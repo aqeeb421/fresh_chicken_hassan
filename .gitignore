@@ -1,3 +1,6 @@
+# Build Artifacts
+*.zip
+
 # Temporary & Scratch Files
 scratch/
 .system_generated/
