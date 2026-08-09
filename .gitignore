@@ -1,0 +1,10 @@
+# Temporary & Scratch Files
+scratch/
+.system_generated/
+*.log
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

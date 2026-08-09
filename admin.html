@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Admin & Price Manager - Fresh Chicken</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#133B2C',
+                        'primary-dark': '#0b251b',
+                        accent: '#E53935',
+                        'accent-hover': '#c62828',
+                        'bg-light': '#F9FBF9'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-[#F9FBF9] text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <!-- ADMIN LOGIN MODAL OVERLAY -->
+    <div id="admin-login-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-100 space-y-6">
+            <div class="text-center">
+                <div class="w-24 h-24 mx-auto mb-3 flex items-center justify-center">
+                    <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="w-full h-full object-contain filter drop-shadow-md" />
+                </div>
+                <h2 class="text-2xl font-black text-[#133B2C]">Store Admin Login</h2>
+                <p class="text-gray-500 text-xs mt-1">Authorized store manager access only</p>
+            </div>
+
+            <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div id="login-error-msg" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl text-center">
+                    Invalid username or password!
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Username</label>
+                    <input type="text" id="admin-username" required placeholder="Enter username" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Password</label>
+                    <input type="password" id="admin-password" required placeholder="Enter password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white" />
+                </div>
+
+                <button type="submit" class="w-full bg-[#133B2C] hover:bg-[#0b251b] text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition-all">
+                    Login to Admin Panel
+                </button>
+            </form>
+
+            <div class="text-center pt-2">
+                <a href="index.html" class="text-xs text-gray-400 hover:text-gray-600 font-semibold underline">Return to Main Store</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN DASHBOARD CONTENT -->
+    <div id="admin-dashboard" class="hidden flex-grow flex flex-col">
+        <!-- Admin Header -->
+        <header class="bg-[#133B2C] text-white border-b border-white/10 sticky top-0 z-40 shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="h-12 w-auto object-contain bg-white rounded-xl p-1 shadow-sm" />
+                    <div>
+                        <h1 class="font-black text-xl text-white leading-none">Fresh Chicken Admin</h1>
+                        <span id="db-status-badge" class="text-xs text-emerald-300 font-medium">⚡ Cloud DB: Connected (my-work-c68d9.firebaseio.com)</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a href="index.html" target="_blank" class="bg-white/10 hover:bg-white/20 text-white px-3.5 py-2 rounded-xl text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors">
+                        <span class="material-symbols-outlined text-sm">store</span>
+                        <span>View Store</span>
+                    </a>
+                    <button onclick="handleAdminLogout()" class="bg-red-500/20 hover:bg-red-500/30 text-white px-3.5 py-2 rounded-xl text-xs font-bold border border-red-400/30 transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">logout</span>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Admin Body -->
+        <main class="flex-grow py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Navigation Tabs -->
+                <div class="flex border-b border-gray-200 mb-8 bg-white p-2 rounded-2xl border shadow-sm gap-2">
+                    <button id="tab-prices-btn" onclick="switchTab('prices')" class="admin-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-[#133B2C] text-white shadow-sm">
+                        <span class="material-symbols-outlined">payments</span>
+                        <span>Daily Price Manager</span>
+                    </button>
+
+                    <button id="tab-revenue-btn" onclick="switchTab('revenue')" class="admin-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-gray-50 text-gray-600 hover:bg-gray-100">
+                        <span class="material-symbols-outlined">analytics</span>
+                        <span>Day-wise Revenue</span>
+                    </button>
+
+                    <button id="tab-orders-btn" onclick="switchTab('orders')" class="admin-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-gray-50 text-gray-600 hover:bg-gray-100">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                        <span>Order History</span>
+                    </button>
+
+                    <button id="tab-banners-btn" onclick="switchTab('banners')" class="admin-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-gray-50 text-gray-600 hover:bg-gray-100">
+                        <span class="material-symbols-outlined">campaign</span>
+                        <span>Ads & Offers Banners</span>
+                    </button>
+                </div>
+
+                <!-- TAB 1: DAILY PRICE MANAGER -->
+                <div id="tab-prices" class="admin-tab-content space-y-8">
+                    
+                    <!-- BASE RATE MASTER SECTION -->
+                    <div class="bg-gradient-to-br from-[#133B2C] to-[#0b251b] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                        <div class="relative z-10 max-w-3xl space-y-4">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-400/20 text-emerald-300 rounded-full text-xs font-bold border border-emerald-400/30">
+                                <span class="material-symbols-outlined text-sm">tune</span>
+                                <span>Poultry Rate Master</span>
+                            </div>
+
+                            <h2 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                                Base Rate Control: Whole Chicken (With Skin)
+                            </h2>
+
+                            <p class="text-emerald-100 text-xs sm:text-sm leading-relaxed">
+                                Enter today's base price per Kg for **Whole Chicken (With Skin)**. Clicking <strong class="text-white">Apply Base Rate to All Cuts</strong> will automatically adjust the prices of all other cuts (Curry Cut, Skinless, Boneless, Drumsticks, Wings, Keema) based on standard category price offsets.
+                            </p>
+
+                            <div class="flex flex-col sm:flex-row items-center gap-4 pt-2">
+                                <div class="relative w-full sm:w-64">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-xl text-[#133B2C]">₹</span>
+                                    <input type="number" id="base-rate-input" value="220" min="10" max="2000" step="5" class="w-full pl-10 pr-4 py-3.5 bg-white text-gray-900 font-black text-xl rounded-2xl focus:outline-none focus:ring-4 focus:ring-emerald-400 shadow-md" />
+                                </div>
+
+                                <button onclick="applyBaseRateToAll()" class="w-full sm:w-auto bg-[#E53935] hover:bg-[#c62828] text-white px-6 py-4 rounded-2xl font-black text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined">auto_fix_high</span>
+                                    <span>Apply Base Rate to All Cuts</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Individual Price Cards Header -->
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-[#133B2C]">Individual Cut Prices</h3>
+                            <p class="text-gray-500 text-xs mt-0.5">You can also manually fine-tune prices for individual cuts below if needed.</p>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <button onclick="saveTodayPrices()" class="bg-[#133B2C] hover:bg-[#0b251b] text-white px-5 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 shadow-md transition-all">
+                                <span class="material-symbols-outlined text-base">save</span>
+                                <span>Save All Prices</span>
+                            </button>
+                            <button onclick="resetDefaultPrices()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-2xl font-semibold text-xs transition-colors">
+                                Reset Defaults
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Products Price Cards Grid -->
+                    <div id="price-manager-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 2: REVENUE & ANALYTICS -->
+                <div id="tab-revenue" class="admin-tab-content hidden space-y-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Today's Revenue</span>
+                            <div class="text-3xl font-black text-[#133B2C] mt-2" id="metric-today-rev">₹0</div>
+                            <p class="text-xs text-gray-500 mt-1" id="metric-today-count">0 orders today</p>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Lifetime Revenue</span>
+                            <div class="text-3xl font-black text-emerald-600 mt-2" id="metric-total-rev">₹0</div>
+                            <p class="text-xs text-gray-500 mt-1" id="metric-total-count">0 total orders</p>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Avg. Order Value</span>
+                            <div class="text-3xl font-black text-gray-900 mt-2" id="metric-avg-order">₹0</div>
+                            <p class="text-xs text-gray-500 mt-1">Per transaction average</p>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Store Location</span>
+                            <div class="text-sm font-bold text-gray-900 mt-2 truncate" id="metric-store-loc">Hassan</div>
+                            <p class="text-xs text-gray-500 mt-1">Santepet Circle</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                        <h3 class="text-xl font-bold text-[#133B2C] mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#E53935]">calendar_today</span>
+                            <span>Day-Wise Revenue Breakdown</span>
+                        </h3>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-gray-200 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                        <th class="pb-3">Date</th>
+                                        <th class="pb-3">Orders Count</th>
+                                        <th class="pb-3">Chicken Sold (Kg)</th>
+                                        <th class="pb-3">Daily Revenue (₹)</th>
+                                        <th class="pb-3 text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="day-revenue-table-body" class="divide-y divide-gray-100 text-sm">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: ORDER HISTORY -->
+                <div id="tab-orders" class="admin-tab-content hidden space-y-6">
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-black text-[#133B2C]">Customer Order History</h2>
+                            <p class="text-gray-500 text-xs mt-0.5">All orders logged when customers checkout and open WhatsApp.</p>
+                        </div>
+
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <div class="relative w-full sm:w-64">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+                                <input type="text" id="order-search" oninput="renderOrdersList()" placeholder="Search name or phone..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#133B2C]" />
+                            </div>
+                            <button onclick="clearAllOrders()" class="text-xs text-red-500 hover:text-red-700 font-semibold underline whitespace-nowrap">
+                                Clear Log
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="admin-orders-list" class="space-y-4">
+                    </div>
+                </div>
+
+                <!-- TAB 4: ADS & OFFERS BANNERS -->
+                <div id="tab-banners" class="admin-tab-content hidden space-y-8">
+                    <!-- ADD NEW BANNER FORM CARD -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm space-y-6">
+                        <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                            <div>
+                                <h3 class="font-black text-xl text-[#133B2C]">Add New Promotional Banner / Ad</h3>
+                                <p class="text-xs text-gray-500 mt-1">Create promotional banners, ads & special offers displayed dynamically on the home page.</p>
+                            </div>
+                            <button onclick="resetAdminBanners()" class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-bold text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">restart_alt</span>
+                                <span>Reset Defaults</span>
+                            </button>
+                        </div>
+
+                        <form id="add-banner-form" onsubmit="handleAddBanner(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                            <!-- Banner Image URL -->
+                            <div class="md:col-span-2 space-y-2">
+                                <label class="block font-bold text-gray-700 uppercase tracking-wider">Banner Image URL / Asset Path *</label>
+                                <input type="text" id="banner-image-input" placeholder="e.g. assets/images/hero-banner.png or https://..." required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-[#133B2C]" />
+                                <div class="flex flex-wrap gap-2 pt-1">
+                                    <span class="text-[11px] text-gray-400 font-bold self-center">Quick Presets:</span>
+                                    <button type="button" onclick="setBannerPreset('assets/images/hero-banner.png')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-semibold">Hero Banner</button>
+                                    <button type="button" onclick="setBannerPreset('assets/images/chicken-curry-cut.png')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-semibold">Curry Cut</button>
+                                    <button type="button" onclick="setBannerPreset('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-semibold">BBQ Dish</button>
+                                </div>
+                            </div>
+
+                            <!-- Header Title (Optional) -->
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-gray-700 uppercase tracking-wider">Header Title (Optional)</label>
+                                <input type="text" id="banner-title-input" placeholder="e.g. Weekend Special Offer! 20% OFF" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C]" />
+                            </div>
+
+                            <!-- Offer Badge / Tag (Optional) -->
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-gray-700 uppercase tracking-wider">Offer Badge / Tag (Optional)</label>
+                                <input type="text" id="banner-badge-input" placeholder="e.g. Limited Deal / Sunday Offer" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C]" />
+                            </div>
+
+                            <!-- Description (Optional) -->
+                            <div class="md:col-span-2 space-y-1.5">
+                                <label class="block font-bold text-gray-700 uppercase tracking-wider">Banner Description (Optional)</label>
+                                <textarea id="banner-desc-input" rows="2" placeholder="e.g. Get free doorstep delivery on all orders above Rs. 500 throughout Hassan!" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C]"></textarea>
+                            </div>
+
+                            <!-- Button Action Text & Link -->
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-gray-700 uppercase tracking-wider">Button Text (Optional)</label>
+                                <input type="text" id="banner-btn-text-input" placeholder="e.g. Order Now & Save" value="Order Now" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C]" />
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-gray-700 uppercase tracking-wider">Button Target Link</label>
+                                <input type="text" id="banner-btn-url-input" placeholder="e.g. products.html" value="products.html" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C]" />
+                            </div>
+
+                            <div class="md:col-span-2 pt-2">
+                                <button type="submit" class="w-full bg-[#133B2C] hover:bg-[#0d2a1f] text-white py-3.5 rounded-2xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all">
+                                    <span class="material-symbols-outlined text-xl">add_photo_alternate</span>
+                                    <span>Publish Banner to Home Page</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ACTIVE BANNERS LIST -->
+                    <div class="space-y-4">
+                        <h3 class="font-black text-xl text-[#133B2C]">Active Home Banners</h3>
+                        <div id="admin-banners-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Rendered dynamically by renderBannersManager -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Firebase 100% Free Realtime Database SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="js/config.js?v=1.0.5"></script>
+    <script src="js/firebase-db.js?v=1.0.5"></script>
+    <script src="js/products-data.js?v=1.0.5"></script>
+    <script src="js/cart.js?v=1.0.5"></script>
+    <script src="js/orders.js?v=1.0.5"></script>
+    <script src="js/main.js?v=1.0.5"></script>
+    <script>
+        // ADMIN AUTHENTICATION
+        const AUTH_KEY = 'fresh_chicken_admin_auth';
+
+        function checkAuthStatus() {
+            const isAuth = sessionStorage.getItem(AUTH_KEY) === 'true';
+            const modal = document.getElementById('admin-login-modal');
+            const dashboard = document.getElementById('admin-dashboard');
+
+            if (isAuth) {
+                if (modal) modal.classList.add('hidden');
+                if (dashboard) dashboard.classList.remove('hidden');
+                renderPriceManager();
+            } else {
+                if (modal) modal.classList.remove('hidden');
+                if (dashboard) dashboard.classList.add('hidden');
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-username')?.value.trim();
+            const pass = document.getElementById('admin-password')?.value.trim();
+            const errorMsg = document.getElementById('login-error-msg');
+
+            // Credentials check
+            if (user === 'freshchikenadmin' && pass === 'adminfresh123') {
+                sessionStorage.setItem(AUTH_KEY, 'true');
+                if (errorMsg) errorMsg.classList.add('hidden');
+                checkAuthStatus();
+            } else {
+                if (errorMsg) errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function handleAdminLogout() {
+            sessionStorage.removeItem(AUTH_KEY);
+            checkAuthStatus();
+        }
+
+        // CATEGORY OFFSETS FROM BASE RATE (Chicken With Skin)
+        const PRICE_OFFSETS = {
+            'prod-whole-chicken': 0,     // Base (Best: 220, COT: 240)
+            'prod-skinless-chicken': 20, // Base + 20
+            'prod-wings': 60,            // Base + 60
+            'prod-drumsticks': 90,       // Base + 90
+            'prod-lollipop': 100,        // Base + 100
+            'prod-boneless': 120,        // Base + 120
+            'prod-mince': 140,           // Base + 140
+            'prod-breast-fillet': 160,   // Base + 160
+            'prod-liver-special': -20    // Base - 20
+        };
+
+        // Apply Base Rate calculation to all cuts
+        function applyBaseRateToAll() {
+            const baseInput = document.getElementById('base-rate-input');
+            const baseRate = parseFloat(baseInput ? baseInput.value : 220);
+
+            if (isNaN(baseRate) || baseRate < 10) {
+                alert('Please enter a valid base rate for Chicken (With Skin).');
+                return;
+            }
+
+            const newPricesMap = {};
+            PRODUCTS.forEach(product => {
+                const offset = PRICE_OFFSETS[product.id] !== undefined ? PRICE_OFFSETS[product.id] : 0;
+                const calculatedBest = baseRate + offset;
+                const calculatedMarket = calculatedBest + 20; // Standard COT market offset
+
+                newPricesMap[product.id] = {
+                    pricePerKg: calculatedBest,
+                    marketPricePerKg: calculatedMarket
+                };
+
+                const inputBest = document.getElementById(`price-input-${product.id}`);
+                const inputMkt = document.getElementById(`mkt-price-input-${product.id}`);
+                if (inputBest) inputBest.value = calculatedBest;
+                if (inputMkt) inputMkt.value = calculatedMarket;
+            });
+
+            if (window.priceManager.saveCustomPrices(newPricesMap)) {
+                if (window.cart && window.cart.showToast) {
+                    window.cart.showToast(`Applied Base Rate (₹${baseRate}/Kg) to all cuts!`, 'success');
+                } else {
+                    alert(`Applied Base Rate (₹${baseRate}/Kg) to all cuts!`);
+                }
+                renderPriceManager();
+            }
+        }
+
+        // Save custom prices from inputs
+        function saveTodayPrices() {
+            const newPricesMap = {};
+            PRODUCTS.forEach(product => {
+                const inputBest = document.getElementById(`price-input-${product.id}`);
+                const inputMkt = document.getElementById(`mkt-price-input-${product.id}`);
+                if (inputBest && inputBest.value) {
+                    newPricesMap[product.id] = {
+                        pricePerKg: parseFloat(inputBest.value),
+                        marketPricePerKg: inputMkt && inputMkt.value ? parseFloat(inputMkt.value) : parseFloat(inputBest.value) + 20
+                    };
+                }
+            });
+
+            if (window.priceManager.saveCustomPrices(newPricesMap)) {
+                if (window.cart && window.cart.showToast) {
+                    window.cart.showToast("All prices & COT market rates saved successfully!", 'success');
+                } else {
+                    alert("All prices & COT market rates saved successfully!");
+                }
+                renderPriceManager();
+            }
+        }
+
+        // Reset to default prices
+        function resetDefaultPrices() {
+            if (confirm('Reset all prices back to default catalog prices?')) {
+                window.priceManager.resetDefaultPrices();
+                const wholeItem = PRODUCTS.find(p => p.id === 'prod-whole-chicken');
+                if (wholeItem && document.getElementById('base-rate-input')) {
+                    document.getElementById('base-rate-input').value = wholeItem.pricePerKg;
+                }
+                renderPriceManager();
+            }
+        }
+
+        // Render Price Manager Cards
+        function renderPriceManager() {
+            const grid = document.getElementById('price-manager-grid');
+            if (!grid) return;
+
+            const customPrices = window.priceManager ? window.priceManager.getCustomPrices() : {};
+
+            const wholeItem = PRODUCTS.find(p => p.id === 'prod-whole-chicken');
+            if (wholeItem) {
+                const wholeVal = customPrices['prod-whole-chicken'];
+                const currentBase = (wholeVal && typeof wholeVal === 'object') ? wholeVal.pricePerKg : (wholeVal || wholeItem.pricePerKg);
+                const baseInput = document.getElementById('base-rate-input');
+                if (baseInput) baseInput.value = currentBase;
+            }
+
+            grid.innerHTML = PRODUCTS.map(product => {
+                const val = customPrices[product.id];
+                const currentBest = (val && typeof val === 'object') ? val.pricePerKg : (val || product.pricePerKg);
+                const currentMkt = (val && typeof val === 'object' && val.marketPricePerKg) ? val.marketPricePerKg : (product.marketPricePerKg || currentBest + 20);
+
+                const offset = PRICE_OFFSETS[product.id] !== undefined ? PRICE_OFFSETS[product.id] : 0;
+                const formulaText = offset === 0 ? 'Base Price' : `Base ${offset >= 0 ? '+' : ''}₹${offset}`;
+
+                return `
+                    <div class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-emerald-200 transition-colors space-y-3">
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <img src="${product.image}" alt="${product.name}" class="w-12 h-12 rounded-xl object-cover border border-gray-100" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&w=800&q=80';" />
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-sm leading-snug">${product.name}</h4>
+                                    <span class="text-[10px] text-gray-400 uppercase font-semibold">${product.category}</span>
+                                </div>
+                            </div>
+                            <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-[#133B2C] text-[11px] font-bold rounded-md">
+                                ${formulaText}
+                            </span>
+                        </div>
+
+                        <div class="pt-3 border-t border-gray-100 space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                    Market Price / COT (₹)
+                                </label>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-sm font-bold text-gray-400">₹</span>
+                                    <input type="number" id="mkt-price-input-${product.id}" value="${currentMkt}" min="10" max="2000" step="5" class="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 focus:outline-none focus:border-[#133B2C]" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-bold text-emerald-800 uppercase tracking-wider mb-1">
+                                    Our Best Price (₹)
+                                </label>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-base font-black text-[#133B2C]">₹</span>
+                                    <input type="number" id="price-input-${product.id}" value="${currentBest}" min="10" max="2000" step="5" class="w-full px-2.5 py-1.5 bg-emerald-50 border border-emerald-300 rounded-xl text-base font-black text-gray-900 focus:outline-none focus:border-[#133B2C]" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Tab Switcher
+        function switchTab(tabName) {
+            document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-[#133B2C]', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-gray-50', 'text-gray-600');
+            });
+
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            const targetBtn = document.getElementById(`tab-${tabName}-btn`);
+
+            if (targetTab) targetTab.classList.remove('hidden');
+            if (targetBtn) {
+                targetBtn.classList.remove('bg-gray-50', 'text-gray-600');
+                targetBtn.classList.add('bg-[#133B2C]', 'text-white', 'shadow-sm');
+            }
+
+            if (tabName === 'revenue') renderRevenueMetrics();
+            if (tabName === 'orders') renderOrdersList();
+            if (tabName === 'banners') renderBannersManager();
+        }
+
+        // Handle Status Change from Admin Panel
+        function handleAdminStatusChange(orderId, newStatus) {
+            if (window.ordersEngine) {
+                window.ordersEngine.updateOrderStatus(orderId, newStatus);
+                if (window.cart && window.cart.showToast) {
+                    window.cart.showToast(`Updated ${orderId} status to "${newStatus}"`, 'success');
+                }
+            }
+        }
+
+        // Render Day-Wise Revenue & Metrics
+        function renderRevenueMetrics() {
+            if (!window.ordersEngine) return;
+
+            const engine = window.ordersEngine;
+            const todayRev = engine.getTodayRevenue();
+            const todayCount = engine.getTodayOrders().length;
+            const lifetimeRev = engine.getLifetimeRevenue();
+            const totalCount = engine.getAllOrders().length;
+            const avgOrder = totalCount > 0 ? Math.round(lifetimeRev / totalCount) : 0;
+
+            document.getElementById('metric-today-rev').textContent = `₹${todayRev}`;
+            document.getElementById('metric-today-count').textContent = `${todayCount} orders today`;
+            document.getElementById('metric-total-rev').textContent = `₹${lifetimeRev}`;
+            document.getElementById('metric-total-count').textContent = `${totalCount} total orders`;
+            document.getElementById('metric-avg-order').textContent = `₹${avgOrder}`;
+            if (CONFIG && CONFIG.ADDRESS) {
+                document.getElementById('metric-store-loc').textContent = CONFIG.ADDRESS.split(',')[1] || CONFIG.ADDRESS;
+            }
+
+            const dayBreakdown = engine.getDayWiseRevenue();
+            const tableBody = document.getElementById('day-revenue-table-body');
+            
+            if (dayBreakdown.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-gray-400">No orders logged yet. Place a test order via checkout to view daily revenue.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = dayBreakdown.map(day => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="py-4 font-bold text-gray-900">${day.dateString}</td>
+                    <td class="py-4 font-semibold text-gray-700">${day.count} orders</td>
+                    <td class="py-4 text-gray-600">${day.itemsSoldKg} Kg</td>
+                    <td class="py-4 font-black text-[#133B2C]">₹${day.revenue}</td>
+                    <td class="py-4 text-right">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
+                            Active
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render Order History List with Status Controller
+        function renderOrdersList() {
+            if (!window.ordersEngine) return;
+
+            const container = document.getElementById('admin-orders-list');
+            const searchInput = document.getElementById('order-search');
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            let orders = window.ordersEngine.getAllOrders();
+
+            if (query) {
+                orders = orders.filter(o => 
+                    o.customer.name.toLowerCase().includes(query) ||
+                    o.customer.phone.includes(query) ||
+                    o.id.toLowerCase().includes(query)
+                );
+            }
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm">
+                        <span class="material-symbols-outlined text-5xl text-gray-300 mb-2">receipt</span>
+                        <h4 class="font-bold text-gray-700">No orders found</h4>
+                        <p class="text-xs text-gray-400 mt-1">Orders submitted via checkout will appear here automatically.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const statuses = ['Order Placed', 'Confirmed', 'Preparing Cut', 'Out for Delivery', 'Delivered', 'Cancelled'];
+
+            container.innerHTML = orders.map(order => `
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:border-emerald-200 transition-colors space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-100 gap-3">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-black text-[#133B2C] text-lg">${order.id}</span>
+                                <span class="text-xs text-gray-400 font-medium">📅 ${order.dateString}</span>
+                            </div>
+                            <span class="text-xs text-gray-500 font-semibold">💳 ${order.paymentMethod || 'Cash / UPI'}</span>
+                        </div>
+
+                        <!-- Status Selector Dropdown -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Status:</span>
+                            <select onchange="handleAdminStatusChange('${order.id}', this.value)" class="px-3 py-2 bg-emerald-50 border border-emerald-300 text-[#133B2C] font-bold text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                ${statuses.map(st => `<option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="bg-gray-50 p-4 rounded-2xl space-y-1">
+                            <span class="font-bold text-gray-900 block text-sm mb-1">👤 Customer Details</span>
+                            <p class="text-gray-700 font-bold">${order.customer.name}</p>
+                            <p class="text-gray-600">📞 ${order.customer.phone}</p>
+                            <p class="text-gray-600">📍 ${order.customer.fullAddress}</p>
+                            ${order.customer.notes ? `<p class="text-emerald-800 font-semibold">📝 Notes: ${order.customer.notes}</p>` : ''}
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-2xl space-y-1">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-gray-900 block text-sm">🛒 Ordered Cuts</span>
+                                <span class="font-black text-emerald-800 text-sm">Total: ₹${order.grandTotal}</span>
+                            </div>
+                            ${order.items.map(i => `<p class="text-gray-700 font-medium">• ${i.name} — ${i.quantity} Kg (₹${i.pricePerKg * i.quantity})</p>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearAllOrders() {
+            if (confirm('Clear all stored order history?')) {
+                window.ordersEngine.clearOrderHistory();
+                renderRevenueMetrics();
+                renderOrdersList();
+            }
+        }
+
+        function checkAuthStatus() {
+            const isAuth = sessionStorage.getItem(AUTH_KEY) === 'true';
+            const modal = document.getElementById('admin-login-modal');
+            const dashboard = document.getElementById('admin-dashboard');
+
+            if (isAuth) {
+                if (modal) modal.classList.add('hidden');
+                if (dashboard) dashboard.classList.remove('hidden');
+                renderPriceManager();
+                renderRevenueMetrics();
+                renderOrdersList();
+                renderBannersManager();
+            } else {
+                if (modal) modal.classList.remove('hidden');
+                if (dashboard) dashboard.classList.add('hidden');
+            }
+        }
+
+        // BANNERS MANAGER FUNCTIONS
+        function setBannerPreset(url) {
+            const input = document.getElementById('banner-image-input');
+            if (input) input.value = url;
+        }
+
+        function handleAddBanner(e) {
+            e.preventDefault();
+            const image = document.getElementById('banner-image-input')?.value.trim();
+            const title = document.getElementById('banner-title-input')?.value.trim();
+            const badge = document.getElementById('banner-badge-input')?.value.trim();
+            const description = document.getElementById('banner-desc-input')?.value.trim();
+            const linkText = document.getElementById('banner-btn-text-input')?.value.trim();
+            const linkUrl = document.getElementById('banner-btn-url-input')?.value.trim();
+
+            if (!image) {
+                alert('Please enter a banner image URL or asset path.');
+                return;
+            }
+
+            if (window.bannersEngine) {
+                window.bannersEngine.addBanner({ image, title, badge, description, linkText, linkUrl });
+                document.getElementById('add-banner-form').reset();
+                if (window.cart && window.cart.showToast) {
+                    window.cart.showToast('Published new banner to home page!', 'success');
+                } else {
+                    alert('Published new banner to home page!');
+                }
+                renderBannersManager();
+            }
+        }
+
+        function toggleAdminBanner(id) {
+            if (window.bannersEngine) {
+                window.bannersEngine.toggleBannerStatus(id);
+                renderBannersManager();
+            }
+        }
+
+        function deleteAdminBanner(id) {
+            if (confirm('Delete this banner from home page?')) {
+                if (window.bannersEngine) {
+                    window.bannersEngine.deleteBanner(id);
+                    renderBannersManager();
+                }
+            }
+        }
+
+        function resetAdminBanners() {
+            if (confirm('Reset to default promotional banners?')) {
+                if (window.bannersEngine) {
+                    window.bannersEngine.resetDefaultBanners();
+                    renderBannersManager();
+                }
+            }
+        }
+
+        function renderBannersManager() {
+            const grid = document.getElementById('admin-banners-grid');
+            if (!grid || !window.bannersEngine) return;
+
+            const banners = window.bannersEngine.getBanners();
+
+            if (banners.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm">
+                        <span class="material-symbols-outlined text-5xl text-gray-300 mb-2">campaign</span>
+                        <h4 class="font-bold text-gray-700">No promotional banners active</h4>
+                        <p class="text-xs text-gray-400 mt-1">Use the form above to publish your first banner.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = banners.map(b => `
+                <div class="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:border-emerald-200 transition-colors flex flex-col justify-between p-5 space-y-4">
+                    <div class="flex items-start gap-4">
+                        <img src="${b.image}" alt="${b.title || 'Banner'}" class="w-24 h-20 rounded-xl object-cover border border-gray-100 flex-shrink-0" onerror="this.onerror=null;this.src='assets/images/hero-banner.png';" />
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 ${b.active !== false ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-500'} font-bold text-[10px] rounded-full">
+                                    ${b.active !== false ? 'Active' : 'Hidden'}
+                                </span>
+                                ${b.badge ? `<span class="px-2 py-0.5 bg-amber-100 text-amber-900 font-bold text-[10px] rounded-full">${b.badge}</span>` : ''}
+                            </div>
+                            <h4 class="font-black text-gray-900 text-sm leading-snug">${b.title || 'Image Only Banner'}</h4>
+                            <p class="text-gray-500 text-xs line-clamp-2">${b.description || 'No description provided.'}</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100 flex items-center justify-between gap-2 text-xs">
+                        <button onclick="toggleAdminBanner('${b.id}')" class="px-3 py-1.5 ${b.active !== false ? 'bg-amber-50 text-amber-900 border border-amber-200' : 'bg-emerald-50 text-emerald-900 border border-emerald-200'} rounded-xl font-bold">
+                            ${b.active !== false ? 'Hide Banner' : 'Show Banner'}
+                        </button>
+                        <button onclick="deleteAdminBanner('${b.id}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateDbStatus() {
+            const badge = document.getElementById('db-status-badge');
+            if (!badge) return;
+            if (window.cloudDb && window.cloudDb.isFirebaseReady) {
+                badge.innerHTML = '⚡ Cloud DB: <span class="font-bold text-emerald-400">Connected (my-work-c68d9)</span>';
+            } else {
+                const errDetail = window.cloudDb && window.cloudDb.initError ? ` (${window.cloudDb.initError})` : '';
+                badge.innerHTML = `⚠️ Cloud DB: <span class="font-bold text-yellow-300">Offline / LocalStorage Mode${errDetail}</span>`;
+            }
+        }
+
+        window.addEventListener('firebaseConnected', updateDbStatus);
+
+        // Check authentication on load and connect Realtime Firebase Cloud Order Listener
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+            updateDbStatus();
+
+            if (window.cloudDb) {
+                window.cloudDb.listenToRealtimeOrders(cloudOrders => {
+                    if (cloudOrders) {
+                        const ordersArray = Array.isArray(cloudOrders) ? cloudOrders : Object.values(cloudOrders);
+                        ordersArray.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+                        window.ordersEngine.orders = ordersArray;
+                        try {
+                            localStorage.setItem('fresh_chicken_orders_v1', JSON.stringify(ordersArray));
+                        } catch (e) {}
+                        renderRevenueMetrics();
+                        renderOrdersList();
+                    }
+                });
+
+                window.cloudDb.listenToRealtimeBanners(cloudBanners => {
+                    if (cloudBanners) {
+                        renderBannersManager();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
