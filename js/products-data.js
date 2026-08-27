@@ -12,7 +12,7 @@ const DEFAULT_PRODUCTS = [
         pricePerKg: 220,
         unit: '1 Kg',
         description: 'Fresh, farm-raised chicken with skin intact. Ideal for roasting, grilling, or traditional whole curry.',
-        image: 'assets/images/whole-chicken.png?v=1.0.5',
+        image: 'assets/images/with-skin-chicken.png?v=1.0.5',
         badge: 'Best Seller',
         stockStatus: 'In Stock (Fresh Cut Daily)'
     },
@@ -36,7 +36,7 @@ const DEFAULT_PRODUCTS = [
         pricePerKg: 340,
         unit: '1 Kg',
         description: '100% tender, lean boneless chicken breast and thigh meat. Perfect for tikka, stir-fries, and pasta.',
-        image: 'assets/images/chicken-curry-cut.png?v=1.0.5',
+        image: 'assets/images/boneless-chicken.png?v=1.0.5',
         badge: 'High Protein',
         stockStatus: 'In Stock'
     },
@@ -72,7 +72,7 @@ const DEFAULT_PRODUCTS = [
         pricePerKg: 380,
         unit: '1 Kg',
         description: 'Ultra-lean boneless chicken breast fillets. High protein, zero skin, trimmed cleanly for fitness diets.',
-        image: 'assets/images/skinless-chicken.png?v=1.0.5',
+        image: 'assets/images/chicken-breast.png?v=1.0.5',
         badge: 'Fitness Pick',
         stockStatus: 'In Stock'
     },
@@ -120,7 +120,7 @@ const COMING_SOON_PRODUCTS = [
         name: 'Nati Koli (Country Chicken)',
         category: 'Coming Soon',
         description: 'Authentic free-range country chicken. Rich flavor, lean meat, and traditional Karnataka taste.',
-        image: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=800&q=80',
+        image: 'assets/images/nati-koli.png?v=1.0.3',
         badge: 'Coming Soon'
     },
     {
@@ -136,7 +136,7 @@ const COMING_SOON_PRODUCTS = [
         name: 'Barbeque Chicken',
         category: 'Coming Soon',
         description: 'Chef marinated juicy chicken cuts with exotic spices, ready for BBQ grill & tandoor.',
-        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
+        image: 'assets/images/barbeque-chicken.png?v=1.0.3',
         badge: 'Coming Soon'
     }
 ];
@@ -144,7 +144,7 @@ const COMING_SOON_PRODUCTS = [
 // Deep copy default products
 let PRODUCTS = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
 
-window.initDefaultProducts = function() {
+window.initDefaultProducts = function () {
     window.PRODUCTS = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
 };
 
