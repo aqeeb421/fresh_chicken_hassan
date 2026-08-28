@@ -22,8 +22,10 @@
             }
         }
     </script>
-    <!-- Favicon -->
+    <!-- Favicon & PWA Manifest -->
     <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#133B2C">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -41,14 +43,24 @@
             </a>
 
             <nav class="hidden md:flex items-center gap-8">
-                <a href="index.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
-                <a href="products.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Products</a>
-                <a href="orders.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">My Orders</a>
-                <a href="cart.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Cart</a>
-                <a href="contact.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
+                <a href="index.html" data-i18n="nav_home" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
+                <a href="products.html" data-i18n="nav_products" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Products</a>
+                <a href="orders.html" data-i18n="nav_orders" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">My Orders</a>
+                <a href="cart.html" data-i18n="nav_cart" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Cart</a>
+                <a href="contact.html" data-i18n="nav_contact" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
             </nav>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
+                <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
+                    <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
+                        EN
+                    </button>
+                    <button type="button" onclick="window.setLanguage('kn')" class="lang-btn-kn px-2.5 py-1 rounded-xl transition-all font-semibold">
+                        ಕನ್ನಡ
+                    </button>
+                </div>
+
                 <a href="cart.html" class="relative p-2.5 text-gray-700 hover:text-[#133B2C] transition-colors rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100">
                     <span class="material-symbols-outlined text-2xl">shopping_cart</span>
                     <span class="cart-badge absolute -top-1.5 -right-1.5 h-5 w-5 bg-[#E53935] text-white text-[11px] font-extrabold flex items-center justify-center rounded-full shadow-md border-2 border-white">0</span>
@@ -76,29 +88,37 @@
                     </button>
                 </div>
 
-                <nav class="flex flex-col gap-4 mt-8">
+                <div class="mt-4 mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                    <span class="text-xs font-bold text-gray-600">Language:</span>
+                    <div class="flex items-center bg-white p-0.5 rounded-xl border border-gray-200 text-xs font-bold">
+                        <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-3 py-1 rounded-lg transition-all">EN</button>
+                        <button type="button" onclick="window.setLanguage('kn')" class="lang-btn-kn px-3 py-1 rounded-lg transition-all font-semibold">ಕನ್ನಡ</button>
+                    </div>
+                </div>
+
+                <nav class="flex flex-col gap-4 mt-4">
                     <a href="index.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">home</span>
-                        <span>Home</span>
+                        <span data-i18n="nav_home">Home</span>
                     </a>
                     <a href="products.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">grid_view</span>
-                        <span>Products</span>
+                        <span data-i18n="nav_products">Products</span>
                     </a>
                     <a href="orders.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">receipt_long</span>
-                        <span>My Orders</span>
+                        <span data-i18n="nav_orders">My Orders</span>
                     </a>
                     <a href="cart.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined">shopping_cart</span>
-                            <span>Cart</span>
+                            <span data-i18n="nav_cart">Cart</span>
                         </div>
                         <span class="cart-badge bg-[#E53935] text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </a>
                     <a href="contact.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">call</span>
-                        <span>Contact Us</span>
+                        <span data-i18n="nav_contact">Contact Us</span>
                     </a>
                 </nav>
             </div>
@@ -120,14 +140,42 @@
                 <p class="text-gray-500 text-sm mt-1">Provide your delivery address and choose your payment method.</p>
             </div>
 
+            <!-- Store Live Status & Welcome Back Notification -->
+            <div class="max-w-7xl mx-auto mb-6 space-y-3">
+                <div id="checkout-store-status" class="bg-emerald-50 border border-emerald-200 text-emerald-950 px-4 py-2.5 rounded-2xl flex items-center justify-between shadow-sm text-xs font-semibold">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="checkout-status-text">🟢 Store Open (9:00 AM - 8:00 PM) • Fresh Cuts Dispatched Directly from Santepet</span>
+                    </div>
+                </div>
+
+                <div id="saved-profile-alert" class="hidden bg-emerald-100/70 border border-emerald-300 text-emerald-900 px-4 py-2.5 rounded-2xl flex items-center justify-between text-xs font-semibold">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base text-emerald-700">account_circle</span>
+                        <span id="saved-profile-text">Welcome back! We pre-filled your delivery details.</span>
+                    </div>
+                    <button type="button" onclick="clearSavedProfile()" class="text-xs text-emerald-800 underline font-bold">Clear</button>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Delivery Form (2 Cols) -->
                 <div class="lg:col-span-2">
                     <form id="checkout-form" class="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm space-y-6">
-                        <h3 class="font-bold text-xl text-[#133B2C] pb-4 border-b border-gray-100 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[#E53935]">location_on</span>
-                            <span>Delivery Information</span>
-                        </h3>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-100 gap-3">
+                            <h3 class="font-bold text-xl text-[#133B2C] flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[#E53935]">location_on</span>
+                                <span>Delivery Information</span>
+                            </h3>
+                            <button type="button" id="detect-gps-btn" onclick="detectGpsLocation()" class="bg-emerald-50 hover:bg-emerald-100 text-[#133B2C] border border-emerald-200 px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors self-start sm:self-auto shadow-sm">
+                                <span class="material-symbols-outlined text-base text-emerald-600">my_location</span>
+                                <span id="gps-btn-text">Use My GPS Location</span>
+                            </button>
+                        </div>
+                        <div id="gps-status-box" class="hidden p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-medium flex items-center justify-between">
+                            <span id="gps-coords-text">📍 GPS Location Attached</span>
+                            <button type="button" onclick="clearGpsLocation()" class="text-emerald-700 font-bold hover:underline">Remove</button>
+                        </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <!-- Name -->
@@ -151,23 +199,58 @@
                             <!-- Area -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Area / Locality *</label>
-                                <input type="text" id="cust-area" required placeholder="e.g. Indiranagar" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <input type="text" id="cust-area" required placeholder="e.g. Santepet Circle / Indiranagar" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
                             <!-- City -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">City *</label>
-                                <input type="text" id="cust-city" required placeholder="e.g. Bengaluru" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <input type="text" id="cust-city" required value="Hassan" placeholder="e.g. Hassan" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
                             <!-- Pincode -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Pincode *</label>
-                                <input type="text" id="cust-pincode" required placeholder="e.g. 560038" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <input type="text" id="cust-pincode" required value="573201" placeholder="e.g. 573201" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
-                            <!-- Payment Options Selection -->
+                            <!-- Delivery Time Slot Selection (9:00 AM to 8:00 PM) -->
                             <div class="sm:col-span-2 space-y-3 pt-4 border-t border-gray-100">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center justify-between">
+                                    <span>Select Delivery Time Slot (9:00 AM - 8:00 PM)</span>
+                                    <span class="text-[10px] text-emerald-700 font-semibold">Delivery Hours</span>
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <label class="cursor-pointer border-2 border-[#133B2C] bg-emerald-50/50 rounded-2xl p-3.5 flex items-center gap-3 transition-all slot-option">
+                                        <input type="radio" name="delivery-slot" value="Express Delivery (Within 30-45 Mins)" checked class="w-4 h-4 text-[#133B2C] focus:ring-[#133B2C]" />
+                                        <div>
+                                            <span class="font-bold text-xs text-[#133B2C] block">⚡ Express Delivery</span>
+                                            <span class="text-[11px] text-gray-500 block">Fresh cut & dispatched in 30-45 mins</span>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer border border-gray-200 bg-gray-50 rounded-2xl p-3.5 flex items-center gap-3 transition-all slot-option">
+                                        <input type="radio" name="delivery-slot" value="Morning Slot (9:00 AM - 12:00 PM)" class="w-4 h-4 text-[#133B2C] focus:ring-[#133B2C]" />
+                                        <div>
+                                            <span class="font-bold text-xs text-gray-900 block">🌅 Morning Slot</span>
+                                            <span class="text-[11px] text-gray-500 block">9:00 AM - 12:00 PM</span>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer border border-gray-200 bg-gray-50 rounded-2xl p-3.5 flex items-center gap-3 transition-all slot-option">
+                                        <input type="radio" name="delivery-slot" value="Afternoon Slot (12:00 PM - 4:00 PM)" class="w-4 h-4 text-[#133B2C] focus:ring-[#133B2C]" />
+                                        <div>
+                                            <span class="font-bold text-xs text-gray-900 block">☀️ Afternoon Slot</span>
+                                            <span class="text-[11px] text-gray-500 block">12:00 PM - 4:00 PM</span>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer border border-gray-200 bg-gray-50 rounded-2xl p-3.5 flex items-center gap-3 transition-all slot-option">
+                                        <input type="radio" name="delivery-slot" value="Evening Slot (4:00 PM - 8:00 PM)" class="w-4 h-4 text-[#133B2C] focus:ring-[#133B2C]" />
+                                        <div>
+                                            <span class="font-bold text-xs text-gray-900 block">🌆 Evening Slot</span>
+                                            <span class="text-[11px] text-gray-500 block">4:00 PM - 8:00 PM</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Select Payment Method</label>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <!-- Option 1: GPay / UPI Scanner -->
@@ -346,6 +429,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="js/config.js?v=1.0.1"></script>
+    <script src="js/translations.js?v=1.0.1"></script>
     <script src="js/firebase-db.js?v=1.0.1"></script>
     <script src="js/products-data.js?v=1.0.1"></script>
     <script src="js/cart.js?v=1.0.1"></script>

@@ -1,0 +1,12 @@
+{
+  "name": "fresh-chicken-hassan",
+  "version": "1.0.0",
+  "description": "Fresh Chicken Hassan Delivery Web Application",
+  "scripts": {
+    "test": "node test-runner.js",
+    "test:e2e": "node e2e-tests.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.3.0"
+  }
+}

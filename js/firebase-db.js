@@ -130,12 +130,13 @@ class CloudDatabaseEngine {
         return false;
     }
 
-    // 3. Save new order to Cloud Database
+    // 3. Save new order to Cloud Database (routes test orders to test-orders/)
     async saveOrderToCloud(orderData) {
+        const node = orderData.isTest ? 'test-orders' : 'orders';
         if (this.useSdk && this.db) {
             try {
-                await this.db.ref(`orders/${orderData.id}`).set(orderData);
-                console.log('⚡ Order saved successfully via Firebase SDK!', orderData.id);
+                await this.db.ref(`${node}/${orderData.id}`).set(orderData);
+                console.log(`⚡ Order saved to Cloud DB [${node}]:`, orderData.id);
                 return true;
             } catch (e) {
                 console.error('Error saving order via SDK, falling back to REST:', e);
@@ -144,15 +145,15 @@ class CloudDatabaseEngine {
 
         // REST fallback
         try {
-            console.log('⚡ Saving order to Cloud DB via REST:', orderData.id);
-            const response = await fetch(`${this.baseUrl}/orders/${orderData.id}.json`, {
+            console.log(`⚡ Saving order to Cloud DB via REST [${node}]:`, orderData.id);
+            const response = await fetch(`${this.baseUrl}/${node}/${orderData.id}.json`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
             });
 
             if (response.ok) {
-                console.log('⚡ Order saved successfully to Cloud DB via REST!');
+                console.log(`⚡ Order saved successfully to Cloud DB via REST [${node}]!`);
                 return true;
             } else if (response.status === 403) {
                 console.error('⛔ Firebase Permission Denied (403): Security rules blocking order creation.');
@@ -166,11 +167,12 @@ class CloudDatabaseEngine {
     }
 
     // 3.5 Update Order Status in Cloud DB
-    async updateOrderStatusInCloud(orderId, newStatus) {
+    async updateOrderStatusInCloud(orderId, newStatus, isTest = false) {
+        const node = isTest || orderId.startsWith('TEST-') ? 'test-orders' : 'orders';
         if (this.useSdk && this.db) {
             try {
-                await this.db.ref(`orders/${orderId}/status`).set(newStatus);
-                console.log(`⚡ Order status updated in Cloud DB: ${orderId} -> ${newStatus}`);
+                await this.db.ref(`${node}/${orderId}/status`).set(newStatus);
+                console.log(`⚡ Order status updated in Cloud DB [${node}]: ${orderId} -> ${newStatus}`);
                 return true;
             } catch (e) {
                 console.error('Error updating order status via SDK:', e);
@@ -178,13 +180,13 @@ class CloudDatabaseEngine {
         }
 
         try {
-            const response = await fetch(`${this.baseUrl}/orders/${orderId}/status.json`, {
+            const response = await fetch(`${this.baseUrl}/${node}/${orderId}/status.json`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newStatus)
             });
             if (response.ok) {
-                console.log(`⚡ Order status updated via REST: ${orderId} -> ${newStatus}`);
+                console.log(`⚡ Order status updated via REST [${node}]: ${orderId} -> ${newStatus}`);
                 return true;
             }
         } catch (e) {

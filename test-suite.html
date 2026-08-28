@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresh Chicken - Automated Feature Test Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gray-800 p-6 rounded-3xl border border-gray-700">
+            <div>
+                <div class="flex items-center gap-3 mb-1">
+                    <span class="material-symbols-outlined text-3xl text-emerald-400">verified</span>
+                    <h1 class="text-2xl font-black text-white">Automated Feature Test Suite</h1>
+                </div>
+                <p class="text-xs text-gray-400">Validates 0.5 Kg steps, manual inputs, cart badge count, live prices, and duplicate prevention.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="runAllTests()" class="bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black px-5 py-3 rounded-2xl text-xs flex items-center gap-2 shadow-lg transition-all">
+                    <span class="material-symbols-outlined text-base">play_arrow</span>
+                    <span>Run All Tests</span>
+                </button>
+                <a href="index.html" class="bg-gray-700 hover:bg-gray-600 text-white font-bold px-4 py-3 rounded-2xl text-xs flex items-center gap-1.5 transition-all">
+                    <span class="material-symbols-outlined text-base">storefront</span>
+                    <span>Store</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Metrics bar -->
+        <div class="grid grid-cols-3 gap-4">
+            <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 text-center">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Total Tests</span>
+                <span id="metric-total" class="text-3xl font-black text-white">0</span>
+            </div>
+            <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 text-center">
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">Passed</span>
+                <span id="metric-passed" class="text-3xl font-black text-emerald-400">0</span>
+            </div>
+            <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 text-center">
+                <span class="text-xs font-bold text-rose-400 uppercase tracking-wider block">Failed</span>
+                <span id="metric-failed" class="text-3xl font-black text-rose-400">0</span>
+            </div>
+        </div>
+
+        <!-- Test Results Container -->
+        <div id="test-results-container" class="space-y-3">
+            <!-- Test rows populated by JS -->
+        </div>
+    </div>
+
+    <!-- Scripts under test -->
+    <script src="js/config.js"></script>
+    <script src="js/products-data.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/orders.js"></script>
+
+    <script>
+        function runAllTests() {
+            const container = document.getElementById('test-results-container');
+            container.innerHTML = '';
+
+            let total = 0;
+            let passed = 0;
+            let failed = 0;
+
+            function assert(condition, message) {
+                if (!condition) {
+                    throw new Error(message || 'Assertion failed');
+                }
+            }
+
+            function testCase(category, title, fn) {
+                total++;
+                let status = 'PASSED';
+                let errorMsg = '';
+
+                try {
+                    fn();
+                    passed++;
+                } catch (err) {
+                    status = 'FAILED';
+                    errorMsg = err.message;
+                    failed++;
+                }
+
+                const isPass = status === 'PASSED';
+                const row = document.createElement('div');
+                row.className = `p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    isPass ? 'bg-gray-800/80 border-emerald-500/30' : 'bg-rose-950/40 border-rose-500/40'
+                }`;
+
+                row.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
+                                isPass ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
+                            }">${category}</span>
+                            <span class="font-bold text-sm text-gray-200">${title}</span>
+                        </div>
+                        ${errorMsg ? `<p class="text-xs text-rose-400 font-mono pl-1">${errorMsg}</p>` : ''}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="flex items-center gap-1 text-xs font-black px-3 py-1 rounded-xl ${
+                            isPass ? 'bg-emerald-500 text-gray-950' : 'bg-rose-500 text-white'
+                        }">
+                            <span class="material-symbols-outlined text-sm">${isPass ? 'check_circle' : 'cancel'}</span>
+                            <span>${status}</span>
+                        </span>
+                    </div>
+                `;
+                container.appendChild(row);
+            }
+
+            // 1. QUANTITY SANITIZATION & STEP LOGIC
+            const QTY_MIN = 1;
+            function sanitizeQty(raw) {
+                let val = parseFloat(raw);
+                if (isNaN(val) || val < QTY_MIN) val = QTY_MIN;
+                val = Math.round(val * 2) / 2;
+                if (val < QTY_MIN) val = QTY_MIN;
+                return val;
+            }
+
+            testCase('Input Logic', 'Rejects input under 1 Kg and clamps to minimum 1 Kg', () => {
+                assert(sanitizeQty(0.2) === 1, 'Expected 0.2 to snap to 1');
+                assert(sanitizeQty(-3) === 1, 'Expected -3 to snap to 1');
+                assert(sanitizeQty('abc') === 1, 'Expected NaN string to snap to 1');
+            });
+
+            testCase('Input Logic', 'Snaps fractional user inputs to nearest 0.5 Kg step', () => {
+                assert(sanitizeQty(1.3) === 1.5, 'Expected 1.3 to snap to 1.5');
+                assert(sanitizeQty(1.7) === 1.5, 'Expected 1.7 to snap to 1.5');
+                assert(sanitizeQty(1.8) === 2.0, 'Expected 1.8 to snap to 2.0');
+            });
+
+            testCase('Input Logic', 'Handles large quantities typed directly (e.g. 10 Kg, 20.5 Kg)', () => {
+                assert(sanitizeQty(10) === 10, 'Expected 10 to stay 10');
+                assert(sanitizeQty('20.5') === 20.5, 'Expected 20.5 to stay 20.5');
+            });
+
+            // 2. CART ENGINE TESTS
+            testCase('Cart Engine', 'Adding 1.5 Kg correctly calculates subtotal without floating errors', () => {
+                window.cart.clearCart();
+                window.cart.addItem('prod-whole-chicken', 1.5);
+                const subtotal = window.cart.getSubtotal();
+                assert(window.cart.items.length === 1, 'Items length should be 1');
+                assert(window.cart.items[0].quantity === 1.5, 'Quantity should be 1.5');
+                assert(subtotal === 330, `Expected ₹330 but got ₹${subtotal}`);
+            });
+
+            testCase('Cart Engine', 'Cart badge displays unique product count (not total Kg)', () => {
+                window.cart.clearCart();
+                window.cart.addItem('prod-boneless', 10); // 10 kg
+                assert(window.cart.getTotalCount() === 1, `Expected badge count to be 1 for 10kg single item, got ${window.cart.getTotalCount()}`);
+                
+                window.cart.addItem('prod-whole-chicken', 2); // 2nd product
+                assert(window.cart.getTotalCount() === 2, `Expected badge count to be 2, got ${window.cart.getTotalCount()}`);
+            });
+
+            testCase('Cart Engine', 'Cart increment & decrement by 0.5 Kg works properly', () => {
+                window.cart.clearCart();
+                window.cart.addItem('prod-whole-chicken', 1.0);
+                window.cart.increment('prod-whole-chicken');
+                assert(window.cart.items[0].quantity === 1.5, 'Increment to 1.5 Kg failed');
+
+                window.cart.decrement('prod-whole-chicken');
+                assert(window.cart.items[0].quantity === 1.0, 'Decrement back to 1.0 Kg failed');
+
+                window.cart.decrement('prod-whole-chicken'); // Decrementing below 1 should remove
+                assert(window.cart.items.length === 0, 'Item should be removed when decremented below 1 Kg');
+            });
+
+            testCase('Pricing & Delivery', 'Delivery is ₹40 under ₹500 and FREE at/above ₹500', () => {
+                window.cart.clearCart();
+                window.cart.addItem('prod-whole-chicken', 1.0); // 220 < 500
+                assert(window.cart.getDeliveryCharge() === 40, 'Delivery should be ₹40');
+
+                window.cart.addItem('prod-boneless', 1.0); // 220 + 340 = 560 >= 500
+                assert(window.cart.getDeliveryCharge() === 0, 'Delivery should be FREE (0)');
+                assert(window.cart.getGrandTotal() === 560, 'Grand total should be 560');
+            });
+
+            // 3. DUPLICATE ORDER TESTS
+            testCase('Orders Engine', 'Double clicking submit within 60s cooldown reuses same order ID', () => {
+                window.ordersEngine.clearOrderHistory();
+                const payload = {
+                    customer: {
+                        name: 'Test Customer',
+                        phone: '9148699386',
+                        fullAddress: 'Santepet Circle, Hassan - 573201'
+                    },
+                    items: [{ id: 'prod-whole-chicken', quantity: 1.5, pricePerKg: 220 }],
+                    subtotal: 330,
+                    deliveryCharge: 40,
+                    grandTotal: 370
+                };
+
+                const order1 = window.ordersEngine.saveOrder(payload);
+                const order2 = window.ordersEngine.saveOrder(payload);
+
+                assert(order1 && order1.id, 'First order must have valid ID');
+                assert(order2 && order2.id, 'Second order must have valid ID');
+                assert(order1.id === order2.id, 'Second call must return the existing order ID');
+                assert(window.ordersEngine.orders.length === 1, 'Orders count must remain 1 without duplicate entries');
+            });
+
+            testCase('Orders Engine', 'Different phone number creates separate new order', () => {
+                const payload2 = {
+                    customer: {
+                        name: 'Other Customer',
+                        phone: '9988776655',
+                        fullAddress: 'Salagame Road, Hassan - 573201'
+                    },
+                    items: [{ id: 'prod-boneless', quantity: 1.0, pricePerKg: 340 }],
+                    subtotal: 340,
+                    deliveryCharge: 40,
+                    grandTotal: 380
+                };
+
+                const order3 = window.ordersEngine.saveOrder(payload2);
+                assert(window.ordersEngine.orders.length === 2, 'Distinct order should increase orders count to 2');
+            });
+
+            // Update Metrics
+            document.getElementById('metric-total').textContent = total;
+            document.getElementById('metric-passed').textContent = passed;
+            document.getElementById('metric-failed').textContent = failed;
+        }
+
+        // Auto run on load
+        document.addEventListener('DOMContentLoaded', runAllTests);
+    </script>
+</body>
+</html>

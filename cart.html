@@ -22,8 +22,10 @@
             }
         }
     </script>
-    <!-- Favicon -->
+    <!-- Favicon & PWA Manifest -->
     <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#133B2C">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -41,14 +43,24 @@
             </a>
 
             <nav class="hidden md:flex items-center gap-8">
-                <a href="index.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
-                <a href="products.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Products</a>
-                <a href="orders.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">My Orders</a>
-                <a href="cart.html" class="nav-link font-semibold text-sm text-[#E53935] hover:text-[#E53935] transition-colors">Cart</a>
-                <a href="contact.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
+                <a href="index.html" data-i18n="nav_home" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
+                <a href="products.html" data-i18n="nav_products" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Products</a>
+                <a href="orders.html" data-i18n="nav_orders" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">My Orders</a>
+                <a href="cart.html" data-i18n="nav_cart" class="nav-link font-semibold text-sm text-[#E53935] hover:text-[#E53935] transition-colors">Cart</a>
+                <a href="contact.html" data-i18n="nav_contact" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
             </nav>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
+                <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
+                    <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
+                        EN
+                    </button>
+                    <button type="button" onclick="window.setLanguage('kn')" class="lang-btn-kn px-2.5 py-1 rounded-xl transition-all font-semibold">
+                        ಕನ್ನಡ
+                    </button>
+                </div>
+
                 <a href="cart.html" class="relative p-2.5 text-gray-700 hover:text-[#133B2C] transition-colors rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100">
                     <span class="material-symbols-outlined text-2xl">shopping_cart</span>
                     <span class="cart-badge absolute -top-1.5 -right-1.5 h-5 w-5 bg-[#E53935] text-white text-[11px] font-extrabold flex items-center justify-center rounded-full shadow-md border-2 border-white">0</span>
@@ -76,29 +88,37 @@
                     </button>
                 </div>
 
-                <nav class="flex flex-col gap-4 mt-8">
+                <div class="mt-4 mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                    <span class="text-xs font-bold text-gray-600">Language:</span>
+                    <div class="flex items-center bg-white p-0.5 rounded-xl border border-gray-200 text-xs font-bold">
+                        <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-3 py-1 rounded-lg transition-all">EN</button>
+                        <button type="button" onclick="window.setLanguage('kn')" class="lang-btn-kn px-3 py-1 rounded-lg transition-all font-semibold">ಕನ್ನಡ</button>
+                    </div>
+                </div>
+
+                <nav class="flex flex-col gap-4 mt-4">
                     <a href="index.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">home</span>
-                        <span>Home</span>
+                        <span data-i18n="nav_home">Home</span>
                     </a>
                     <a href="products.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">grid_view</span>
-                        <span>Products</span>
+                        <span data-i18n="nav_products">Products</span>
                     </a>
                     <a href="orders.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">receipt_long</span>
-                        <span>My Orders</span>
+                        <span data-i18n="nav_orders">My Orders</span>
                     </a>
                     <a href="cart.html" class="py-3 px-4 rounded-xl font-bold text-[#E53935] bg-red-50 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined">shopping_cart</span>
-                            <span>Cart</span>
+                            <span data-i18n="nav_cart">Cart</span>
                         </div>
                         <span class="cart-badge bg-[#E53935] text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </a>
                     <a href="contact.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">call</span>
-                        <span>Contact Us</span>
+                        <span data-i18n="nav_contact">Contact Us</span>
                     </a>
                 </nav>
             </div>
@@ -126,10 +146,18 @@
                 </a>
             </div>
 
-            <!-- Free Delivery Indicator Banner -->
-            <div id="free-delivery-banner" class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-8 flex items-center gap-3 text-emerald-900 text-sm font-semibold shadow-sm">
-                <span class="material-symbols-outlined text-emerald-600 text-2xl">local_shipping</span>
-                <span id="free-delivery-text">Add ₹200 more to qualify for FREE Delivery!</span>
+            <!-- Free Delivery Indicator Banner with Progress Meter -->
+            <div id="free-delivery-banner" class="bg-white border border-gray-200 rounded-3xl p-5 mb-8 shadow-sm space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span id="free-delivery-text" class="text-gray-800 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-emerald-600 text-xl">local_shipping</span>
+                        <span>Add items to qualify for FREE Delivery!</span>
+                    </span>
+                    <span id="cart-progress-percent" class="text-[#133B2C]">0%</span>
+                </div>
+                <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                    <div id="cart-progress-fill" class="bg-gradient-to-r from-[#133B2C] to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
             </div>
 
             <!-- Two Column Cart View -->
@@ -212,15 +240,15 @@
                     <ul class="space-y-3 text-sm text-gray-400">
                         <li class="flex items-start gap-2">
                             <span class="material-symbols-outlined text-emerald-400 text-lg">location_on</span>
-                            <span id="footer-address">123 Fresh Poultry Market, City - 560001</span>
+                            <span id="footer-address">Fresh Poultry Market, santepet circle, Hassan, Pin - 573201</span>
                         </li>
                         <li class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-emerald-400 text-lg">call</span>
-                            <span id="footer-phone">+91 98765 43210</span>
+                            <span id="footer-phone">+91 91486 99386</span>
                         </li>
                         <li class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-emerald-400 text-lg">schedule</span>
-                            <span id="footer-hours">Mon - Sun: 7:00 AM - 9:00 PM</span>
+                            <span id="footer-hours">Mon - Sun: 9:00 AM - 8:00 PM</span>
                         </li>
                     </ul>
                 </div>
@@ -247,15 +275,36 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="js/config.js?v=1.0.1"></script>
+    <script src="js/translations.js?v=1.0.1"></script>
     <script src="js/firebase-db.js?v=1.0.1"></script>
     <script src="js/products-data.js?v=1.0.1"></script>
     <script src="js/cart.js?v=1.0.1"></script>
     <script src="js/orders.js?v=1.0.1"></script>
     <script src="js/main.js?v=1.0.1"></script>
     <script>
+        const KN_NAMES = {
+            'prod-whole-chicken': 'ಚಿಕನ್ (ಚರ್ಮದೊಂದಿಗೆ)',
+            'prod-skinless-chicken': 'ಚಿಕನ್ (ಚರ್ಮ ರಹಿತ)',
+            'prod-boneless': 'ಬೋನ್ಲೆಸ್ ಚಿಕನ್',
+            'prod-wings': 'ಚಿಕನ್ ವಿಂಗ್ಸ್ (ರೆಕ್ಕೆಗಳು)',
+            'prod-drumsticks': 'ಚಿಕನ್ ಲೆಗ್ಸ್ (ಕಾಲುಗಳು)',
+            'prod-breast-fillet': 'ಚಿಕನ್ ಬ್ರೆಸ್ಟ್ ಫಿಲೆಟ್',
+            'prod-mince': 'ಚಿಕನ್ ಖೀಮಾ (ಕೈಮಾ)',
+            'prod-lollipop': 'ಚಿಕನ್ ಲಾಲಿಪಾಪ್',
+            'prod-liver-special': 'ಚಿಕನ್ ಲಿವರ್ (ಲಿವರ್ & ಗಿಝಾರ್ಡ್)'
+        };
+
+        const KN_CUTS = {
+            'Curry Cut': '🥘 ಸಾರು ಕಟ್ (Curry Cut)',
+            'Biryani Cut': '🍗 ಬಿರಿಯಾನಿ ಕಟ್ (Biryani Cut)',
+            'Fry Cut': '🍳 ಫ್ರೈ ಕಟ್ (Fry Cut)',
+            'Standard Cut': '🔪 ಸಾಮಾನ್ಯ ಕಟ್ (Standard)'
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             renderCartPage();
             window.addEventListener('cartUpdated', renderCartPage);
+            window.addEventListener('languageChanged', renderCartPage);
         });
 
         function renderCartPage() {
@@ -265,14 +314,21 @@
             const grandTotalEl = document.getElementById('cart-grand-total');
             const checkoutBtn = document.getElementById('proceed-checkout-btn');
             const freeDeliveryText = document.getElementById('free-delivery-text');
+            const progressPercentEl = document.getElementById('cart-progress-percent');
+            const progressFillEl = document.getElementById('cart-progress-fill');
 
             if (!wrapper || !window.cart) return;
 
+            const isKn = (typeof currentLanguage !== 'undefined' && currentLanguage === 'kn') || (localStorage.getItem('fresh_chicken_lang') === 'kn');
             const items = window.cart.items;
             const subtotal = window.cart.getSubtotal();
             const delivery = window.cart.getDeliveryCharge();
             const grandTotal = window.cart.getGrandTotal();
             const freeLimit = CONFIG.FREE_DELIVERY_LIMIT || 500;
+            const percentage = Math.min(100, Math.round((subtotal / freeLimit) * 100));
+
+            if (progressPercentEl) progressPercentEl.textContent = `${percentage}%`;
+            if (progressFillEl) progressFillEl.style.width = `${percentage}%`;
 
             if (items.length === 0) {
                 wrapper.innerHTML = `
@@ -280,11 +336,11 @@
                         <div class="w-24 h-24 bg-red-50 text-[#E53935] rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
                             <span class="material-symbols-outlined text-5xl">remove_shopping_cart</span>
                         </div>
-                        <h3 class="text-2xl font-black text-[#133B2C] mb-2">Your Cart is Empty</h3>
-                        <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Looks like you haven't added any fresh chicken cuts to your cart yet.</p>
+                        <h3 class="text-2xl font-black text-[#133B2C] mb-2">${isKn ? 'ನಿಮ್ಮ ಕಾರ್ಟ್ ಖಾಲಿಯಾಗಿದೆ' : 'Your Cart is Empty'}</h3>
+                        <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">${isKn ? 'ನೀವು ಇನ್ನೂ ಯಾವುದೇ ತಾಜಾ ಚಿಕನ್ ತುಂಡುಗಳನ್ನು ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿಲ್ಲ.' : 'Looks like you haven\'t added any fresh chicken cuts to your cart yet.'}</p>
                         <a href="products.html" class="inline-flex items-center gap-2 bg-[#133B2C] hover:bg-[#0b251b] text-white py-3.5 px-8 rounded-2xl font-bold text-sm shadow-md hover:shadow-lg transition-all">
                             <span class="material-symbols-outlined">grid_view</span>
-                            <span>Explore Products</span>
+                            <span>${isKn ? 'ಉತ್ಪನ್ನಗಳನ್ನು ನೋಡಿ' : 'Explore Products'}</span>
                         </a>
                     </div>
                 `;
@@ -295,7 +351,13 @@
                     checkoutBtn.classList.add('opacity-50', 'pointer-events-none');
                 }
                 if (freeDeliveryText) {
-                    freeDeliveryText.textContent = `Add ₹${freeLimit} worth of items for FREE Delivery!`;
+                    freeDeliveryText.innerHTML = isKn ? `
+                        <span class="material-symbols-outlined text-emerald-600 text-xl">local_shipping</span>
+                        <span><strong>ಉಚಿತ ಡೆಲಿವರಿ</strong> ಪಡೆಯಲು ₹${freeLimit} ಮೊತ್ತದ ಚಿಕನ್ ಸೇರಿಸಿ!</span>
+                    ` : `
+                        <span class="material-symbols-outlined text-emerald-600 text-xl">local_shipping</span>
+                        <span>Add ₹${freeLimit} worth of fresh cuts for <strong>FREE Delivery</strong>!</span>
+                    `;
                 }
                 return;
             }
@@ -304,50 +366,75 @@
                 checkoutBtn.classList.remove('opacity-50', 'pointer-events-none');
             }
 
-            wrapper.innerHTML = items.map(item => `
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-gray-100 last:border-0 gap-4">
-                    <div class="flex items-center gap-4">
-                        <img src="${item.image}" alt="${item.name}" class="w-20 h-20 rounded-2xl object-cover border border-gray-100 shadow-sm" />
-                        <div>
-                            <h4 class="font-bold text-gray-900 text-base mb-1">${item.name}</h4>
-                            <p class="text-xs text-gray-500 mb-2">₹${item.pricePerKg} / ${item.unit}</p>
-                            <button onclick="window.cart.removeItem('${item.id}')" class="text-xs text-[#E53935] hover:underline font-semibold flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm">delete</span>
-                                <span>Remove</span>
-                            </button>
+            wrapper.innerHTML = items.map(item => {
+                const itemKey = item.cartItemId || item.id;
+                const displayName = (isKn && KN_NAMES[item.id]) ? KN_NAMES[item.id] : item.name;
+                const cutStyle = item.cutType ? ((isKn && KN_CUTS[item.cutType]) ? KN_CUTS[item.cutType] : item.cutType) : null;
+
+                return `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-gray-100 last:border-0 gap-4">
+                        <div class="flex items-center gap-4">
+                            <img src="${item.image}" alt="${displayName}" class="w-20 h-20 rounded-2xl object-cover border border-gray-100 shadow-sm" />
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-base mb-0.5">${displayName}</h4>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-xs text-gray-500">₹${item.pricePerKg} / ${isKn ? '1 ಕೆ.ಜಿ' : item.unit}</span>
+                                    ${cutStyle ? `
+                                        <span class="text-[11px] font-black bg-emerald-100/80 text-emerald-900 px-2 py-0.5 rounded-lg border border-emerald-200">
+                                            ${cutStyle}
+                                        </span>
+                                    ` : ''}
+                                </div>
+                                <button onclick="window.cart.removeItem('${itemKey}')" class="text-xs text-[#E53935] hover:underline font-semibold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                    <span>${isKn ? 'ತೆಗೆದುಹಾಕಿ' : 'Remove'}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
+                            <!-- Quantity Controller -->
+                            <div class="flex items-center border border-gray-200 rounded-xl bg-gray-50 p-1">
+                                <button onclick="window.cart.decrement('${itemKey}')" class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-700 hover:bg-gray-100">
+                                    <span class="material-symbols-outlined text-sm">remove</span>
+                                </button>
+                                <span class="w-12 text-center font-bold text-sm text-[#133B2C]">${item.quantity} ${isKn ? 'ಕೆ.ಜಿ' : 'Kg'}</span>
+                                <button onclick="window.cart.increment('${itemKey}')" class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-700 hover:bg-gray-100">
+                                    <span class="material-symbols-outlined text-sm">add</span>
+                                </button>
+                            </div>
+
+                            <!-- Total Price -->
+                            <span class="font-black text-lg text-[#133B2C] min-w-[80px] text-right">
+                                ₹${Math.round(item.pricePerKg * item.quantity * 100) / 100}
+                            </span>
                         </div>
                     </div>
-
-                    <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
-                        <!-- Quantity Controller -->
-                        <div class="flex items-center border border-gray-200 rounded-xl bg-gray-50 p-1">
-                            <button onclick="window.cart.decrement('${item.id}')" class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-700 hover:bg-gray-100">
-                                <span class="material-symbols-outlined text-sm">remove</span>
-                            </button>
-                            <span class="w-12 text-center font-bold text-sm text-[#133B2C]">${item.quantity} Kg</span>
-                            <button onclick="window.cart.increment('${item.id}')" class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-gray-700 hover:bg-gray-100">
-                                <span class="material-symbols-outlined text-sm">add</span>
-                            </button>
-                        </div>
-
-                        <!-- Total Price -->
-                        <span class="font-black text-lg text-[#133B2C] min-w-[80px] text-right">
-                            ₹${item.pricePerKg * item.quantity}
-                        </span>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             if (subtotalEl) subtotalEl.textContent = `₹${subtotal}`;
-            if (deliveryEl) deliveryEl.textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
+            if (deliveryEl) deliveryEl.textContent = delivery === 0 ? (isKn ? 'ಉಚಿತ' : 'FREE') : `₹${delivery}`;
             if (grandTotalEl) grandTotalEl.textContent = `₹${grandTotal}`;
 
             if (freeDeliveryText) {
                 if (subtotal >= freeLimit) {
-                    freeDeliveryText.textContent = `🎉 Congratulations! Your order qualifies for FREE Delivery!`;
+                    freeDeliveryText.innerHTML = isKn ? `
+                        <span class="material-symbols-outlined text-emerald-600 text-xl">verified</span>
+                        <span class="text-emerald-700">🎉 ಅಭಿನಂದನೆಗಳು! ನಿಮ್ಮ ಆರ್ಡರ್‌ಗೆ <strong>ಉಚಿತ ಹೋಮ್ ಡೆಲಿವರಿ</strong> ಲಭ್ಯವಾಗಿದೆ!</span>
+                    ` : `
+                        <span class="material-symbols-outlined text-emerald-600 text-xl">verified</span>
+                        <span class="text-emerald-700">🎉 Congratulations! Your order qualifies for <strong>FREE Doorstep Delivery</strong>!</span>
+                    `;
                 } else {
                     const diff = freeLimit - subtotal;
-                    freeDeliveryText.textContent = `Add ₹${diff} more to qualify for FREE Delivery!`;
+                    freeDeliveryText.innerHTML = isKn ? `
+                        <span class="material-symbols-outlined text-emerald-600 text-xl">local_shipping</span>
+                        <span><strong>ಉಚಿತ ಡೆಲಿವರಿ</strong> ಪಡೆಯಲು ಇನ್ನೂ <strong>₹${diff}</strong> ಮೊತ್ತ ಸೇರಿಸಿ!</span>
+                    ` : `
+                        <span class="material-symbols-outlined text-emerald-600 text-xl">local_shipping</span>
+                        <span>Add <strong>₹${diff}</strong> more to qualify for <strong>FREE Delivery</strong>!</span>
+                    `;
                 }
             }
         }

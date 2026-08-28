@@ -24,8 +24,10 @@
             }
         }
     </script>
-    <!-- Favicon -->
+    <!-- Favicon & PWA Manifest -->
     <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#133B2C">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -50,20 +52,25 @@
 
             <!-- Desktop Navigation Links -->
             <nav class="hidden md:flex items-center gap-8">
-                <a href="index.html"
-                    class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
-                <a href="products.html"
-                    class="nav-link font-semibold text-sm text-[#E53935] hover:text-[#E53935] transition-colors">Products</a>
-                <a href="orders.html"
-                    class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">My Orders</a>
-                <a href="cart.html"
-                    class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Cart</a>
-                <a href="contact.html"
-                    class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
+                <a href="index.html" data-i18n="nav_home" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
+                <a href="products.html" data-i18n="nav_products" class="nav-link font-semibold text-sm text-[#E53935] hover:text-[#E53935] transition-colors">Products</a>
+                <a href="orders.html" data-i18n="nav_orders" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">My Orders</a>
+                <a href="cart.html" data-i18n="nav_cart" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Cart</a>
+                <a href="contact.html" data-i18n="nav_contact" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
             </nav>
 
-            <!-- Actions: Cart & Mobile Toggle -->
-            <div class="flex items-center gap-4">
+            <!-- Actions: Language Switcher, Cart & Mobile Toggle -->
+            <div class="flex items-center gap-3">
+                <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
+                <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
+                    <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
+                        EN
+                    </button>
+                    <button type="button" onclick="window.setLanguage('kn')" class="lang-btn-kn px-2.5 py-1 rounded-xl transition-all font-semibold">
+                        ಕನ್ನಡ
+                    </button>
+                </div>
+
                 <a href="cart.html"
                     class="relative p-2.5 text-gray-700 hover:text-[#133B2C] transition-colors rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100">
                     <span class="material-symbols-outlined text-2xl">shopping_cart</span>
@@ -96,27 +103,35 @@
                     </button>
                 </div>
 
-                <nav class="flex flex-col gap-4 mt-8">
+                <div class="mt-4 mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                    <span class="text-xs font-bold text-gray-600">Language:</span>
+                    <div class="flex items-center bg-white p-0.5 rounded-xl border border-gray-200 text-xs font-bold">
+                        <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-3 py-1 rounded-lg transition-all">EN</button>
+                        <button type="button" onclick="window.setLanguage('kn')" class="lang-btn-kn px-3 py-1 rounded-lg transition-all font-semibold">ಕನ್ನಡ</button>
+                    </div>
+                </div>
+
+                <nav class="flex flex-col gap-4 mt-4">
                     <a href="index.html"
                         class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">home</span>
-                        <span>Home</span>
+                        <span data-i18n="nav_home">Home</span>
                     </a>
                     <a href="products.html"
                         class="py-3 px-4 rounded-xl font-bold text-[#E53935] bg-red-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">grid_view</span>
-                        <span>Products</span>
+                        <span data-i18n="nav_products">Products</span>
                     </a>
                     <a href="orders.html"
                         class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">receipt_long</span>
-                        <span>My Orders</span>
+                        <span data-i18n="nav_orders">My Orders</span>
                     </a>
                     <a href="cart.html"
                         class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined">shopping_cart</span>
-                            <span>Cart</span>
+                            <span data-i18n="nav_cart">Cart</span>
                         </div>
                         <span
                             class="cart-badge bg-[#E53935] text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
@@ -124,7 +139,7 @@
                     <a href="contact.html"
                         class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">call</span>
-                        <span>Contact Us</span>
+                        <span data-i18n="nav_contact">Contact Us</span>
                     </a>
                 </nav>
             </div>
@@ -143,10 +158,36 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <!-- Page Title & Header -->
-            <div class="text-center max-w-2xl mx-auto mb-10">
+            <div class="text-center max-w-2xl mx-auto mb-6">
                 <span class="text-[#E53935] font-bold text-xs uppercase tracking-widest">Fresh Poultry Catalog</span>
                 <h1 class="text-3xl sm:text-4xl font-black text-[#133B2C] mt-1 mb-3">Our Fresh Chicken Cuts</h1>
                 <p class="text-gray-600 text-sm sm:text-base">Order fresh chicken cuts by weight (Kg) and enjoy <strong>FREE delivery on orders above ₹500</strong>.</p>
+            </div>
+
+            <!-- Live Store Status & Free Delivery Progress Bar -->
+            <div class="max-w-3xl mx-auto mb-8 space-y-4">
+                <!-- Store Live Status -->
+                <div id="store-status-banner" class="bg-emerald-50 border border-emerald-200 text-emerald-950 px-4 py-2.5 rounded-2xl flex items-center justify-between shadow-sm text-xs font-semibold">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="store-status-text">🟢 Open Now • 9:00 AM to 8:00 PM (Express Delivery in 30-45 Mins)</span>
+                    </div>
+                    <span class="text-[11px] text-emerald-700 font-bold hidden sm:inline">Santepet, Hassan</span>
+                </div>
+
+                <!-- Dynamic Free Delivery Progress Bar -->
+                <div id="free-delivery-progress-box" class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <span id="progress-status-text" class="text-gray-700 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-base text-emerald-600">local_shipping</span>
+                            <span>Add ₹500 more for FREE Delivery!</span>
+                        </span>
+                        <span id="progress-percentage-text" class="text-[#133B2C]">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                        <div id="progress-bar-fill" class="bg-gradient-to-r from-[#133B2C] to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Search Bar & Category Filter -->
@@ -291,6 +332,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="js/config.js?v=1.0.5"></script>
+    <script src="js/translations.js?v=1.0.1"></script>
     <script src="js/firebase-db.js?v=1.0.5"></script>
     <script src="js/products-data.js?v=1.0.5"></script>
     <script src="js/cart.js?v=1.0.5"></script>

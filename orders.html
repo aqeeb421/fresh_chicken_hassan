@@ -22,8 +22,10 @@
             }
         }
     </script>
-    <!-- Favicon -->
+    <!-- Favicon & PWA Manifest -->
     <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#133B2C">
     <!-- Google Fonts & Symbols -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <!-- Custom CSS -->
@@ -43,14 +45,24 @@
             </a>
 
             <nav class="hidden md:flex items-center gap-8">
-                <a href="index.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
-                <a href="products.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Products</a>
-                <a href="orders.html" class="nav-link font-bold text-sm text-[#E53935] hover:text-[#E53935] transition-colors">My Orders</a>
-                <a href="cart.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Cart</a>
-                <a href="contact.html" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
+                <a href="index.html" data-i18n="nav_home" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
+                <a href="products.html" data-i18n="nav_products" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Products</a>
+                <a href="orders.html" data-i18n="nav_orders" class="nav-link font-bold text-sm text-[#E53935] hover:text-[#E53935] transition-colors">My Orders</a>
+                <a href="cart.html" data-i18n="nav_cart" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Cart</a>
+                <a href="contact.html" data-i18n="nav_contact" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
             </nav>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
+                <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
+                    <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
+                        EN
+                    </button>
+                    <button type="button" onclick="window.setLanguage('kn')" class="lang-btn-kn px-2.5 py-1 rounded-xl transition-all font-semibold">
+                        ಕನ್ನಡ
+                    </button>
+                </div>
+
                 <a href="cart.html" class="relative p-2.5 text-gray-700 hover:text-[#133B2C] transition-colors rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100">
                     <span class="material-symbols-outlined text-2xl">shopping_cart</span>
                     <span class="cart-badge absolute -top-1.5 -right-1.5 h-5 w-5 bg-[#E53935] text-white text-[11px] font-extrabold flex items-center justify-center rounded-full shadow-md border-2 border-white">0</span>
@@ -78,29 +90,37 @@
                     </button>
                 </div>
 
-                <nav class="flex flex-col gap-4 mt-8">
+                <div class="mt-4 mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                    <span class="text-xs font-bold text-gray-600">Language:</span>
+                    <div class="flex items-center bg-white p-0.5 rounded-xl border border-gray-200 text-xs font-bold">
+                        <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-3 py-1 rounded-lg transition-all">EN</button>
+                        <button type="button" onclick="window.setLanguage('kn')" class="lang-btn-kn px-3 py-1 rounded-lg transition-all font-semibold">ಕನ್ನಡ</button>
+                    </div>
+                </div>
+
+                <nav class="flex flex-col gap-4 mt-4">
                     <a href="index.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">home</span>
-                        <span>Home</span>
+                        <span data-i18n="nav_home">Home</span>
                     </a>
                     <a href="products.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">grid_view</span>
-                        <span>Products</span>
+                        <span data-i18n="nav_products">Products</span>
                     </a>
                     <a href="orders.html" class="py-3 px-4 rounded-xl font-bold text-[#E53935] bg-red-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">receipt_long</span>
-                        <span>My Orders</span>
+                        <span data-i18n="nav_orders">My Orders</span>
                     </a>
                     <a href="cart.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined">shopping_cart</span>
-                            <span>Cart</span>
+                            <span data-i18n="nav_cart">Cart</span>
                         </div>
                         <span class="cart-badge bg-[#E53935] text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
                     </a>
                     <a href="contact.html" class="py-3 px-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                         <span class="material-symbols-outlined">call</span>
-                        <span>Contact Us</span>
+                        <span data-i18n="nav_contact">Contact Us</span>
                     </a>
                 </nav>
             </div>
@@ -215,6 +235,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="js/config.js?v=1.0.4"></script>
+    <script src="js/translations.js?v=1.0.1"></script>
     <script src="js/firebase-db.js?v=1.0.4"></script>
     <script src="js/products-data.js?v=1.0.4"></script>
     <script src="js/cart.js?v=1.0.4"></script>
@@ -363,28 +384,156 @@
                         </div>
                     </div>
 
-                    <!-- WhatsApp Resend Action Button -->
+                    <!-- Order Actions (Reorder, Print Slip, WhatsApp) -->
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-gray-100">
                         <div class="space-y-1 text-center sm:text-left">
-                            <span class="text-xs text-gray-500 block">Missed sharing on WhatsApp? Resend order directly to store manager:</span>
+                            <span class="text-xs text-gray-500 block">${isKn ? 'ಆರ್ಡರ್ ವಿವರಗಳನ್ನು ಮರುಪರಿಶೀಲಿಸಿ ಅಥವಾ ಮರು ಆರ್ಡರ್ ಮಾಡಿ:' : 'Manage your fresh cuts order or reorder in one click:'}</span>
                             ${(order.paymentMethod && order.paymentMethod.includes('UPI')) ? `
                                 <span class="text-[11px] font-black text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md inline-block">
-                                    📸 ⚠️ Please attach payment screenshot (SS) in WhatsApp chat to confirm order!
+                                    📸 ⚠️ ${isKn ? 'ಆನ್‌ಲೈನ್ ಪಾವತಿ ದೃಢೀಕರಣಕ್ಕಾಗಿ ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಲಗತ್ತಿಸಿ!' : 'Please attach payment screenshot (SS) in WhatsApp chat to confirm order!'}
                                 </span>
                             ` : ''}
                         </div>
-                        <button onclick="resendOrderToWhatsApp('${order.id}')" class="w-full sm:w-auto bg-[#25D366] hover:bg-[#1ebd59] text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all flex-shrink-0">
-                            <span class="material-symbols-outlined text-lg">chat</span>
-                            <span>Resend Order on WhatsApp</span>
-                        </button>
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <!-- 1-Click Reorder Button -->
+                            <button onclick="handleReorder('${order.id}')" class="flex-1 sm:flex-initial bg-[#133B2C] hover:bg-[#0b251b] text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all">
+                                <span class="material-symbols-outlined text-base">sync</span>
+                                <span>${isKn ? 'ಮರು ಆರ್ಡರ್ ಮಾಡಿ' : 'Reorder'}</span>
+                            </button>
+
+                            <!-- Print Receipt Slip Button -->
+                            <button onclick="printOrderReceipt('${order.id}')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 border border-gray-200 shadow-sm transition-all" title="Print Slip">
+                                <span class="material-symbols-outlined text-base">print</span>
+                            </button>
+
+                            <!-- WhatsApp Resend Button -->
+                            <button onclick="resendOrderToWhatsApp('${order.id}')" class="flex-1 sm:flex-initial bg-[#25D366] hover:bg-[#1ebd59] text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg transition-all">
+                                <span class="material-symbols-outlined text-base">chat</span>
+                                <span>${isKn ? 'ವಾಟ್ಸಾಪ್' : 'WhatsApp'}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            `).join('');
+            `;
+        }).join('');
+    }
+
+        // Handle 1-Click Reorder
+        function handleReorder(orderId) {
+            if (window.ordersEngine && window.ordersEngine.reorderItems(orderId)) {
+                window.location.href = 'cart.html';
+            }
+        }
+
+        // Print & Share Order Packing Slip
+        function printOrderReceipt(orderId) {
+            const list = window.ordersEngine ? window.ordersEngine.getAllOrders(true) : [];
+            const order = list.find(o => o.id === orderId);
+            if (!order) return;
+
+            let slipWhatsAppText = `🧾 *FRESH CHICKEN HASSAN - BILL RECEIPT*\n`;
+            slipWhatsAppText += `----------------------------------------\n`;
+            slipWhatsAppText += `📋 *Order ID:* ${order.id}\n`;
+            slipWhatsAppText += `📅 *Date:* ${order.dateString || order.dateISO}\n\n`;
+            slipWhatsAppText += `👤 *Customer:* ${order.customer.name}\n`;
+            slipWhatsAppText += `📞 *Phone:* ${order.customer.phone}\n`;
+            slipWhatsAppText += `📍 *Delivery Address:* ${order.customer.fullAddress}\n`;
+            if (order.customer.notes) {
+                slipWhatsAppText += `📝 *Notes:* ${order.customer.notes}\n`;
+            }
+            if (order.customer.lat && order.customer.lng) {
+                slipWhatsAppText += `🚗 *GPS Directions:* https://www.google.com/maps/dir/?api=1&destination=${order.customer.lat},${order.customer.lng}\n`;
+            }
+            slipWhatsAppText += `\n----------------------------------------\n`;
+            slipWhatsAppText += `🛒 *ORDERED ITEMS*\n`;
+            order.items.forEach(i => {
+                const cut = i.cutType ? ` (${i.cutType})` : '';
+                slipWhatsAppText += `• ${i.name}${cut} - ${i.quantity} Kg: ₹${Math.round(i.pricePerKg * i.quantity * 100) / 100}\n`;
+            });
+            slipWhatsAppText += `----------------------------------------\n`;
+            slipWhatsAppText += `Subtotal: ₹${order.subtotal}\n`;
+            slipWhatsAppText += `Delivery Fee: ${order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge}\n`;
+            slipWhatsAppText += `*GRAND TOTAL: ₹${order.grandTotal}*\n`;
+            slipWhatsAppText += `💳 *Payment Method:* ${order.paymentMethod || 'Cash'}\n`;
+            slipWhatsAppText += `----------------------------------------\n`;
+            slipWhatsAppText += `✨ *Thank you for ordering with Fresh Chicken Hassan!* 🍗\n`;
+            slipWhatsAppText += `📞 Store Helpline: +91 9148699386`;
+
+            const encodedText = encodeURIComponent(slipWhatsAppText);
+
+            const printWindow = window.open('', '_blank', 'width=450,height=700');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Order Receipt - ${order.id}</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body { font-family: monospace, -apple-system, sans-serif; padding: 15px; max-width: 380px; margin: 0 auto; color: #111; }
+                        .text-center { text-align: center; }
+                        .border-top { border-top: 1px dashed #444; margin: 10px 0; }
+                        .flex { display: flex; justify-content: space-between; }
+                        .bold { font-weight: bold; }
+                        .items-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+                        .items-table td { padding: 3px 0; }
+                        .title { font-size: 18px; font-weight: bold; margin-bottom: 2px; }
+                        .btn { background: #133B2C; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; font-size: 13px; }
+                        .btn-wa { background: #25D366; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; width: 100%; font-weight: bold; font-size: 13px; text-decoration: none; display: block; text-align: center; box-sizing: border-box; }
+                        @media print { .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="text-center">
+                        <div class="title">FRESH CHICKEN</div>
+                        <div style="font-size: 11px;">Santepet, Hassan • Ph: 9148699386</div>
+                        <div style="font-size: 12px; margin-top: 4px;" class="bold">PACKING SLIP / BILL</div>
+                    </div>
+                    <div class="border-top"></div>
+                    <div class="flex" style="font-size: 12px;">
+                        <span>Order ID: <b>${order.id}</b></span>
+                        <span>${order.dateISO || new Date().toISOString().split('T')[0]}</span>
+                    </div>
+                    <div style="font-size: 12px; margin-top: 4px;">
+                        Customer: <b>${order.customer.name}</b> (${order.customer.phone})<br/>
+                        Address: ${order.customer.fullAddress}
+                        ${order.customer.notes ? `<br/><b>Notes:</b> ${order.customer.notes}` : ''}
+                    </div>
+                    <div class="border-top"></div>
+                    <table class="items-table">
+                        <tr class="bold" style="border-bottom: 1px dashed #444;">
+                            <td>Item (Cut)</td>
+                            <td style="text-align: center;">Qty</td>
+                            <td style="text-align: right;">Total</td>
+                        </tr>
+                        ${order.items.map(i => `
+                            <tr>
+                                <td>${i.name}${i.cutType ? ` (${i.cutType})` : ''}</td>
+                                <td style="text-align: center;">${i.quantity} Kg</td>
+                                <td style="text-align: right;">₹${Math.round(i.pricePerKg * i.quantity * 100) / 100}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    <div class="border-top"></div>
+                    <div class="flex" style="font-size: 12px;"><span>Subtotal:</span> <span>₹${order.subtotal}</span></div>
+                    <div class="flex" style="font-size: 12px;"><span>Delivery Fee:</span> <span>${order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge}</span></div>
+                    <div class="flex bold" style="font-size: 15px; margin-top: 4px;"><span>GRAND TOTAL:</span> <span>₹${order.grandTotal}</span></div>
+                    <div class="flex" style="font-size: 12px; margin-top: 4px;"><span>Payment:</span> <b>${order.paymentMethod || 'Cash'}</b></div>
+                    <div class="border-top"></div>
+                    <div class="text-center" style="font-size: 11px;">Thank you for choosing Fresh Chicken Hassan! 🍗</div>
+                    <div class="no-print">
+                        <button class="btn" onclick="window.print()">🖨️ Print Slip</button>
+                        <a class="btn-wa" href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank">📲 Share Slip on WhatsApp</a>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
 
         // Helper to reconstruct and open WhatsApp message for existing order
         function resendOrderToWhatsApp(orderId) {
-            const order = window.ordersEngine.getAllOrders().find(o => o.id === orderId);
+            const list = window.ordersEngine ? window.ordersEngine.getAllOrders(true) : [];
+            const order = list.find(o => o.id === orderId);
             if (!order) return;
 
             let message = `Hello ${CONFIG.BUSINESS_NAME},\n\n`;

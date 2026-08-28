@@ -227,12 +227,24 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: ORDER HISTORY -->
+                <!-- TAB 3: ORDER HISTORY (Live Orders vs Test Sandbox) -->
                 <div id="tab-orders" class="admin-tab-content hidden space-y-6">
                     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div>
-                            <h2 class="text-2xl font-black text-[#133B2C]">Customer Order History</h2>
-                            <p class="text-gray-500 text-xs mt-0.5">All orders logged when customers checkout and open WhatsApp.</p>
+                            <h2 class="text-2xl font-black text-[#133B2C]">Order Management</h2>
+                            <p class="text-gray-500 text-xs mt-0.5">Manage live customer orders and sandbox test orders.</p>
+                        </div>
+
+                        <!-- Live vs Test Sandbox Tabs -->
+                        <div class="flex items-center bg-gray-100 p-1 rounded-2xl border border-gray-200 text-xs font-bold">
+                            <button type="button" id="btn-subtab-live" onclick="switchOrderTab('live')" class="px-4 py-2 rounded-xl bg-[#133B2C] text-white shadow-sm transition-all flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                <span>Live Orders</span>
+                            </button>
+                            <button type="button" id="btn-subtab-test" onclick="switchOrderTab('test')" class="px-4 py-2 rounded-xl text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5 font-semibold">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <span>🧪 Test Sandbox</span>
+                            </button>
                         </div>
 
                         <div class="flex items-center gap-3 w-full sm:w-auto">
@@ -240,7 +252,7 @@
                                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
                                 <input type="text" id="order-search" oninput="renderOrdersList()" placeholder="Search name or phone..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#133B2C]" />
                             </div>
-                            <button onclick="clearAllOrders()" class="text-xs text-red-500 hover:text-red-700 font-semibold underline whitespace-nowrap">
+                            <button id="order-clear-btn" onclick="handleClearOrders()" class="text-xs text-red-500 hover:text-red-700 font-semibold underline whitespace-nowrap">
                                 Clear Log
                             </button>
                         </div>
@@ -608,6 +620,26 @@
             `).join('');
         }
 
+        let activeOrderTab = 'live';
+
+        function switchOrderTab(tab) {
+            activeOrderTab = tab;
+            const btnLive = document.getElementById('btn-subtab-live');
+            const btnTest = document.getElementById('btn-subtab-test');
+            const clearBtn = document.getElementById('order-clear-btn');
+
+            if (tab === 'live') {
+                btnLive.className = 'px-4 py-2 rounded-xl bg-[#133B2C] text-white shadow-sm transition-all flex items-center gap-1.5 font-bold';
+                btnTest.className = 'px-4 py-2 rounded-xl text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5 font-semibold';
+                if (clearBtn) clearBtn.textContent = 'Clear Live Log';
+            } else {
+                btnTest.className = 'px-4 py-2 rounded-xl bg-amber-600 text-white shadow-sm transition-all flex items-center gap-1.5 font-bold';
+                btnLive.className = 'px-4 py-2 rounded-xl text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5 font-semibold';
+                if (clearBtn) clearBtn.textContent = '🧹 Purge Test Orders';
+            }
+            renderOrdersList();
+        }
+
         // Render Order History List with Status Controller
         function renderOrdersList() {
             if (!window.ordersEngine) return;
@@ -616,22 +648,24 @@
             const searchInput = document.getElementById('order-search');
             const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-            let orders = window.ordersEngine.getAllOrders();
+            let orders = activeOrderTab === 'live' ? 
+                window.ordersEngine.getAllOrders() : 
+                window.ordersEngine.getTestOrders();
 
             if (query) {
                 orders = orders.filter(o => 
-                    o.customer.name.toLowerCase().includes(query) ||
-                    o.customer.phone.includes(query) ||
-                    o.id.toLowerCase().includes(query)
+                    (o.customer?.name || '').toLowerCase().includes(query) ||
+                    (o.customer?.phone || '').includes(query) ||
+                    (o.id || '').toLowerCase().includes(query)
                 );
             }
 
             if (orders.length === 0) {
                 container.innerHTML = `
                     <div class="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm">
-                        <span class="material-symbols-outlined text-5xl text-gray-300 mb-2">receipt</span>
-                        <h4 class="font-bold text-gray-700">No orders found</h4>
-                        <p class="text-xs text-gray-400 mt-1">Orders submitted via checkout will appear here automatically.</p>
+                        <span class="material-symbols-outlined text-5xl text-gray-300 mb-2">${activeOrderTab === 'live' ? 'receipt' : 'science'}</span>
+                        <h4 class="font-bold text-gray-700">${activeOrderTab === 'live' ? 'No live orders found' : 'No sandbox test orders'}</h4>
+                        <p class="text-xs text-gray-400 mt-1">${activeOrderTab === 'live' ? 'Orders submitted via checkout will appear here automatically.' : 'Automated QA test orders and sandbox trials will appear here.'}</p>
                     </div>
                 `;
                 return;
@@ -640,22 +674,30 @@
             const statuses = ['Order Placed', 'Confirmed', 'Preparing Cut', 'Out for Delivery', 'Delivered', 'Cancelled'];
 
             container.innerHTML = orders.map(order => `
-                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:border-emerald-200 transition-colors space-y-4">
+                <div class="bg-white rounded-3xl p-6 border ${order.isTest ? 'border-amber-200 bg-amber-50/20' : 'border-gray-100'} shadow-sm hover:border-emerald-200 transition-colors space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-100 gap-3">
                         <div>
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="font-black text-[#133B2C] text-lg">${order.id}</span>
-                                <span class="text-xs text-gray-400 font-medium">📅 ${order.dateString}</span>
+                                <span class="font-black ${order.isTest ? 'text-amber-800' : 'text-[#133B2C]'} text-lg">${order.id}</span>
+                                ${order.isTest ? '<span class="text-[10px] font-black bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md">TEST ORDER</span>' : ''}
+                                <span class="text-xs text-gray-400 font-medium">📅 ${order.dateString || order.dateISO}</span>
                             </div>
-                            <span class="text-xs text-gray-500 font-semibold">💳 ${order.paymentMethod || 'Cash / UPI'}</span>
+                            <span class="text-xs text-gray-500 font-semibold">💳 ${order.paymentMethod || 'Cash / UPI'} • 🚚 ${order.deliverySlot || 'Express'}</span>
                         </div>
 
-                        <!-- Status Selector Dropdown -->
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Status:</span>
-                            <select onchange="handleAdminStatusChange('${order.id}', this.value)" class="px-3 py-2 bg-emerald-50 border border-emerald-300 text-[#133B2C] font-bold text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                                ${statuses.map(st => `<option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>`).join('')}
-                            </select>
+                        <!-- Actions: Print Slip & Status Selector -->
+                        <div class="flex items-center gap-3">
+                            <button onclick="printOrderSlip('${order.id}')" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs rounded-xl flex items-center gap-1 border border-gray-200 shadow-sm" title="Print Delivery Slip">
+                                <span class="material-symbols-outlined text-sm">print</span>
+                                <span>Print Slip</span>
+                            </button>
+
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Status:</span>
+                                <select onchange="handleAdminStatusChange('${order.id}', this.value)" class="px-3 py-2 bg-emerald-50 border border-emerald-300 text-[#133B2C] font-bold text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    ${statuses.map(st => `<option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -673,18 +715,142 @@
                                 <span class="font-bold text-gray-900 block text-sm">🛒 Ordered Cuts</span>
                                 <span class="font-black text-emerald-800 text-sm">Total: ₹${order.grandTotal}</span>
                             </div>
-                            ${order.items.map(i => `<p class="text-gray-700 font-medium">• ${i.name} — ${i.quantity} Kg (₹${i.pricePerKg * i.quantity})</p>`).join('')}
+                            ${order.items.map(i => `<p class="text-gray-700 font-medium">• ${i.name}${i.cutType ? ` (${i.cutType})` : ''} — ${i.quantity} Kg (₹${Math.round(i.pricePerKg * i.quantity * 100) / 100})</p>`).join('')}
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function clearAllOrders() {
-            if (confirm('Clear all stored order history?')) {
-                window.ordersEngine.clearOrderHistory();
-                renderRevenueMetrics();
-                renderOrdersList();
+        // Print & Share Order Thermal / Packing Slip
+        function printOrderSlip(orderId) {
+            const list = window.ordersEngine ? window.ordersEngine.getAllOrders(true) : [];
+            const order = list.find(o => o.id === orderId);
+            if (!order) return;
+
+            let slipWhatsAppText = `🧾 *FRESH CHICKEN HASSAN - BILL RECEIPT*\n`;
+            slipWhatsAppText += `----------------------------------------\n`;
+            slipWhatsAppText += `📋 *Order ID:* ${order.id}\n`;
+            slipWhatsAppText += `📅 *Date:* ${order.dateString || order.dateISO}\n\n`;
+            slipWhatsAppText += `👤 *Customer:* ${order.customer.name}\n`;
+            slipWhatsAppText += `📞 *Phone:* ${order.customer.phone}\n`;
+            slipWhatsAppText += `📍 *Delivery Address:* ${order.customer.fullAddress}\n`;
+            if (order.customer.notes) {
+                slipWhatsAppText += `📝 *Notes:* ${order.customer.notes}\n`;
+            }
+            if (order.customer.lat && order.customer.lng) {
+                slipWhatsAppText += `🚗 *GPS Directions:* https://www.google.com/maps/dir/?api=1&destination=${order.customer.lat},${order.customer.lng}\n`;
+            }
+            slipWhatsAppText += `\n----------------------------------------\n`;
+            slipWhatsAppText += `🛒 *ORDERED ITEMS*\n`;
+            order.items.forEach(i => {
+                const cut = i.cutType ? ` (${i.cutType})` : '';
+                slipWhatsAppText += `• ${i.name}${cut} - ${i.quantity} Kg: ₹${Math.round(i.pricePerKg * i.quantity * 100) / 100}\n`;
+            });
+            slipWhatsAppText += `----------------------------------------\n`;
+            slipWhatsAppText += `Subtotal: ₹${order.subtotal}\n`;
+            slipWhatsAppText += `Delivery Fee: ${order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge}\n`;
+            slipWhatsAppText += `*GRAND TOTAL: ₹${order.grandTotal}*\n`;
+            slipWhatsAppText += `💳 *Payment Method:* ${order.paymentMethod || 'Cash'}\n`;
+            slipWhatsAppText += `🚚 *Delivery Slot:* ${order.deliverySlot || 'Express'}\n`;
+            slipWhatsAppText += `----------------------------------------\n`;
+            slipWhatsAppText += `✨ *Thank you for ordering with Fresh Chicken Hassan!* 🍗\n`;
+            slipWhatsAppText += `📞 Store Helpline: +91 9148699386`;
+
+            const encodedText = encodeURIComponent(slipWhatsAppText);
+            const cleanPhone = (order.customer.phone || '').toString().replace(/\D/g, '').slice(-10);
+            const customerWaUrl = `https://wa.me/91${cleanPhone}?text=${encodedText}`;
+            const shareGeneralWaUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+
+            const printWindow = window.open('', '_blank', 'width=450,height=720');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Order Receipt - ${order.id}</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        body { font-family: monospace, -apple-system, sans-serif; padding: 15px; max-width: 380px; margin: 0 auto; color: #111; }
+                        .text-center { text-align: center; }
+                        .border-top { border-top: 1px dashed #444; margin: 10px 0; }
+                        .flex { display: flex; justify-content: space-between; }
+                        .bold { font-weight: bold; }
+                        .items-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+                        .items-table td { padding: 3px 0; }
+                        .title { font-size: 18px; font-weight: bold; margin-bottom: 2px; }
+                        .btn { background: #133B2C; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; font-size: 13px; }
+                        .btn-wa { background: #25D366; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; width: 100%; font-weight: bold; font-size: 13px; text-decoration: none; display: block; text-align: center; box-sizing: border-box; }
+                        .btn-driver { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; width: 100%; font-weight: bold; font-size: 13px; text-decoration: none; display: block; text-align: center; box-sizing: border-box; }
+                        @media print { .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="text-center">
+                        <div class="title">FRESH CHICKEN</div>
+                        <div style="font-size: 11px;">Santepet, Hassan • Ph: 9148699386</div>
+                        <div style="font-size: 12px; margin-top: 4px;" class="bold">PACKING SLIP / BILL</div>
+                    </div>
+                    <div class="border-top"></div>
+                    <div class="flex" style="font-size: 12px;">
+                        <span>Order ID: <b>${order.id}</b></span>
+                        <span>${order.dateISO || new Date().toISOString().split('T')[0]}</span>
+                    </div>
+                    <div style="font-size: 12px; margin-top: 4px;">
+                        Customer: <b>${order.customer.name}</b> (${order.customer.phone})<br/>
+                        Address: ${order.customer.fullAddress}
+                        ${order.customer.notes ? `<br/><b>Notes:</b> ${order.customer.notes}` : ''}
+                    </div>
+                    <div class="border-top"></div>
+                    <table class="items-table">
+                        <tr class="bold" style="border-bottom: 1px dashed #444;">
+                            <td>Item (Cut)</td>
+                            <td style="text-align: center;">Qty</td>
+                            <td style="text-align: right;">Total</td>
+                        </tr>
+                        ${order.items.map(i => `
+                            <tr>
+                                <td>${i.name}${i.cutType ? ` (${i.cutType})` : ''}</td>
+                                <td style="text-align: center;">${i.quantity} Kg</td>
+                                <td style="text-align: right;">₹${Math.round(i.pricePerKg * i.quantity * 100) / 100}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    <div class="border-top"></div>
+                    <div class="flex" style="font-size: 12px;"><span>Subtotal:</span> <span>₹${order.subtotal}</span></div>
+                    <div class="flex" style="font-size: 12px;"><span>Delivery Fee:</span> <span>${order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge}</span></div>
+                    <div class="flex bold" style="font-size: 15px; margin-top: 4px;"><span>GRAND TOTAL:</span> <span>₹${order.grandTotal}</span></div>
+                    <div class="flex" style="font-size: 12px; margin-top: 4px;"><span>Payment:</span> <b>${order.paymentMethod || 'Cash'}</b></div>
+                    <div class="border-top"></div>
+                    <div class="text-center" style="font-size: 11px;">Thank you for choosing Fresh Chicken Hassan! 🍗</div>
+                    <div class="no-print">
+                        <button class="btn" onclick="window.print()">🖨️ Print Slip</button>
+                        <a class="btn-wa" href="${customerWaUrl}" target="_blank">📲 Send Bill to Customer (${cleanPhone})</a>
+                        <a class="btn-driver" href="${shareGeneralWaUrl}" target="_blank">🏍️ Share Slip with Delivery Rider</a>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        function handleClearOrders() {
+            if (activeOrderTab === 'test') {
+                if (confirm('Purge all sandbox test orders? (Live revenue and real customer orders will NOT be affected)')) {
+                    if (window.ordersEngine) {
+                        window.ordersEngine.testOrders = [];
+                        localStorage.removeItem('fresh_chicken_test_orders_v1');
+                    }
+                    renderOrdersList();
+                }
+            } else {
+                if (confirm('Clear live order log? (Revenue metrics will remain stored)')) {
+                    if (window.ordersEngine) {
+                        window.ordersEngine.orders = [];
+                        localStorage.removeItem('fresh_chicken_orders_v1');
+                    }
+                    renderRevenueMetrics();
+                    renderOrdersList();
+                }
             }
         }
 

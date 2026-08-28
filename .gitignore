@@ -4,6 +4,8 @@
 # Temporary & Scratch Files
 scratch/
 .system_generated/
+.test-profile/
+node_modules/
 *.log
 
 # OS & IDE

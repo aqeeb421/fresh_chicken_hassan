@@ -42,70 +42,76 @@ class CartEngine {
         }));
     }
 
-    // Add product to cart with specified quantity in Kg
-    addItem(productId, qty = 1) {
-        const quantity = parseInt(qty);
+    // Add product to cart with specified quantity in Kg and cut preference
+    addItem(productId, qty = 1, cutType = 'Curry Cut') {
+        const quantity = parseFloat(qty);
         if (isNaN(quantity) || quantity <= 0) return false;
 
         const product = PRODUCTS.find(p => p.id === productId);
         if (!product) return false;
 
-        const existingIndex = this.items.findIndex(item => item.id === productId);
+        const cartItemId = cutType ? `${product.id}__${cutType.replace(/\s+/g, '_')}` : product.id;
+
+        const existingIndex = this.items.findIndex(item => item.cartItemId === cartItemId || (item.id === productId && (item.cutType || null) === (cutType || null)));
         if (existingIndex > -1) {
-            this.items[existingIndex].quantity += quantity;
+            this.items[existingIndex].quantity = Math.round((this.items[existingIndex].quantity + quantity) * 100) / 100;
         } else {
             this.items.push({
+                cartItemId: cartItemId,
                 id: product.id,
                 name: product.name,
                 pricePerKg: product.pricePerKg,
                 image: product.image,
                 unit: product.unit || '1 Kg',
-                quantity: quantity
+                quantity: quantity,
+                cutType: cutType || null
             });
         }
 
         this.saveCart();
-        this.showToast(`Added ${quantity} Kg of "${product.name}" to your cart!`, 'success');
+        const cutSuffix = cutType ? ` (${cutType})` : '';
+        this.showToast(`Added ${quantity} Kg of "${product.name}"${cutSuffix} to cart!`, 'success');
         return true;
     }
 
     // Update product quantity directly
-    updateQuantity(productId, newQty) {
-        const qty = parseInt(newQty);
-        const index = this.items.findIndex(item => item.id === productId);
+    updateQuantity(cartItemIdOrId, newQty) {
+        const qty = parseFloat(newQty);
+        const index = this.items.findIndex(item => item.cartItemId === cartItemIdOrId || item.id === cartItemIdOrId);
         if (index === -1) return;
 
         if (qty <= 0) {
-            this.removeItem(productId);
+            this.removeItem(cartItemIdOrId);
         } else {
-            this.items[index].quantity = qty;
+            this.items[index].quantity = Math.round(qty * 100) / 100;
             this.saveCart();
         }
     }
 
-    // Increase quantity by 1
-    increment(productId) {
-        const item = this.items.find(i => i.id === productId);
+    // Increase quantity by 0.5 Kg
+    increment(cartItemIdOrId) {
+        const item = this.items.find(i => i.cartItemId === cartItemIdOrId || i.id === cartItemIdOrId);
         if (item) {
-            this.updateQuantity(productId, item.quantity + 1);
+            this.updateQuantity(item.cartItemId || item.id, Math.round((item.quantity + 0.5) * 10) / 10);
         } else {
-            this.addItem(productId, 1);
+            this.addItem(cartItemIdOrId, 1);
         }
     }
 
-    // Decrease quantity by 1
-    decrement(productId) {
-        const item = this.items.find(i => i.id === productId);
+    // Decrease quantity by 0.5 Kg (min 1 Kg)
+    decrement(cartItemIdOrId) {
+        const item = this.items.find(i => i.cartItemId === cartItemIdOrId || i.id === cartItemIdOrId);
         if (item) {
-            this.updateQuantity(productId, item.quantity - 1);
+            const next = Math.round((item.quantity - 0.5) * 10) / 10;
+            this.updateQuantity(item.cartItemId || item.id, next < 1 ? 0 : next); // 0 triggers removeItem
         }
     }
 
     // Remove item completely
-    removeItem(productId) {
-        const item = this.items.find(i => i.id === productId);
-        const name = item ? item.name : 'Item';
-        this.items = this.items.filter(i => i.id !== productId);
+    removeItem(cartItemIdOrId) {
+        const item = this.items.find(i => i.cartItemId === cartItemIdOrId || i.id === cartItemIdOrId);
+        const name = item ? `${item.name} (${item.cutType || ''})` : 'Item';
+        this.items = this.items.filter(i => i.cartItemId !== cartItemIdOrId && i.id !== cartItemIdOrId);
         this.saveCart();
         this.showToast(`Removed "${name}" from cart.`, 'info');
     }
@@ -116,14 +122,15 @@ class CartEngine {
         this.saveCart();
     }
 
-    // Total number of items (sum of quantities)
+    // Total number of unique products in cart (for badge display)
     getTotalCount() {
-        return this.items.reduce((sum, item) => sum + item.quantity, 0);
+        return this.items.length;
     }
 
     // Subtotal amount in ₹
     getSubtotal() {
-        return this.items.reduce((sum, item) => sum + (item.pricePerKg * item.quantity), 0);
+        const raw = this.items.reduce((sum, item) => sum + (item.pricePerKg * item.quantity), 0);
+        return Math.round(raw * 100) / 100;
     }
 
     // Calculate delivery charge

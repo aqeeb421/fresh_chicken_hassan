@@ -14,7 +14,8 @@ const DEFAULT_PRODUCTS = [
         description: 'Fresh, farm-raised chicken with skin intact. Ideal for roasting, grilling, or traditional whole curry.',
         image: 'assets/images/with-skin-chicken.png?v=1.0.5',
         badge: 'Best Seller',
-        stockStatus: 'In Stock (Fresh Cut Daily)'
+        stockStatus: 'In Stock (Fresh Cut Daily)',
+        allowCutPreferences: true
     },
     {
         id: 'prod-skinless-chicken',
@@ -26,7 +27,8 @@ const DEFAULT_PRODUCTS = [
         description: 'Cleaned, dressed, and skinless whole chicken. Low fat, tender, and ready for all home recipes.',
         image: 'assets/images/skinless-chicken.png?v=1.0.5',
         badge: 'Popular',
-        stockStatus: 'In Stock'
+        stockStatus: 'In Stock',
+        allowCutPreferences: true
     },
     {
         id: 'prod-boneless',
