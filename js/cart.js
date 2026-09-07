@@ -137,7 +137,7 @@ class CartEngine {
     getDeliveryCharge() {
         const subtotal = this.getSubtotal();
         if (subtotal === 0) return 0;
-        return subtotal >= (window.CONFIG?.FREE_DELIVERY_LIMIT || 500) ? 0 : (window.CONFIG?.DELIVERY_CHARGE || 40);
+        return subtotal >= (window.CONFIG?.FREE_DELIVERY_LIMIT || 999) ? 0 : (window.CONFIG?.DELIVERY_CHARGE || 40);
     }
 
     // Grand total

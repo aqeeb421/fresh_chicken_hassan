@@ -301,6 +301,129 @@ class CloudDatabaseEngine {
             console.error('Error fetching banners from Cloud DB:', e);
         }
     }
+
+    // 7. Save user profile to Cloud Database under users/{phone}
+    async saveUserToCloud(userData) {
+        if (!userData || !userData.phone) return false;
+        const phone = userData.phone.toString().replace(/\D/g, '').slice(-10);
+        if (!phone) return false;
+        if (this.useSdk && this.db) {
+            try {
+                await this.db.ref('users/' + phone + '/profile').set(userData);
+                console.log('⚡ User profile saved to Cloud DB:', phone);
+                return true;
+            } catch (e) {
+                console.error('Error saving user via SDK:', e);
+            }
+        }
+        try {
+            const response = await fetch(`${this.baseUrl}/users/${phone}/profile.json`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+            if (response.ok) { console.log('⚡ User profile saved via REST:', phone); return true; }
+        } catch (e) { console.error('Error saving user via REST:', e); }
+        return false;
+    }
+
+    // 8. Get user profile from Cloud Database
+    async getUserFromCloud(phone) {
+        const cleanPhone = (phone || '').toString().replace(/\D/g, '').slice(-10);
+        if (!cleanPhone) return null;
+        if (this.useSdk && this.db) {
+            try {
+                const snap = await this.db.ref('users/' + cleanPhone + '/profile').once('value');
+                return snap.val();
+            } catch (e) { console.error('Error fetching user via SDK:', e); }
+        }
+        try {
+            const response = await fetch(`${this.baseUrl}/users/${cleanPhone}/profile.json?t=${Date.now()}`);
+            if (response.ok) return await response.json();
+        } catch (e) { console.error('Error fetching user via REST:', e); }
+        return null;
+    }
+
+    // 9. Save order under users/{phone}/orders/{orderId} for per-user history
+    async saveOrderToUserNode(phone, orderData) {
+        const cleanPhone = (phone || '').toString().replace(/\D/g, '').slice(-10);
+        if (!cleanPhone || !orderData || !orderData.id) return false;
+        if (this.useSdk && this.db) {
+            try {
+                await this.db.ref('users/' + cleanPhone + '/orders/' + orderData.id).set(orderData);
+                return true;
+            } catch (e) { console.error('Error saving order to user node via SDK:', e); }
+        }
+        try {
+            const response = await fetch(`${this.baseUrl}/users/${cleanPhone}/orders/${orderData.id}.json`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            if (response.ok) return true;
+        } catch (e) { console.error('Error saving order to user node via REST:', e); }
+        return false;
+    }
+
+    // 10. Fetch all orders for a user from Cloud Database
+    async fetchUserOrdersFromCloud(phone) {
+        const cleanPhone = (phone || '').toString().replace(/\D/g, '').slice(-10);
+        if (!cleanPhone) return [];
+        if (this.useSdk && this.db) {
+            try {
+                const snap = await this.db.ref('users/' + cleanPhone + '/orders').once('value');
+                const data = snap.val();
+                if (data) return Object.values(data).sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+                return [];
+            } catch (e) { console.error('Error fetching user orders via SDK:', e); }
+        }
+        try {
+            const response = await fetch(`${this.baseUrl}/users/${cleanPhone}/orders.json?t=${Date.now()}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data) return Object.values(data).sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+            }
+        } catch (e) { console.error('Error fetching user orders via REST:', e); }
+        return [];
+    }
+
+    // 11. Real-time listener for a single user's orders (Zero privacy leakage)
+    listenToUserRealtimeOrders(phone, callback) {
+        const cleanPhone = (phone || '').toString().replace(/\D/g, '').slice(-10);
+        if (!cleanPhone) {
+            if (typeof callback === 'function') callback([]);
+            return;
+        }
+
+        if (this.userOrdersInterval) {
+            clearInterval(this.userOrdersInterval);
+            this.userOrdersInterval = null;
+        }
+
+        if (this.useSdk && this.db) {
+            this.db.ref('users/' + cleanPhone + '/orders').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const orders = data ? Object.values(data).sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || '')) : [];
+                if (typeof callback === 'function') callback(orders);
+            }, (err) => {
+                console.warn('⚠️ User order SDK listen error, fallback to REST:', err);
+                this.startRestUserOrderPolling(cleanPhone, callback);
+            });
+        } else {
+            this.startRestUserOrderPolling(cleanPhone, callback);
+        }
+    }
+
+    startRestUserOrderPolling(cleanPhone, callback) {
+        const poll = async () => {
+            const orders = await this.fetchUserOrdersFromCloud(cleanPhone);
+            if (typeof callback === 'function') callback(orders);
+        };
+        poll();
+        if (!this.userOrdersInterval) {
+            this.userOrdersInterval = setInterval(poll, 4000);
+        }
+    }
 }
 
 // Global instance

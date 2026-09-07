@@ -78,10 +78,22 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+                    <!-- Sound Toggle Button -->
+                    <button id="admin-audio-toggle" onclick="toggleAdminAudio()" class="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors" title="Toggle Sound Chime">
+                        <span class="material-symbols-outlined text-sm" id="audio-icon">volume_up</span>
+                        <span id="audio-status-text">Sound: ON</span>
+                    </button>
+
+                    <!-- Desktop Notification Permission Toggle -->
+                    <button id="admin-notif-toggle" onclick="requestNotificationPermission()" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 px-3 py-2 rounded-xl text-xs font-bold border border-amber-400/40 transition-colors flex items-center gap-1.5" title="Enable Desktop Push Notifications">
+                        <span class="material-symbols-outlined text-sm">notifications</span>
+                        <span id="notif-status-text">Enable Alerts</span>
+                    </button>
+
                     <a href="index.html" target="_blank" class="bg-white/10 hover:bg-white/20 text-white px-3.5 py-2 rounded-xl text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors">
                         <span class="material-symbols-outlined text-sm">store</span>
-                        <span>View Store</span>
+                        <span class="hidden sm:inline">View Store</span>
                     </a>
                     <button onclick="handleAdminLogout()" class="bg-red-500/20 hover:bg-red-500/30 text-white px-3.5 py-2 rounded-xl text-xs font-bold border border-red-400/30 transition-colors flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">logout</span>
@@ -90,6 +102,11 @@
                 </div>
             </div>
         </header>
+
+        <!-- FLOATING NEW ORDER TOAST CONTAINER -->
+        <div id="admin-order-alerts-container" class="fixed top-24 right-4 z-50 flex flex-col gap-3 max-w-sm pointer-events-none">
+            <!-- Dynamically injected new order cards -->
+        </div>
 
         <!-- Main Admin Body -->
         <main class="flex-grow py-8">
@@ -975,6 +992,233 @@
             `).join('');
         }
 
+        // --- REAL-TIME ORDER NOTIFICATION & AUDIO ENGINE ---
+        let adminAudioEnabled = true;
+        let adminAudioCtx = null;
+        let knownOrderIds = new Set();
+        let isInitialOrderLoad = true;
+
+        function initAdminAudio() {
+            if (!adminAudioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    adminAudioCtx = new AudioContextClass();
+                }
+            }
+            if (adminAudioCtx && adminAudioCtx.state === 'suspended') {
+                adminAudioCtx.resume();
+            }
+        }
+
+        // Enable audio context on any user interaction
+        document.addEventListener('click', initAdminAudio, { once: false });
+
+        function toggleAdminAudio() {
+            initAdminAudio();
+            adminAudioEnabled = !adminAudioEnabled;
+            const icon = document.getElementById('audio-icon');
+            const text = document.getElementById('audio-status-text');
+            const btn = document.getElementById('admin-audio-toggle');
+            if (adminAudioEnabled) {
+                if (icon) icon.textContent = 'volume_up';
+                if (text) text.textContent = 'Sound: ON';
+                if (btn) btn.className = 'bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors';
+                playNewOrderChime();
+            } else {
+                if (icon) icon.textContent = 'volume_off';
+                if (text) text.textContent = 'Sound: MUTE';
+                if (btn) btn.className = 'bg-red-500/20 hover:bg-red-500/30 text-red-200 px-3 py-2 rounded-xl text-xs font-bold border border-red-400/30 flex items-center gap-1.5 transition-colors';
+            }
+        }
+
+        function playNewOrderChime() {
+            if (!adminAudioEnabled) return;
+            try {
+                initAdminAudio();
+                if (!adminAudioCtx) return;
+
+                const now = adminAudioCtx.currentTime;
+                // Pleasant 4-note ascending bell chime: C5 -> E5 -> G5 -> C6
+                const chimeNotes = [
+                    { freq: 523.25, start: 0, dur: 0.15 },
+                    { freq: 659.25, start: 0.14, dur: 0.15 },
+                    { freq: 783.99, start: 0.28, dur: 0.18 },
+                    { freq: 1046.50, start: 0.44, dur: 0.40 }
+                ];
+
+                chimeNotes.forEach(note => {
+                    const osc = adminAudioCtx.createOscillator();
+                    const gain = adminAudioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(note.freq, now + note.start);
+
+                    gain.gain.setValueAtTime(0.001, now + note.start);
+                    gain.gain.exponentialRampToValueAtTime(0.4, now + note.start + 0.03);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + note.start + note.dur);
+
+                    osc.connect(gain);
+                    gain.connect(adminAudioCtx.destination);
+
+                    osc.start(now + note.start);
+                    osc.stop(now + note.start + note.dur + 0.05);
+                });
+            } catch (err) {
+                console.warn('Audio chime playback error:', err);
+            }
+        }
+
+        function updateNotificationButtonUI() {
+            const btn = document.getElementById('admin-notif-toggle');
+            const text = document.getElementById('notif-status-text');
+            if (!btn || !text) return;
+
+            if (!('Notification' in window)) {
+                btn.classList.add('hidden');
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                text.textContent = 'Alerts: Active';
+                btn.className = 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 px-3 py-2 rounded-xl text-xs font-bold border border-emerald-400/40 transition-colors flex items-center gap-1.5';
+            } else if (Notification.permission === 'denied') {
+                text.textContent = 'Alerts: Blocked';
+                btn.className = 'bg-red-500/20 text-red-200 px-3 py-2 rounded-xl text-xs font-bold border border-red-400/40 opacity-70 flex items-center gap-1.5 cursor-not-allowed';
+            } else {
+                text.textContent = 'Enable Alerts';
+                btn.className = 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 px-3 py-2 rounded-xl text-xs font-bold border border-amber-400/40 transition-colors flex items-center gap-1.5 animate-pulse';
+            }
+        }
+
+        async function requestNotificationPermission() {
+            initAdminAudio();
+            if (!('Notification' in window)) {
+                alert('Desktop notifications are not supported by this browser.');
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                try {
+                    new Notification('🍗 Fresh Chicken Hassan - Alerts Active', {
+                        body: 'You will receive instant desktop notifications for every incoming order!',
+                        icon: 'assets/images/logo.png?v=1.0.2'
+                    });
+                } catch (e) {}
+                playNewOrderChime();
+                return;
+            }
+
+            try {
+                const permission = await Notification.requestPermission();
+                updateNotificationButtonUI();
+                if (permission === 'granted') {
+                    new Notification('🍗 Fresh Chicken Hassan - Alerts Active', {
+                        body: 'You will receive instant desktop notifications for every incoming order!',
+                        icon: 'assets/images/logo.png?v=1.0.2'
+                    });
+                    playNewOrderChime();
+                }
+            } catch (e) {
+                console.warn('Error requesting notification permission:', e);
+            }
+        }
+
+        function sendOrderDesktopNotification(order) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    const itemsSummary = (order.items || []).map(i => `${i.quantity}Kg ${i.name}`).join(', ');
+                    const n = new Notification(`🍗 NEW ORDER: ${order.id} (₹${order.grandTotal})`, {
+                        body: `Customer: ${order.customer?.name || 'Customer'} (${order.customer?.phone || ''})\nItems: ${itemsSummary}\nAddress: ${order.customer?.fullAddress || ''}`,
+                        icon: 'assets/images/logo.png?v=1.0.2',
+                        tag: order.id,
+                        requireInteraction: true
+                    });
+                    n.onclick = function() {
+                        window.focus();
+                        switchTab('orders');
+                    };
+                } catch (e) {
+                    console.warn('Desktop notification error:', e);
+                }
+            }
+        }
+
+        function showOrderToastAlert(order) {
+            const container = document.getElementById('admin-order-alerts-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto bg-white border-2 border-emerald-500 rounded-3xl p-4 shadow-2xl flex items-start gap-3 transform transition-all duration-300 translate-y-2 opacity-0';
+            toast.innerHTML = `
+                <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-[#133B2C] flex items-center justify-center flex-shrink-0 font-bold">
+                    🍗
+                </div>
+                <div class="flex-grow space-y-1">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black text-[#133B2C]">NEW ORDER RECEIVED!</span>
+                        <span class="text-[10px] font-bold text-gray-400">${order.id}</span>
+                    </div>
+                    <p class="text-xs font-bold text-gray-800">${order.customer?.name || 'Customer'} • <span class="text-emerald-700">₹${order.grandTotal}</span></p>
+                    <p class="text-[11px] text-gray-500 line-clamp-1">📍 ${order.customer?.fullAddress || 'Hassan'}</p>
+                    <div class="pt-1 flex gap-2">
+                        <button onclick="switchTab('orders'); this.closest('.pointer-events-auto').remove();" class="px-2.5 py-1 bg-[#133B2C] hover:bg-[#0b251b] text-white rounded-lg text-[10px] font-bold">
+                            View Order
+                        </button>
+                        <button onclick="printOrderSlip('${order.id}'); this.closest('.pointer-events-auto').remove();" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[10px] font-bold">
+                            Print Slip
+                        </button>
+                        <button onclick="this.closest('.pointer-events-auto').remove();" class="px-2 py-1 text-gray-400 hover:text-gray-600 text-[10px] font-semibold">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            container.prepend(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            // Auto dismiss after 15 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 15000);
+        }
+
+        function handleIncomingOrdersUpdate(ordersArray) {
+            if (!ordersArray || !Array.isArray(ordersArray)) return;
+
+            if (isInitialOrderLoad) {
+                // Populate initial set without firing chimes for historical orders
+                ordersArray.forEach(o => {
+                    if (o && o.id) knownOrderIds.add(o.id);
+                });
+                isInitialOrderLoad = false;
+                return;
+            }
+
+            // Check for brand new orders
+            let hasNewOrders = false;
+            let latestNewOrder = null;
+
+            ordersArray.forEach(o => {
+                if (o && o.id && !knownOrderIds.has(o.id)) {
+                    knownOrderIds.add(o.id);
+                    hasNewOrders = true;
+                    latestNewOrder = o;
+                    sendOrderDesktopNotification(o);
+                    showOrderToastAlert(o);
+                }
+            });
+
+            if (hasNewOrders) {
+                playNewOrderChime();
+            }
+        }
+
         function updateDbStatus() {
             const badge = document.getElementById('db-status-badge');
             if (!badge) return;
@@ -992,6 +1236,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthStatus();
             updateDbStatus();
+            updateNotificationButtonUI();
 
             if (window.cloudDb) {
                 window.cloudDb.listenToRealtimeOrders(cloudOrders => {
@@ -1002,6 +1247,8 @@
                         try {
                             localStorage.setItem('fresh_chicken_orders_v1', JSON.stringify(ordersArray));
                         } catch (e) {}
+
+                        handleIncomingOrdersUpdate(ordersArray);
                         renderRevenueMetrics();
                         renderOrdersList();
                     }

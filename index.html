@@ -52,8 +52,11 @@
                 <a href="contact.html" data-i18n="nav_contact" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
             </nav>
 
-            <!-- Actions: Language Switcher, Cart & Mobile Toggle -->
-            <div class="flex items-center gap-3">
+            <!-- Actions: Profile, Language Switcher, Cart & Mobile Toggle -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Customer Profile Header Slot (Desktop) -->
+                <div class="customer-profile-slot hidden sm:block"></div>
+
                 <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
                 <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
                     <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
@@ -93,7 +96,13 @@
                     </button>
                 </div>
 
-                <div class="mt-4 mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                <!-- Customer Profile Slot in Mobile Drawer -->
+                <div class="mt-4 mb-2 flex items-center justify-between bg-emerald-50/50 p-2.5 rounded-2xl border border-emerald-100">
+                    <span class="text-xs font-bold text-gray-700">Account:</span>
+                    <div class="customer-profile-slot"></div>
+                </div>
+
+                <div class="mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
                     <span class="text-xs font-bold text-gray-600">Language:</span>
                     <div class="flex items-center bg-white p-0.5 rounded-xl border border-gray-200 text-xs font-bold">
                         <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-3 py-1 rounded-lg transition-all">EN</button>
@@ -232,10 +241,7 @@
 
     </main>
 
-    <!-- Floating WhatsApp Button -->
-    <a id="floating-whatsapp" href="#" target="_blank" class="whatsapp-pulse fixed bottom-6 right-6 z-40 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-        <span class="material-symbols-outlined text-3xl">chat</span>
-    </a>
+
 
     <!-- Back to Top Button -->
     <button id="back-to-top" class="fixed bottom-24 right-6 z-30 bg-white text-[#133B2C] w-10 h-10 rounded-full shadow-lg border border-gray-100 flex items-center justify-center opacity-0 pointer-events-none transition-all hover:bg-gray-50">
@@ -313,6 +319,7 @@
     <script src="js/config.js?v=1.0.5"></script>
     <script src="js/translations.js?v=1.0.1"></script>
     <script src="js/firebase-db.js?v=1.0.5"></script>
+    <script src="js/profile.js?v=1.0.5"></script>
     <script src="js/products-data.js?v=1.0.5"></script>
     <script src="js/cart.js?v=1.0.5"></script>
     <script src="js/orders.js?v=1.0.5"></script>

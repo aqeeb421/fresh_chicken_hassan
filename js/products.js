@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const isKn = (typeof currentLanguage !== 'undefined' && currentLanguage === 'kn') || (localStorage.getItem('fresh_chicken_lang') === 'kn');
         const subtotal = window.cart.getSubtotal();
-        const limit = window.CONFIG?.FREE_DELIVERY_LIMIT || 500;
+        const limit = window.CONFIG?.FREE_DELIVERY_LIMIT || 999;
         const percentage = Math.min(100, Math.round((subtotal / limit) * 100));
 
         fillBar.style.width = `${percentage}%`;

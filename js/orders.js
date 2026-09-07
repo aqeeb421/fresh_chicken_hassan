@@ -116,6 +116,10 @@ class OrdersEngine {
         // Sync with Cloud DB if available
         if (window.cloudDb) {
             window.cloudDb.saveOrderToCloud(newOrder);
+            // Also save under users/{phone}/orders/ for per-user history
+            if (newOrder.customer && newOrder.customer.phone) {
+                window.cloudDb.saveOrderToUserNode(newOrder.customer.phone, newOrder);
+            }
         }
 
         return newOrder;

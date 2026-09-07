@@ -50,7 +50,11 @@
                 <a href="contact.html" data-i18n="nav_contact" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Contact</a>
             </nav>
 
-            <div class="flex items-center gap-3">
+            <!-- Actions: Profile, Language Switcher, Cart & Mobile Toggle -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Customer Profile Header Slot (Desktop) -->
+                <div class="customer-profile-slot hidden sm:block"></div>
+
                 <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
                 <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
                     <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
@@ -88,7 +92,13 @@
                     </button>
                 </div>
 
-                <div class="mt-4 mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                <!-- Customer Profile Slot in Mobile Drawer -->
+                <div class="mt-4 mb-2 flex items-center justify-between bg-emerald-50/50 p-2.5 rounded-2xl border border-emerald-100">
+                    <span class="text-xs font-bold text-gray-700">Account:</span>
+                    <div class="customer-profile-slot"></div>
+                </div>
+
+                <div class="mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
                     <span class="text-xs font-bold text-gray-600">Language:</span>
                     <div class="flex items-center bg-white p-0.5 rounded-xl border border-gray-200 text-xs font-bold">
                         <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-3 py-1 rounded-lg transition-all">EN</button>
@@ -140,21 +150,40 @@
                 <p class="text-gray-500 text-sm mt-1">Provide your delivery address and choose your payment method.</p>
             </div>
 
-            <!-- Store Live Status & Welcome Back Notification -->
+            <!-- Store Live Status & Saved Address Confirmation Card -->
             <div class="max-w-7xl mx-auto mb-6 space-y-3">
                 <div id="checkout-store-status" class="bg-emerald-50 border border-emerald-200 text-emerald-950 px-4 py-2.5 rounded-2xl flex items-center justify-between shadow-sm text-xs font-semibold">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span id="checkout-status-text">🟢 Store Open (9:00 AM - 8:00 PM) • Fresh Cuts Dispatched Directly from Santepet</span>
+                        <span id="checkout-status-text">🟢 Store Open (9:00 AM - 9:00 PM) • Fresh Cuts Dispatched Directly from Santepet</span>
                     </div>
                 </div>
 
-                <div id="saved-profile-alert" class="hidden bg-emerald-100/70 border border-emerald-300 text-emerald-900 px-4 py-2.5 rounded-2xl flex items-center justify-between text-xs font-semibold">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base text-emerald-700">account_circle</span>
-                        <span id="saved-profile-text">Welcome back! We pre-filled your delivery details.</span>
+                <!-- Saved Address Confirmation Prompt Card -->
+                <div id="saved-profile-alert" class="hidden bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 text-emerald-950 p-4 sm:p-5 rounded-3xl shadow-md space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-emerald-200/70">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl text-[#133B2C]">verified_user</span>
+                            <span class="text-sm font-black text-[#133B2C]" id="saved-profile-title">Saved Delivery Details Found</span>
+                        </div>
+                        <span class="text-[11px] font-bold bg-emerald-200 text-emerald-900 px-2.5 py-0.5 rounded-full self-start sm:self-auto">Auto-Filled</span>
                     </div>
-                    <button type="button" onclick="clearSavedProfile()" class="text-xs text-emerald-800 underline font-bold">Clear</button>
+                    <div class="text-xs text-gray-700 leading-relaxed" id="saved-profile-summary">
+                        <!-- Populated by checkout.js -->
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2.5 pt-1">
+                        <button type="button" onclick="confirmUseSavedProfile()" class="bg-[#133B2C] hover:bg-[#0b251b] text-white px-4 py-2 rounded-xl font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer">
+                            <span class="material-symbols-outlined text-sm">check_circle</span>
+                            <span>Use This Saved Address</span>
+                        </button>
+                        <button type="button" onclick="enableEditSavedProfile()" class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-3.5 py-2 rounded-xl font-semibold text-xs transition-colors cursor-pointer flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            <span>Edit Address</span>
+                        </button>
+                        <button type="button" onclick="clearSavedProfile()" class="text-xs text-gray-400 hover:text-red-500 font-semibold underline ml-auto transition-colors cursor-pointer">
+                            Clear &amp; Enter New
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -167,51 +196,57 @@
                                 <span class="material-symbols-outlined text-[#E53935]">location_on</span>
                                 <span>Delivery Information</span>
                             </h3>
-                            <button type="button" id="detect-gps-btn" onclick="detectGpsLocation()" class="bg-emerald-50 hover:bg-emerald-100 text-[#133B2C] border border-emerald-200 px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors self-start sm:self-auto shadow-sm">
+                            <button type="button" id="detect-gps-btn" onclick="detectGpsLocation()" class="bg-emerald-50 hover:bg-emerald-100 text-[#133B2C] border border-emerald-200 px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors self-start sm:self-auto shadow-sm cursor-pointer">
                                 <span class="material-symbols-outlined text-base text-emerald-600">my_location</span>
                                 <span id="gps-btn-text">Use My GPS Location</span>
                             </button>
                         </div>
                         <div id="gps-status-box" class="hidden p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-medium flex items-center justify-between">
                             <span id="gps-coords-text">📍 GPS Location Attached</span>
-                            <button type="button" onclick="clearGpsLocation()" class="text-emerald-700 font-bold hover:underline">Remove</button>
+                            <button type="button" onclick="clearGpsLocation()" class="text-emerald-700 font-bold hover:underline cursor-pointer">Remove</button>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <!-- Name -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Customer Name *</label>
-                                <input type="text" id="cust-name" required placeholder="e.g. Rahul Sharma" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <input type="text" id="cust-name" required placeholder="e.g. Rahul Sharma" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
                             <!-- Phone -->
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Phone Number *</label>
-                                <input type="tel" id="cust-phone" required placeholder="e.g. 9876543210" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Phone Number (WhatsApp) *</label>
+                                <input type="tel" id="cust-phone" required maxlength="10" pattern="[0-9]{10}" placeholder="e.g. 9876543210" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
                             <!-- House / Street -->
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">House / Building / Street *</label>
-                                <input type="text" id="cust-street" required placeholder="Flat No 402, Green Valley Apartments, 5th Cross" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <input type="text" id="cust-street" required placeholder="Flat No 402, Green Valley Apartments, 5th Cross" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                            </div>
+
+                            <!-- Landmark -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Landmark</label>
+                                <input type="text" id="cust-landmark" placeholder="e.g. Near Santepet Circle / Old Bus Stand" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
                             <!-- Area -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Area / Locality *</label>
-                                <input type="text" id="cust-area" required placeholder="e.g. Santepet Circle / Indiranagar" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <input type="text" id="cust-area" required placeholder="e.g. KR Puram / Vidyanagar / Santepet" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
                             <!-- City -->
                             <div>
-                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">City *</label>
-                                <input type="text" id="cust-city" required value="Hassan" placeholder="e.g. Hassan" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">City (Hassan Only) *</label>
+                                <input type="text" id="cust-city" required value="Hassan" placeholder="e.g. Hassan" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-bold text-gray-800 focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
                             <!-- Pincode -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Pincode *</label>
-                                <input type="text" id="cust-pincode" required value="573201" placeholder="e.g. 573201" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
+                                <input type="text" id="cust-pincode" required value="573201" maxlength="6" placeholder="e.g. 573201" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
                             </div>
 
                             <!-- Delivery Time Slot Selection (9:00 AM to 8:00 PM) -->
@@ -359,10 +394,7 @@
         </div>
     </main>
 
-    <!-- Floating WhatsApp Button -->
-    <a id="floating-whatsapp" href="#" target="_blank" class="whatsapp-pulse fixed bottom-6 right-6 z-40 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-        <span class="material-symbols-outlined text-3xl">chat</span>
-    </a>
+
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300 pt-16 pb-12 border-t border-gray-800">
@@ -431,6 +463,7 @@
     <script src="js/config.js?v=1.0.1"></script>
     <script src="js/translations.js?v=1.0.1"></script>
     <script src="js/firebase-db.js?v=1.0.1"></script>
+    <script src="js/profile.js?v=1.0.1"></script>
     <script src="js/products-data.js?v=1.0.1"></script>
     <script src="js/cart.js?v=1.0.1"></script>
     <script src="js/orders.js?v=1.0.1"></script>

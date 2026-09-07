@@ -6,6 +6,66 @@
 let userGpsCoords = null; // { lat, lng }
 let isSubmittingOrder = false;
 
+// Show Store Closed Modal
+function showStoreClosedModal() {
+    var existing = document.getElementById('store-closed-modal');
+    if (existing) { existing.classList.remove('hidden'); return; }
+    var m = document.createElement('div');
+    m.id = 'store-closed-modal';
+    m.className = 'fixed inset-0 z-[998] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm';
+    m.innerHTML =
+        '<div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center border border-gray-100">'
+        +'<div class="w-16 h-16 mx-auto mb-4 bg-amber-50 rounded-2xl flex items-center justify-center">'
+        +'<span class="material-symbols-outlined text-4xl text-amber-500">schedule</span></div>'
+        +'<h3 class="font-black text-xl text-gray-900 mb-2">Store is Closed</h3>'
+        +'<p class="text-gray-500 text-sm leading-relaxed mb-1">We are open <strong class="text-[#133B2C]">9:00 AM – 9:00 PM</strong> every day.</p>'
+        +'<p class="text-gray-400 text-xs mb-6">Pre-order now! We will process your order first thing at 9:00 AM.</p>'
+        +'<div class="flex gap-3">'
+        +'<button onclick="document.getElementById(\'store-closed-modal\').classList.add(\'hidden\')" class="flex-1 border border-gray-200 text-gray-600 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition-colors">Go Back</button>'
+        +'<button onclick="document.getElementById(\'store-closed-modal\').classList.add(\'hidden\'); handleCheckoutSubmitForced()" class="flex-1 bg-[#133B2C] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#0b251b] transition-colors">Pre-Order Anyway</button>'
+        +'</div></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function(e){ if(e.target===m) m.classList.add('hidden'); });
+}
+
+// Show Outside Hassan Modal
+function showOutsideHassanModal(city) {
+    var existing = document.getElementById('outside-hassan-modal');
+    if (existing) { existing.classList.remove('hidden'); return; }
+    var m = document.createElement('div');
+    m.id = 'outside-hassan-modal';
+    m.className = 'fixed inset-0 z-[998] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm';
+    m.innerHTML =
+        '<div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center border border-gray-100">'
+        +'<div class="w-16 h-16 mx-auto mb-4 bg-red-50 rounded-2xl flex items-center justify-center">'
+        +'<span class="material-symbols-outlined text-4xl text-red-400">location_off</span></div>'
+        +'<h3 class="font-black text-xl text-gray-900 mb-2">Outside Our Service Area</h3>'
+        +'<p class="text-gray-600 text-sm leading-relaxed mb-2">We currently deliver <strong class="text-[#133B2C]">only within Hassan city</strong>.</p>'
+        +'<div class="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 mb-5 text-xs text-amber-800 font-semibold">'
+        +'📍 Your city: <strong>'+(city||'Unknown')+'</strong><br/>We are expanding very soon! 🚀</div>'
+        +'<p class="text-gray-400 text-xs mb-5">We will reach your area very soon. Check back later!</p>'
+        +'<button onclick="document.getElementById(\'outside-hassan-modal\').classList.add(\'hidden\')" class="w-full bg-[#133B2C] text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-[#0b251b] transition-colors">Got It</button>'
+        +'</div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function(e){ if(e.target===m) m.classList.add('hidden'); });
+}
+
+// Pre-order forced submission (bypass store-closed check)
+function handleCheckoutSubmitForced() {
+    // Temporarily allow the form to submit past the hours gate
+    var form = document.getElementById('checkout-form');
+    if (form) {
+        var origIsOpen = window.CONFIG && window.CONFIG.isStoreOpen;
+        if (origIsOpen) window.CONFIG._isStoreOpenOriginal = origIsOpen;
+        if (window.CONFIG) window.CONFIG.isStoreOpen = function() { return true; };
+        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        if (window.CONFIG && window.CONFIG._isStoreOpenOriginal) {
+            window.CONFIG.isStoreOpen = window.CONFIG._isStoreOpenOriginal;
+            delete window.CONFIG._isStoreOpenOriginal;
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const checkoutForm = document.getElementById('checkout-form');
     const orderItemsContainer = document.getElementById('checkout-order-items');
@@ -35,42 +95,91 @@ function updateCheckoutStoreStatus() {
     if (statusEl && window.CONFIG && window.CONFIG.getStoreStatusInfo) {
         const info = window.CONFIG.getStoreStatusInfo();
         if (info.isOpen) {
-            statusEl.innerHTML = `🟢 <strong>Store Open (9:00 AM - 8:00 PM)</strong> • Express Cuts Dispatched Direct from Santepet`;
+            statusEl.innerHTML = `🟢 <strong>Store Open (9:00 AM - 9:00 PM)</strong> • Express Cuts Dispatched Direct from Santepet`;
         } else {
             statusEl.innerHTML = `🌙 <strong>Store Closed (Opens 9:00 AM)</strong> • Pre-order now for 9:00 AM morning fresh delivery`;
         }
     }
 }
 
-// Auto-fill customer profile from previous order
+// Auto-fill customer profile from previous order with confirmation card
 function initCustomerProfileAutoFill() {
     try {
-        const saved = localStorage.getItem('fresh_chicken_customer_profile');
-        if (saved) {
-            const p = JSON.parse(saved);
+        let p = null;
+        if (window.customerProfile && window.customerProfile.getProfile) {
+            p = window.customerProfile.getProfile();
+        }
+        if (!p) {
+            const saved = localStorage.getItem('fresh_chicken_customer_profile');
+            if (saved) p = JSON.parse(saved);
+        }
+
+        if (p && p.name && p.phone) {
             const nameEl = document.getElementById('cust-name');
             const phoneEl = document.getElementById('cust-phone');
             const streetEl = document.getElementById('cust-street');
+            const landmarkEl = document.getElementById('cust-landmark');
             const areaEl = document.getElementById('cust-area');
             const cityEl = document.getElementById('cust-city');
             const pinEl = document.getElementById('cust-pincode');
 
-            if (p.name && nameEl) nameEl.value = p.name;
-            if (p.phone && phoneEl) phoneEl.value = p.phone;
-            if (p.street && streetEl) streetEl.value = p.street;
-            if (p.area && areaEl) areaEl.value = p.area;
-            if (p.city && cityEl) cityEl.value = p.city || 'Hassan';
-            if (p.pincode && pinEl) pinEl.value = p.pincode || '573201';
+            if (nameEl && p.name) nameEl.value = p.name;
+            if (phoneEl && p.phone) phoneEl.value = p.phone;
+            if (streetEl && p.street) streetEl.value = p.street;
+            if (landmarkEl && p.landmark) landmarkEl.value = p.landmark;
+            if (areaEl && p.area) areaEl.value = p.area;
+            if (cityEl) cityEl.value = p.city || 'Hassan';
+            if (pinEl) pinEl.value = p.pincode || '573201';
 
             const alertBox = document.getElementById('saved-profile-alert');
-            const alertText = document.getElementById('saved-profile-text');
-            if (alertBox && alertText && p.name) {
-                alertText.innerHTML = `Welcome back <strong>${p.name}</strong>! We've pre-filled your saved delivery address.`;
+            const summaryEl = document.getElementById('saved-profile-summary');
+            if (alertBox && summaryEl) {
+                const addrParts = [
+                    p.street,
+                    p.landmark ? 'Near ' + p.landmark : '',
+                    p.area,
+                    (p.city || 'Hassan') + ' - ' + (p.pincode || '573201')
+                ].filter(Boolean).join(', ');
+
+                summaryEl.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-extrabold text-sm text-[#133B2C]">👤 ${p.name}</span>
+                        <span class="text-xs text-gray-500 font-bold">📞 +91 ${p.phone}</span>
+                    </div>
+                    <div class="text-xs text-gray-600 font-medium">
+                        📍 <strong>Address:</strong> ${addrParts || 'Hassan'}
+                    </div>
+                `;
                 alertBox.classList.remove('hidden');
             }
         }
     } catch (e) {
         console.error('Error loading saved customer profile', e);
+    }
+}
+
+// User confirms they want to use their saved address
+function confirmUseSavedProfile() {
+    if (window.cart && window.cart.showToast) {
+        window.cart.showToast('Using your saved delivery address! ✔', 'success');
+    }
+    const alertBox = document.getElementById('saved-profile-alert');
+    if (alertBox) {
+        alertBox.classList.add('border-emerald-500', 'bg-emerald-100/80');
+    }
+}
+
+// User wants to edit the saved profile fields
+function enableEditSavedProfile() {
+    const streetEl = document.getElementById('cust-street');
+    if (streetEl) {
+        streetEl.focus();
+        streetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        streetEl.classList.add('ring-2', 'ring-[#133B2C]');
+        setTimeout(() => streetEl.classList.remove('ring-2', 'ring-[#133B2C]'), 2000);
+    }
+    if (window.cart && window.cart.showToast) {
+        window.cart.showToast('You can now edit your delivery fields below.', 'info');
     }
 }
 
@@ -83,8 +192,10 @@ function clearSavedProfile() {
     const form = document.getElementById('checkout-form');
     if (form) {
         form.reset();
-        document.getElementById('cust-city').value = 'Hassan';
-        document.getElementById('cust-pincode').value = '573201';
+        const cityEl = document.getElementById('cust-city');
+        const pinEl = document.getElementById('cust-pincode');
+        if (cityEl) cityEl.value = 'Hassan';
+        if (pinEl) pinEl.value = '573201';
     }
 }
 
@@ -304,6 +415,12 @@ function handleCheckoutSubmit(e) {
         return; // Prevent duplicate rapid submission
     }
 
+    // 1. Store Hours Gate (9:00 AM - 9:00 PM only)
+    if (window.CONFIG && !window.CONFIG.isStoreOpen()) {
+        showStoreClosedModal();
+        return;
+    }
+
     if (!window.cart || window.cart.items.length === 0) {
         alert('Your cart is empty!');
         return;
@@ -312,6 +429,7 @@ function handleCheckoutSubmit(e) {
     const name = document.getElementById('cust-name')?.value.trim();
     const phone = document.getElementById('cust-phone')?.value.trim();
     const street = document.getElementById('cust-street')?.value.trim();
+    const landmark = document.getElementById('cust-landmark')?.value.trim() || '';
     const area = document.getElementById('cust-area')?.value.trim();
     const city = document.getElementById('cust-city')?.value.trim();
     const pincode = document.getElementById('cust-pincode')?.value.trim();
@@ -330,18 +448,29 @@ function handleCheckoutSubmit(e) {
         return;
     }
 
-    const fullAddress = `${street}, ${area}, ${city} - ${pincode}`;
+    // 2. Hassan City Restriction
+    const cityClean = city.trim().toLowerCase();
+    const hassanKeywords = ['hassan', 'ಹಾಸನ'];
+    const isHassanCity = hassanKeywords.some(kw => cityClean.includes(kw));
+    if (!isHassanCity) {
+        showOutsideHassanModal(city);
+        return;
+    }
+
+    const fullAddress = `${street}${landmark ? ' (Near ' + landmark + ')' : ''}, ${area}, ${city} - ${pincode}`;
     const items = window.cart.items;
     const subtotal = window.cart.getSubtotal();
     const delivery = window.cart.getDeliveryCharge();
     const grandTotal = window.cart.getGrandTotal();
 
-    // Save customer profile for auto-fill on next orders
+    // Save/update customer profile for auto-fill on next orders
     try {
-        localStorage.setItem('fresh_chicken_customer_profile', JSON.stringify({
-            name, phone, street, area, city, pincode
-        }));
+        const profileData = { name, phone, street, landmark, area, city, pincode, updatedAt: new Date().toISOString() };
+        localStorage.setItem('fresh_chicken_customer_profile', JSON.stringify(profileData));
         localStorage.setItem('fresh_chicken_last_phone', phone);
+        if (window.customerProfile && window.customerProfile.updateFromCheckout) {
+            window.customerProfile.updateFromCheckout(profileData);
+        }
     } catch (err) {}
 
     // Construct formatted WhatsApp message
@@ -399,7 +528,7 @@ function handleCheckoutSubmit(e) {
     // Save order into order history & revenue tracker
     if (window.ordersEngine) {
         window.ordersEngine.saveOrder({
-            customer: { name, phone, street, area, city, pincode, fullAddress, notes, gps: userGpsCoords },
+            customer: { name, phone, street, landmark, area, city, pincode, fullAddress, notes, gps: userGpsCoords },
             items: JSON.parse(JSON.stringify(items)),
             subtotal,
             deliveryCharge: delivery,

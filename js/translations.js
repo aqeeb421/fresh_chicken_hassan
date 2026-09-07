@@ -23,7 +23,7 @@ const TRANSLATIONS = {
         'store_closed_hours': 'Pre-order now for 9:00 AM morning fresh delivery',
         
         // Free Delivery Progress
-        'free_delivery_progress': 'Free Doorstep Delivery on orders above ₹500',
+        'free_delivery_progress': 'Free Doorstep Delivery on orders above ₹999',
         'free_delivery_unlocked': '🎉 Congratulations! You unlocked FREE Doorstep Delivery!',
         'free_delivery_need_more': 'Add ₹{amount} more chicken for FREE Delivery!',
         
@@ -133,7 +133,7 @@ const TRANSLATIONS = {
         'store_closed_hours': 'ಮುಂಜಾನೆ 9:00 ಗಂಟೆಯ ತಾಜಾ ಡೆಲಿವರಿಗಾಗಿ ಈಗಲೇ ಮುಂಗಡ ಆರ್ಡರ್ ಮಾಡಿ',
 
         // Free Delivery Progress
-        'free_delivery_progress': '₹500 ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಆರ್ಡರ್‌ಗಳಿಗೆ ಉಚಿತ ಮನೆ ಬಾಗಿಲಿಗೆ ಡೆಲಿವರಿ',
+        'free_delivery_progress': '₹999 ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಆರ್ಡರ್‌ಗಳಿಗೆ ಉಚಿತ ಮನೆ ಬಾಗಿಲಿಗೆ ಡೆಲಿವರಿ',
         'free_delivery_unlocked': '🎉 ಅಭಿನಂದನೆಗಳು! ನಿಮ್ಮ ಆರ್ಡರ್‌ಗೆ ಉಚಿತ ಹೋಮ್ ಡೆಲಿವರಿ ಲಭ್ಯವಾಗಿದೆ!',
         'free_delivery_need_more': 'ಉಚಿತ ಡೆಲಿವರಿ ಪಡೆಯಲು ಇನ್ನೂ ₹{amount} ಮೊತ್ತದ ಚಿಕನ್ ಸೇರಿಸಿ!',
 

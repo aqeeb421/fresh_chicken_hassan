@@ -158,24 +158,24 @@ if (typeof window !== 'undefined') {
 
 const DEFAULT_BANNERS = [
     {
-        id: 'banner-1',
-        title: 'Free Doorstep Delivery Above ₹500!',
-        description: 'Order fresh chicken cuts worth ₹500 or more and enjoy instant FREE doorstep delivery straight from Santepet Circle to your home in Hassan.',
-        badge: 'Special Offer',
+        id: 'banner-free-delivery',
+        title: '🎉 FREE Delivery on Orders Above ₹999!',
+        description: 'Order fresh farm chicken worth ₹999 or more and get FREE same-day doorstep delivery anywhere in Hassan city. No extra charge — we bring it straight to your home!',
+        badge: '🚚 FREE Delivery',
         image: 'assets/images/hero-banner.png',
         linkUrl: 'products.html',
-        linkText: 'Order Now & Save Delivery',
+        linkText: 'Shop Now & Get Free Delivery',
         active: true,
         createdAt: '2026-08-09T00:00:00.000Z'
     },
     {
-        id: 'banner-2',
-        title: 'Sunday Farm Fresh Special!',
-        description: 'Pre-order your favorite curry cuts and boneless fillets for Sunday family meals. Sourced fresh every morning at 7:00 AM.',
-        badge: 'Weekend Deal',
-        image: 'assets/images/chicken-curry-cut.png',
+        id: 'banner-same-day',
+        title: '⚡ Same-Day Fresh Cut Delivery in Hassan',
+        description: 'Order before 9:00 PM and get your chicken freshly cut and delivered to your doorstep the same day. Fresh from Santepet Circle, Hassan.',
+        badge: '🐔 Farm Fresh',
+        image: 'assets/images/hero-banner.png',
         linkUrl: 'products.html',
-        linkText: 'Explore Products Catalog',
+        linkText: 'Order Fresh Chicken Now',
         active: true,
         createdAt: '2026-08-09T00:00:00.000Z'
     }

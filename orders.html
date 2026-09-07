@@ -53,6 +53,9 @@
             </nav>
 
             <div class="flex items-center gap-3">
+                <!-- Customer Profile Slot (Sign In / Name) -->
+                <div class="customer-profile-slot"></div>
+
                 <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
                 <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
                     <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
@@ -90,7 +93,10 @@
                     </button>
                 </div>
 
-                <div class="mt-4 mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                <!-- Customer Profile in Mobile Drawer -->
+                <div class="customer-profile-slot my-3"></div>
+
+                <div class="mt-2 mb-2 flex items-center justify-between bg-gray-50 p-2 rounded-2xl border border-gray-100">
                     <span class="text-xs font-bold text-gray-600">Language:</span>
                     <div class="flex items-center bg-white p-0.5 rounded-xl border border-gray-200 text-xs font-bold">
                         <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-3 py-1 rounded-lg transition-all">EN</button>
@@ -140,35 +146,21 @@
             <div class="text-center mb-8">
                 <span class="text-[#E53935] font-bold text-xs uppercase tracking-widest">Order Tracking</span>
                 <h1 class="text-3xl sm:text-4xl font-black text-[#133B2C] mt-1 mb-2">My Orders & Live Status</h1>
-                <p class="text-gray-500 text-sm">Enter your phone number to check your recent orders and live delivery updates.</p>
+                <p class="text-gray-500 text-sm">Private real-time order history, tracking updates, and tax invoices.</p>
             </div>
 
-            <!-- Phone Search Box -->
-            <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm mb-8">
-                <form id="phone-search-form" onsubmit="handleCustomerPhoneSearch(event)" class="flex flex-col sm:flex-row gap-4 items-center">
-                    <div class="relative flex-grow w-full">
-                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">call</span>
-                        <input type="tel" id="customer-phone-input" required placeholder="Enter 10-digit mobile number (e.g. 9876543210)" class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-[#133B2C] focus:bg-white transition-colors" />
-                    </div>
-                    <button type="submit" class="w-full sm:w-auto bg-[#133B2C] hover:bg-[#0b251b] text-white px-8 py-3.5 rounded-2xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-lg">search</span>
-                        <span>Find Orders</span>
-                    </button>
-                </form>
+            <!-- Customer Account Status & Privacy Banner -->
+            <div id="customer-account-banner" class="mb-8">
+                <!-- Dynamically populated with signed-in profile or secure sign-in prompt -->
             </div>
 
             <!-- Customer Orders List -->
             <div id="customer-orders-container" class="space-y-6">
-                <!-- Populated dynamically via JS -->
+                <!-- Populated dynamically via JS with only this user's orders -->
             </div>
 
         </div>
     </main>
-
-    <!-- Floating WhatsApp Button -->
-    <a id="floating-whatsapp" href="#" target="_blank" class="whatsapp-pulse fixed bottom-6 right-6 z-40 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-        <span class="material-symbols-outlined text-3xl">chat</span>
-    </a>
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300 pt-16 pb-12 border-t border-gray-800">
@@ -234,336 +226,14 @@
     <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="js/config.js?v=1.0.4"></script>
+    <script src="js/config.js?v=1.0.5"></script>
     <script src="js/translations.js?v=1.0.1"></script>
-    <script src="js/firebase-db.js?v=1.0.4"></script>
-    <script src="js/products-data.js?v=1.0.4"></script>
-    <script src="js/cart.js?v=1.0.4"></script>
-    <script src="js/orders.js?v=1.0.4"></script>
-    <script src="js/main.js?v=1.0.4"></script>
-    <script>
-        let currentSearchPhone = '';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedPhone = localStorage.getItem('fresh_chicken_last_phone') || '';
-            const phoneInput = document.getElementById('customer-phone-input');
-            if (phoneInput && savedPhone) {
-                phoneInput.value = savedPhone;
-                currentSearchPhone = savedPhone;
-            }
-            renderCustomerOrders();
-
-            // Real-time Cloud DB listener for customer orders
-            if (window.cloudDb) {
-                window.cloudDb.listenToRealtimeOrders(cloudOrders => {
-                    if (cloudOrders) {
-                        const ordersArray = Array.isArray(cloudOrders) ? cloudOrders : Object.values(cloudOrders);
-                        ordersArray.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
-                        window.ordersEngine.orders = ordersArray;
-                        renderCustomerOrders();
-                    }
-                });
-            }
-        });
-
-        function handleCustomerPhoneSearch(e) {
-            e.preventDefault();
-            const phoneInput = document.getElementById('customer-phone-input');
-            if (phoneInput) {
-                currentSearchPhone = phoneInput.value.trim();
-                localStorage.setItem('fresh_chicken_last_phone', currentSearchPhone);
-                renderCustomerOrders();
-            }
-        }
-
-        function getStatusBadgeClass(status) {
-            const s = (status || '').toLowerCase();
-            if (s.includes('delivered')) return 'bg-emerald-100 text-emerald-800 border-emerald-300';
-            if (s.includes('out for delivery') || s.includes('transit')) return 'bg-purple-100 text-purple-800 border-purple-300';
-            if (s.includes('preparing') || s.includes('cut')) return 'bg-amber-100 text-amber-800 border-amber-300';
-            if (s.includes('confirmed')) return 'bg-blue-100 text-blue-800 border-blue-300';
-            if (s.includes('cancel')) return 'bg-red-100 text-red-800 border-red-300';
-            return 'bg-emerald-50 text-[#133B2C] border-emerald-200';
-        }
-
-        function renderCustomerOrders() {
-            const container = document.getElementById('customer-orders-container');
-            if (!container) return;
-
-            if (!currentSearchPhone) {
-                container.innerHTML = `
-                    <div class="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm">
-                        <span class="material-symbols-outlined text-5xl text-gray-300 mb-2">person_search</span>
-                        <h4 class="font-bold text-gray-700 text-lg">Enter Mobile Number</h4>
-                        <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">Enter the mobile number used when placing your order to view your order history and live delivery updates.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const orders = window.ordersEngine.getOrdersByPhone(currentSearchPhone);
-
-            if (orders.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm">
-                        <span class="material-symbols-outlined text-5xl text-gray-300 mb-2">search_off</span>
-                        <h4 class="font-bold text-gray-700 text-lg">No orders found for ${currentSearchPhone}</h4>
-                        <p class="text-xs text-gray-400 mt-1">Make sure you entered the correct 10-digit number used during checkout.</p>
-                        <a href="products.html" class="inline-block mt-4 bg-[#133B2C] text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-md">Order Fresh Chicken</a>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = orders.map(order => `
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all space-y-6">
-                    <!-- Order Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-100 gap-3">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-black text-[#133B2C] text-lg">${order.id}</span>
-                                <span class="px-3 py-1 text-xs font-bold rounded-full border ${getStatusBadgeClass(order.status)} flex items-center gap-1">
-                                    <span class="w-2 h-2 rounded-full bg-current animate-ping"></span>
-                                    ${order.status}
-                                </span>
-                            </div>
-                            <span class="text-xs text-gray-400 font-medium block mt-1">📅 ${order.dateString}</span>
-                        </div>
-
-                        <div class="text-left sm:text-right">
-                            <span class="text-xs text-gray-400 uppercase font-bold block">Grand Total</span>
-                            <span class="font-black text-2xl text-[#133B2C]">₹${order.grandTotal}</span>
-                            <span class="text-[11px] text-gray-500 block font-medium">💳 ${order.paymentMethod || 'Cash / UPI'}</span>
-                        </div>
-                    </div>
-
-                    <!-- Details Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                        <div class="bg-gray-50 p-4 rounded-2xl space-y-1.5">
-                            <span class="font-bold text-gray-900 block text-sm mb-1">🛒 Ordered Items</span>
-                            ${order.items.map(i => `
-                                <div class="flex justify-between items-center py-1 border-b border-gray-200/50 last:border-0">
-                                    <span class="text-gray-700 font-medium">• ${i.name} (${i.quantity} Kg)</span>
-                                    <span class="font-bold text-gray-900">₹${i.pricePerKg * i.quantity}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-2xl space-y-1.5">
-                            <span class="font-bold text-gray-900 block text-sm mb-1">📍 Delivery Address</span>
-                            <p class="text-gray-800 font-bold">${order.customer.name}</p>
-                            <p class="text-gray-600">📞 ${order.customer.phone}</p>
-                            <p class="text-gray-600 leading-relaxed">${order.customer.fullAddress}</p>
-                            ${order.customer.notes ? `<p class="text-emerald-800 font-semibold mt-1">📝 Notes: ${order.customer.notes}</p>` : ''}
-                        </div>
-                    </div>
-
-                    <!-- Live Status Tracker Steps -->
-                    <div class="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-4 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-[#133B2C] uppercase tracking-wider block">Live Order Tracking</span>
-                            <span class="text-[11px] font-semibold text-emerald-800">Auto-Refreshes in Real-Time</span>
-                        </div>
-                        <div class="grid grid-cols-4 gap-2 text-center text-[11px]">
-                            <div class="flex flex-col items-center">
-                                <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold mb-1 shadow-sm">1</div>
-                                <span class="font-bold text-gray-800">Placed</span>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <div class="w-8 h-8 rounded-full ${order.status.includes('Confirmed') || order.status.includes('Preparing') || order.status.includes('Out') || order.status.includes('Delivered') ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-500'} flex items-center justify-center font-bold mb-1 shadow-sm">2</div>
-                                <span class="font-bold text-gray-800">Confirmed</span>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <div class="w-8 h-8 rounded-full ${order.status.includes('Preparing') || order.status.includes('Out') || order.status.includes('Delivered') ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-500'} flex items-center justify-center font-bold mb-1 shadow-sm">3</div>
-                                <span class="font-bold text-gray-800">Fresh Cut</span>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <div class="w-8 h-8 rounded-full ${order.status.includes('Delivered') ? 'bg-emerald-600 text-white' : (order.status.includes('Out') ? 'bg-purple-600 text-white animate-bounce' : 'bg-gray-200 text-gray-500')} flex items-center justify-center font-bold mb-1 shadow-sm">4</div>
-                                <span class="font-bold text-gray-800">Delivered</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Order Actions (Reorder, Print Slip, WhatsApp) -->
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-gray-100">
-                        <div class="space-y-1 text-center sm:text-left">
-                            <span class="text-xs text-gray-500 block">${isKn ? 'ಆರ್ಡರ್ ವಿವರಗಳನ್ನು ಮರುಪರಿಶೀಲಿಸಿ ಅಥವಾ ಮರು ಆರ್ಡರ್ ಮಾಡಿ:' : 'Manage your fresh cuts order or reorder in one click:'}</span>
-                            ${(order.paymentMethod && order.paymentMethod.includes('UPI')) ? `
-                                <span class="text-[11px] font-black text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md inline-block">
-                                    📸 ⚠️ ${isKn ? 'ಆನ್‌ಲೈನ್ ಪಾವತಿ ದೃಢೀಕರಣಕ್ಕಾಗಿ ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಲಗತ್ತಿಸಿ!' : 'Please attach payment screenshot (SS) in WhatsApp chat to confirm order!'}
-                                </span>
-                            ` : ''}
-                        </div>
-                        <div class="flex items-center gap-2 w-full sm:w-auto">
-                            <!-- 1-Click Reorder Button -->
-                            <button onclick="handleReorder('${order.id}')" class="flex-1 sm:flex-initial bg-[#133B2C] hover:bg-[#0b251b] text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all">
-                                <span class="material-symbols-outlined text-base">sync</span>
-                                <span>${isKn ? 'ಮರು ಆರ್ಡರ್ ಮಾಡಿ' : 'Reorder'}</span>
-                            </button>
-
-                            <!-- Print Receipt Slip Button -->
-                            <button onclick="printOrderReceipt('${order.id}')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 border border-gray-200 shadow-sm transition-all" title="Print Slip">
-                                <span class="material-symbols-outlined text-base">print</span>
-                            </button>
-
-                            <!-- WhatsApp Resend Button -->
-                            <button onclick="resendOrderToWhatsApp('${order.id}')" class="flex-1 sm:flex-initial bg-[#25D366] hover:bg-[#1ebd59] text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg transition-all">
-                                <span class="material-symbols-outlined text-base">chat</span>
-                                <span>${isKn ? 'ವಾಟ್ಸಾಪ್' : 'WhatsApp'}</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-        // Handle 1-Click Reorder
-        function handleReorder(orderId) {
-            if (window.ordersEngine && window.ordersEngine.reorderItems(orderId)) {
-                window.location.href = 'cart.html';
-            }
-        }
-
-        // Print & Share Order Packing Slip
-        function printOrderReceipt(orderId) {
-            const list = window.ordersEngine ? window.ordersEngine.getAllOrders(true) : [];
-            const order = list.find(o => o.id === orderId);
-            if (!order) return;
-
-            let slipWhatsAppText = `🧾 *FRESH CHICKEN HASSAN - BILL RECEIPT*\n`;
-            slipWhatsAppText += `----------------------------------------\n`;
-            slipWhatsAppText += `📋 *Order ID:* ${order.id}\n`;
-            slipWhatsAppText += `📅 *Date:* ${order.dateString || order.dateISO}\n\n`;
-            slipWhatsAppText += `👤 *Customer:* ${order.customer.name}\n`;
-            slipWhatsAppText += `📞 *Phone:* ${order.customer.phone}\n`;
-            slipWhatsAppText += `📍 *Delivery Address:* ${order.customer.fullAddress}\n`;
-            if (order.customer.notes) {
-                slipWhatsAppText += `📝 *Notes:* ${order.customer.notes}\n`;
-            }
-            if (order.customer.lat && order.customer.lng) {
-                slipWhatsAppText += `🚗 *GPS Directions:* https://www.google.com/maps/dir/?api=1&destination=${order.customer.lat},${order.customer.lng}\n`;
-            }
-            slipWhatsAppText += `\n----------------------------------------\n`;
-            slipWhatsAppText += `🛒 *ORDERED ITEMS*\n`;
-            order.items.forEach(i => {
-                const cut = i.cutType ? ` (${i.cutType})` : '';
-                slipWhatsAppText += `• ${i.name}${cut} - ${i.quantity} Kg: ₹${Math.round(i.pricePerKg * i.quantity * 100) / 100}\n`;
-            });
-            slipWhatsAppText += `----------------------------------------\n`;
-            slipWhatsAppText += `Subtotal: ₹${order.subtotal}\n`;
-            slipWhatsAppText += `Delivery Fee: ${order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge}\n`;
-            slipWhatsAppText += `*GRAND TOTAL: ₹${order.grandTotal}*\n`;
-            slipWhatsAppText += `💳 *Payment Method:* ${order.paymentMethod || 'Cash'}\n`;
-            slipWhatsAppText += `----------------------------------------\n`;
-            slipWhatsAppText += `✨ *Thank you for ordering with Fresh Chicken Hassan!* 🍗\n`;
-            slipWhatsAppText += `📞 Store Helpline: +91 9148699386`;
-
-            const encodedText = encodeURIComponent(slipWhatsAppText);
-
-            const printWindow = window.open('', '_blank', 'width=450,height=700');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Order Receipt - ${order.id}</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <style>
-                        body { font-family: monospace, -apple-system, sans-serif; padding: 15px; max-width: 380px; margin: 0 auto; color: #111; }
-                        .text-center { text-align: center; }
-                        .border-top { border-top: 1px dashed #444; margin: 10px 0; }
-                        .flex { display: flex; justify-content: space-between; }
-                        .bold { font-weight: bold; }
-                        .items-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 13px; }
-                        .items-table td { padding: 3px 0; }
-                        .title { font-size: 18px; font-weight: bold; margin-bottom: 2px; }
-                        .btn { background: #133B2C; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; font-size: 13px; }
-                        .btn-wa { background: #25D366; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; margin-top: 8px; width: 100%; font-weight: bold; font-size: 13px; text-decoration: none; display: block; text-align: center; box-sizing: border-box; }
-                        @media print { .no-print { display: none; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="text-center">
-                        <div class="title">FRESH CHICKEN</div>
-                        <div style="font-size: 11px;">Santepet, Hassan • Ph: 9148699386</div>
-                        <div style="font-size: 12px; margin-top: 4px;" class="bold">PACKING SLIP / BILL</div>
-                    </div>
-                    <div class="border-top"></div>
-                    <div class="flex" style="font-size: 12px;">
-                        <span>Order ID: <b>${order.id}</b></span>
-                        <span>${order.dateISO || new Date().toISOString().split('T')[0]}</span>
-                    </div>
-                    <div style="font-size: 12px; margin-top: 4px;">
-                        Customer: <b>${order.customer.name}</b> (${order.customer.phone})<br/>
-                        Address: ${order.customer.fullAddress}
-                        ${order.customer.notes ? `<br/><b>Notes:</b> ${order.customer.notes}` : ''}
-                    </div>
-                    <div class="border-top"></div>
-                    <table class="items-table">
-                        <tr class="bold" style="border-bottom: 1px dashed #444;">
-                            <td>Item (Cut)</td>
-                            <td style="text-align: center;">Qty</td>
-                            <td style="text-align: right;">Total</td>
-                        </tr>
-                        ${order.items.map(i => `
-                            <tr>
-                                <td>${i.name}${i.cutType ? ` (${i.cutType})` : ''}</td>
-                                <td style="text-align: center;">${i.quantity} Kg</td>
-                                <td style="text-align: right;">₹${Math.round(i.pricePerKg * i.quantity * 100) / 100}</td>
-                            </tr>
-                        `).join('')}
-                    </table>
-                    <div class="border-top"></div>
-                    <div class="flex" style="font-size: 12px;"><span>Subtotal:</span> <span>₹${order.subtotal}</span></div>
-                    <div class="flex" style="font-size: 12px;"><span>Delivery Fee:</span> <span>${order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge}</span></div>
-                    <div class="flex bold" style="font-size: 15px; margin-top: 4px;"><span>GRAND TOTAL:</span> <span>₹${order.grandTotal}</span></div>
-                    <div class="flex" style="font-size: 12px; margin-top: 4px;"><span>Payment:</span> <b>${order.paymentMethod || 'Cash'}</b></div>
-                    <div class="border-top"></div>
-                    <div class="text-center" style="font-size: 11px;">Thank you for choosing Fresh Chicken Hassan! 🍗</div>
-                    <div class="no-print">
-                        <button class="btn" onclick="window.print()">🖨️ Print Slip</button>
-                        <a class="btn-wa" href="https://api.whatsapp.com/send?text=${encodedText}" target="_blank">📲 Share Slip on WhatsApp</a>
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-        }
-
-        // Helper to reconstruct and open WhatsApp message for existing order
-        function resendOrderToWhatsApp(orderId) {
-            const list = window.ordersEngine ? window.ordersEngine.getAllOrders(true) : [];
-            const order = list.find(o => o.id === orderId);
-            if (!order) return;
-
-            let message = `Hello ${CONFIG.BUSINESS_NAME},\n\n`;
-            message += `Resending Order *${order.id}*\n\n`;
-            message += `📋 *CUSTOMER DETAILS*\n`;
-            message += `👤 Name: ${order.customer.name}\n`;
-            message += `📞 Phone: ${order.customer.phone}\n`;
-            message += `📍 Address: ${order.customer.fullAddress}\n`;
-            if (order.customer.notes) {
-                message += `📝 Notes: ${order.customer.notes}\n`;
-            }
-            message += `\n🛒 *ORDERED ITEMS*\n`;
-            order.items.forEach(item => {
-                message += `• ${item.name} - ${item.quantity} Kg (₹${item.pricePerKg * item.quantity})\n`;
-            });
-            message += `\n💰 *PAYMENT SUMMARY*\n`;
-            message += `Subtotal: ₹${order.subtotal}\n`;
-            message += `Delivery Fee: ${order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge}\n`;
-            message += `*Total Amount: ₹${order.grandTotal}*\n`;
-            message += `💳 *Payment Method: ${order.paymentMethod || 'Cash / UPI'}*\n`;
-            if (order.paymentMethod && order.paymentMethod.includes('UPI')) {
-                message += `📲 Store UPI ID: ${CONFIG.UPI_ID || '9148699386@ybl'}\n\n`;
-                message += `⚠️ *IMPORTANT: PLEASE SHARE PAYMENT SCREENSHOT (SS) IN THIS CHAT TO CONFIRM YOUR ONLINE PAYMENT ORDER!*\n`;
-            }
-            message += `\nPlease confirm my order!`;
-
-            const waNumber = CONFIG.WHATSAPP_NUMBER || '919148699386';
-            const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-            window.open(waUrl, '_blank');
-        }
-    </script>
+    <script src="js/firebase-db.js?v=1.0.5"></script>
+    <script src="js/products-data.js?v=1.0.5"></script>
+    <script src="js/cart.js?v=1.0.5"></script>
+    <script src="js/orders.js?v=1.0.5"></script>
+    <script src="js/profile.js?v=1.0.5"></script>
+    <script src="js/main.js?v=1.0.5"></script>
+    <script src="js/orders-page.js?v=1.0.5"></script>
 </body>
 </html>
