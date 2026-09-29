@@ -23,7 +23,7 @@
         }
     </script>
     <!-- Favicon & PWA Manifest -->
-    <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#133B2C">
     <!-- Custom CSS -->
@@ -32,17 +32,19 @@
 <body class="bg-[#F9FBF9] text-gray-800 antialiased flex flex-col min-h-screen">
 
     <!-- Sticky Header Navbar -->
-    <header id="main-header" class="fixed top-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2.5 group">
-                <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
-                <div>
-                    <span class="font-black text-xl tracking-tight text-[#133B2C] block leading-none">Fresh Chicken</span>
-                    <span class="text-[10px] text-gray-500 font-semibold tracking-wider uppercase">Farm Fresh Poultry</span>
+    <header id="main-header" class="fixed top-0 w-full z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
+            <!-- Brand Logo & Title (Responsive & Compact on Mobile) -->
+            <a href="index.html" class="flex items-center gap-2 sm:gap-2.5 group flex-shrink min-w-0">
+                <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="h-9 w-9 sm:h-11 sm:w-11 object-contain flex-shrink-0 group-hover:scale-105 transition-transform" />
+                <div class="min-w-0">
+                    <span class="font-black text-base sm:text-xl tracking-tight text-[#133B2C] block leading-tight whitespace-nowrap">Fresh Chicken</span>
+                    <span class="text-[9px] sm:text-[10px] text-gray-500 font-semibold tracking-wider uppercase hidden xs:block truncate">Farm Fresh Poultry</span>
                 </div>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8">
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8">
                 <a href="index.html" data-i18n="nav_home" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
                 <a href="products.html" data-i18n="nav_products" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Products</a>
                 <a href="orders.html" data-i18n="nav_orders" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">My Orders</a>
@@ -51,12 +53,12 @@
             </nav>
 
             <!-- Actions: Profile, Language Switcher, Cart & Mobile Toggle -->
-            <div class="flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
                 <!-- Customer Profile Header Slot (Desktop) -->
                 <div class="customer-profile-slot hidden sm:block"></div>
 
-                <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
-                <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
+                <!-- Desktop Language Switcher Pill (English / ಕನ್ನಡ) -->
+                <div class="hidden sm:flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
                     <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
                         EN
                     </button>
@@ -65,13 +67,21 @@
                     </button>
                 </div>
 
-                <a href="cart.html" class="relative p-2.5 text-gray-700 hover:text-[#133B2C] transition-colors rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100">
+                <!-- Mobile 1-Tap Language Toggle (Compact & zero-overlap) -->
+                <button type="button" onclick="window.toggleLanguage()" aria-label="Switch Language" class="sm:hidden flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-[#133B2C] px-2.5 py-1.5 rounded-xl border border-emerald-200 text-[11px] font-black transition-all">
+                    <span>🌐</span>
+                    <span class="lang-current-label font-bold">ಕನ್ನಡ</span>
+                </button>
+
+                <!-- Cart Icon Button with Badge -->
+                <a href="cart.html" aria-label="Shopping Cart" class="relative p-2 sm:p-2.5 text-gray-700 hover:text-[#133B2C] transition-colors rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 flex-shrink-0">
                     <span class="material-symbols-outlined text-2xl">shopping_cart</span>
-                    <span class="cart-badge absolute -top-1.5 -right-1.5 h-5 w-5 bg-[#E53935] text-white text-[11px] font-extrabold flex items-center justify-center rounded-full shadow-md border-2 border-white">0</span>
+                    <span class="cart-badge absolute -top-1 -right-1 h-5 w-5 bg-[#E53935] text-white text-[10px] sm:text-[11px] font-extrabold flex items-center justify-center rounded-full shadow-md border-2 border-white">0</span>
                 </a>
 
-                <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-700 hover:text-[#133B2C] rounded-xl focus:outline-none">
-                    <span class="material-symbols-outlined text-3xl">menu</span>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" aria-label="Open Navigation Menu" class="md:hidden p-1.5 sm:p-2 text-gray-700 hover:text-[#133B2C] rounded-xl focus:outline-none flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl sm:text-3xl">menu</span>
                 </button>
             </div>
         </div>
@@ -84,7 +94,7 @@
             <div>
                 <div class="flex items-center justify-between pb-6 border-b border-gray-100">
                     <div class="flex items-center gap-2">
-                        <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="h-10 w-auto object-contain" />
+                        <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="h-10 w-auto object-contain" />
                         <span class="font-black text-lg text-[#133B2C]">Fresh Chicken</span>
                     </div>
                     <button id="close-drawer-btn" class="p-2 text-gray-400 hover:text-gray-700">
@@ -288,51 +298,61 @@
                             </div>
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Select Payment Method</label>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <!-- Option 1: GPay / UPI Scanner -->
-                                    <label class="cursor-pointer border-2 border-[#133B2C] bg-emerald-50/50 rounded-2xl p-4 flex items-center gap-3 transition-all">
-                                        <input type="radio" name="payment-method" value="Google Pay / UPI Scanner" checked class="w-4 h-4 text-[#133B2C] focus:ring-[#133B2C]" onchange="togglePaymentMethodDisplay('upi')" />
+                                    <!-- Option 1: Cash on Delivery (Recommended & Default) -->
+                                    <label class="cursor-pointer border-2 border-[#133B2C] bg-emerald-50/50 rounded-2xl p-4 flex items-center gap-3 transition-all pay-option">
+                                        <input type="radio" name="payment-method" value="Cash / UPI on Delivery" checked class="w-4 h-4 text-[#133B2C] focus:ring-[#133B2C]" onchange="togglePaymentMethodDisplay('cod')" />
                                         <div>
-                                            <span class="font-bold text-sm text-[#133B2C] block">Google Pay / UPI Scanner</span>
-                                            <span class="text-[11px] text-gray-500 block">Scan QR Code or copy UPI ID</span>
+                                            <span class="font-bold text-sm text-[#133B2C] block flex items-center gap-1.5">
+                                                <span>Cash / UPI on Delivery</span>
+                                                <span class="bg-emerald-200 text-emerald-900 text-[10px] font-black px-2 py-0.5 rounded-full">Recommended</span>
+                                            </span>
+                                            <span class="text-[11px] text-gray-500 block">Pay cash or UPI upon doorstep delivery</span>
                                         </div>
                                     </label>
 
-                                    <!-- Option 2: Cash on Delivery -->
-                                    <label class="cursor-pointer border border-gray-200 bg-gray-50 rounded-2xl p-4 flex items-center gap-3 transition-all">
-                                        <input type="radio" name="payment-method" value="Cash / UPI on Delivery" class="w-4 h-4 text-[#133B2C] focus:ring-[#133B2C]" onchange="togglePaymentMethodDisplay('cod')" />
+                                    <!-- Option 2: Prepay via GPay / UPI -->
+                                    <label class="cursor-pointer border border-gray-200 bg-gray-50 rounded-2xl p-4 flex items-center gap-3 transition-all pay-option">
+                                        <input type="radio" name="payment-method" value="Google Pay / UPI Prepay" class="w-4 h-4 text-[#133B2C] focus:ring-[#133B2C]" onchange="togglePaymentMethodDisplay('upi')" />
                                         <div>
-                                            <span class="font-bold text-sm text-gray-900 block">Cash / UPI on Delivery</span>
-                                            <span class="text-[11px] text-gray-500 block">Pay cash or UPI upon doorstep delivery</span>
+                                            <span class="font-bold text-sm text-gray-900 block">Prepay via UPI / Google Pay</span>
+                                            <span class="text-[11px] text-gray-500 block">Pay now via GPay / PhonePe / QR</span>
                                         </div>
                                     </label>
                                 </div>
 
-                                <!-- UPI QR Scanner Card -->
-                                <div id="upi-scanner-container" class="mt-4 p-5 bg-gradient-to-br from-[#133B2C] to-[#0b251b] text-white rounded-2xl border border-emerald-700 shadow-md space-y-4">
+                                <!-- UPI QR & Intent Container (Hidden by default when COD is selected) -->
+                                <div id="upi-scanner-container" class="hidden mt-4 p-5 bg-gradient-to-br from-[#133B2C] to-[#0b251b] text-white rounded-2xl border border-emerald-700 shadow-md space-y-4">
                                     <div class="flex flex-col sm:flex-row items-center gap-5">
                                         <div class="bg-white p-3 rounded-2xl shadow-lg flex-shrink-0 text-center">
                                             <div class="w-32 h-32 flex flex-col items-center justify-center border-2 border-dashed border-emerald-600 rounded-xl bg-white p-1">
-                                                <img id="upi-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9148699386@ybl%26pn=FreshChicken%26cu=INR" alt="Google Pay QR Scanner" class="w-full h-full object-contain" />
+                                                <img id="upi-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9148699386-2@ybl%26pn=FreshChicken%26cu=INR" alt="Google Pay QR Scanner" class="w-full h-full object-contain" />
                                             </div>
                                             <span class="text-[10px] font-black text-gray-800 uppercase tracking-widest block mt-1">GPay / PhonePe QR</span>
                                         </div>
                                         <div class="space-y-2 text-center sm:text-left flex-grow">
                                             <span class="px-2.5 py-0.5 bg-emerald-400/20 text-emerald-300 rounded-full text-[10px] font-bold border border-emerald-400/30">Instant UPI Payment</span>
-                                            <h4 class="font-black text-base text-white">Scan & Pay via Google Pay / Any UPI App</h4>
-                                            <p class="text-xs text-emerald-100 leading-relaxed">Scan QR code using GPay, PhonePe, or Paytm, or copy the store UPI ID below.</p>
-                                            <div class="flex items-center gap-2 pt-1 justify-center sm:justify-start">
-                                                <span class="font-bold text-xs bg-white/10 text-emerald-200 px-3 py-1.5 rounded-xl border border-white/20 select-all" id="upi-id-text">9148699386@ybl</span>
-                                                <button type="button" onclick="copyUpiId()" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 px-3 py-1.5 rounded-xl font-extrabold text-xs transition-colors flex items-center gap-1 shadow-sm">
-                                                    <span class="material-symbols-outlined text-sm">content_copy</span>
-                                                    <span>Copy UPI</span>
-                                                </button>
+                                            <h4 class="font-black text-base text-white">Pay via Google Pay / Any UPI App</h4>
+                                            <p class="text-xs text-emerald-100 leading-relaxed">Tap button below on mobile, or scan QR code on desktop.</p>
+                                            
+                                            <!-- Direct Mobile UPI Intent Button -->
+                                            <div class="pt-1 flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+                                                <a id="mobile-upi-btn" href="upi://pay?pa=9148699386-2@ybl&pn=FreshChickenHassan&cu=INR" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black px-4 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-sm">
+                                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                                    <span>Open GPay / PhonePe App</span>
+                                                </a>
+                                                <div class="flex items-center gap-1">
+                                                    <span class="font-bold text-xs bg-white/10 text-emerald-200 px-2.5 py-1.5 rounded-xl border border-white/20 select-all" id="upi-id-text">9148699386-2@ybl</span>
+                                                    <button type="button" onclick="copyUpiId()" class="bg-white/20 hover:bg-white/30 text-white px-2.5 py-1.5 rounded-xl font-bold text-xs transition-colors flex items-center gap-1">
+                                                        <span class="material-symbols-outlined text-xs">content_copy</span>
+                                                        <span>Copy</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Bold Screenshot Requirement Alert -->
-                                    <div class="mt-3 p-3 bg-amber-400 text-amber-950 rounded-xl text-xs font-black text-center shadow-md flex items-center justify-center gap-2 border border-amber-500">
-                                        <span class="material-symbols-outlined text-lg">photo_camera</span>
-                                        <span>⚠️ IMPORTANT: PLEASE ATTACH & SHARE YOUR PAYMENT SCREENSHOT (SS) ON WHATSAPP FOR ORDER CONFIRMATION!</span>
+                                    <div class="mt-3 p-3 bg-white/10 rounded-xl text-xs text-emerald-100 text-center flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-base text-emerald-400">info</span>
+                                        <span>If prepaying before delivery, you can easily share your payment confirmation in the WhatsApp chat.</span>
                                     </div>
                                 </div>
                             </div>
@@ -402,7 +422,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
-                        <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="h-10 w-auto object-contain bg-white rounded-lg p-0.5" />
+                        <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="h-10 w-auto object-contain bg-white rounded-lg p-0.5" />
                         <span class="font-black text-2xl text-white">Fresh Chicken</span>
                     </div>
                     <p class="text-gray-400 text-sm leading-relaxed">

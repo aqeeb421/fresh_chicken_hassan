@@ -23,7 +23,7 @@
         }
     </script>
     <!-- Favicon & PWA Manifest -->
-    <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#133B2C">
     <!-- Custom CSS -->
@@ -32,17 +32,19 @@
 <body class="bg-[#F9FBF9] text-gray-800 antialiased flex flex-col min-h-screen">
 
     <!-- Sticky Header Navbar -->
-    <header id="main-header" class="fixed top-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2.5 group">
-                <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
-                <div>
-                    <span class="font-black text-xl tracking-tight text-[#133B2C] block leading-none">Fresh Chicken</span>
-                    <span class="text-[10px] text-gray-500 font-semibold tracking-wider uppercase">Farm Fresh Poultry</span>
+    <header id="main-header" class="fixed top-0 w-full z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
+            <!-- Brand Logo & Title (Responsive & Compact on Mobile) -->
+            <a href="index.html" class="flex items-center gap-2 sm:gap-2.5 group flex-shrink min-w-0">
+                <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="h-9 w-9 sm:h-11 sm:w-11 object-contain flex-shrink-0 group-hover:scale-105 transition-transform" />
+                <div class="min-w-0">
+                    <span class="font-black text-base sm:text-xl tracking-tight text-[#133B2C] block leading-tight whitespace-nowrap">Fresh Chicken</span>
+                    <span class="text-[9px] sm:text-[10px] text-gray-500 font-semibold tracking-wider uppercase hidden xs:block truncate">Farm Fresh Poultry</span>
                 </div>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8">
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8">
                 <a href="index.html" data-i18n="nav_home" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Home</a>
                 <a href="products.html" data-i18n="nav_products" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">Products</a>
                 <a href="orders.html" data-i18n="nav_orders" class="nav-link font-semibold text-sm text-gray-600 hover:text-[#133B2C] transition-colors">My Orders</a>
@@ -51,12 +53,12 @@
             </nav>
 
             <!-- Actions: Profile, Language Switcher, Cart & Mobile Toggle -->
-            <div class="flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
                 <!-- Customer Profile Header Slot (Desktop) -->
                 <div class="customer-profile-slot hidden sm:block"></div>
 
-                <!-- Top Language Switcher Pill (English / ಕನ್ನಡ) -->
-                <div class="flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
+                <!-- Desktop Language Switcher Pill (English / ಕನ್ನಡ) -->
+                <div class="hidden sm:flex items-center bg-gray-100/90 p-1 rounded-2xl border border-gray-200 text-xs font-bold shadow-inner">
                     <button type="button" onclick="window.setLanguage('en')" class="lang-btn-en px-2.5 py-1 rounded-xl transition-all">
                         EN
                     </button>
@@ -65,13 +67,21 @@
                     </button>
                 </div>
 
-                <a href="cart.html" class="relative p-2.5 text-gray-700 hover:text-[#133B2C] transition-colors rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100">
+                <!-- Mobile 1-Tap Language Toggle (Compact & zero-overlap) -->
+                <button type="button" onclick="window.toggleLanguage()" aria-label="Switch Language" class="sm:hidden flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-[#133B2C] px-2.5 py-1.5 rounded-xl border border-emerald-200 text-[11px] font-black transition-all">
+                    <span>🌐</span>
+                    <span class="lang-current-label font-bold">ಕನ್ನಡ</span>
+                </button>
+
+                <!-- Cart Icon Button with Badge -->
+                <a href="cart.html" aria-label="Shopping Cart" class="relative p-2 sm:p-2.5 text-gray-700 hover:text-[#133B2C] transition-colors rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 flex-shrink-0">
                     <span class="material-symbols-outlined text-2xl">shopping_cart</span>
-                    <span class="cart-badge absolute -top-1.5 -right-1.5 h-5 w-5 bg-[#E53935] text-white text-[11px] font-extrabold flex items-center justify-center rounded-full shadow-md border-2 border-white">0</span>
+                    <span class="cart-badge absolute -top-1 -right-1 h-5 w-5 bg-[#E53935] text-white text-[10px] sm:text-[11px] font-extrabold flex items-center justify-center rounded-full shadow-md border-2 border-white">0</span>
                 </a>
 
-                <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-700 hover:text-[#133B2C] rounded-xl focus:outline-none">
-                    <span class="material-symbols-outlined text-3xl">menu</span>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" aria-label="Open Navigation Menu" class="md:hidden p-1.5 sm:p-2 text-gray-700 hover:text-[#133B2C] rounded-xl focus:outline-none flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl sm:text-3xl">menu</span>
                 </button>
             </div>
         </div>
@@ -84,7 +94,7 @@
             <div>
                 <div class="flex items-center justify-between pb-6 border-b border-gray-100">
                     <div class="flex items-center gap-2">
-                        <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="h-10 w-auto object-contain" />
+                        <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="h-10 w-auto object-contain" />
                         <span class="font-black text-lg text-[#133B2C]">Fresh Chicken</span>
                     </div>
                     <button id="close-drawer-btn" class="p-2 text-gray-400 hover:text-gray-700">
@@ -199,6 +209,9 @@
                             </div>
                         </div>
 
+                        <!-- Minimum Order Weight Status (1.0 Kg Rule) -->
+                        <div id="cart-weight-status-box"></div>
+
                         <a href="checkout.html" id="proceed-checkout-btn" class="w-full bg-[#E53935] hover:bg-[#c62828] text-white py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300">
                             <span>Proceed to Checkout</span>
                             <span class="material-symbols-outlined">arrow_forward</span>
@@ -223,7 +236,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
-                        <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="h-10 w-auto object-contain bg-white rounded-lg p-0.5" />
+                        <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="h-10 w-auto object-contain bg-white rounded-lg p-0.5" />
                         <span class="font-black text-2xl text-white">Fresh Chicken</span>
                     </div>
                     <p class="text-gray-400 text-sm leading-relaxed">
@@ -321,6 +334,7 @@
             const deliveryEl = document.getElementById('cart-delivery');
             const grandTotalEl = document.getElementById('cart-grand-total');
             const checkoutBtn = document.getElementById('proceed-checkout-btn');
+            const weightBoxEl = document.getElementById('cart-weight-status-box');
             const freeDeliveryText = document.getElementById('free-delivery-text');
             const progressPercentEl = document.getElementById('cart-progress-percent');
             const progressFillEl = document.getElementById('cart-progress-fill');
@@ -330,9 +344,12 @@
             const isKn = (typeof currentLanguage !== 'undefined' && currentLanguage === 'kn') || (localStorage.getItem('fresh_chicken_lang') === 'kn');
             const items = window.cart.items;
             const subtotal = window.cart.getSubtotal();
+            const totalWeight = window.cart.getTotalWeight();
+            const minWeight = window.cart.minOrderWeight || 1.0;
+            const isWeightMet = totalWeight >= minWeight;
             const delivery = window.cart.getDeliveryCharge();
             const grandTotal = window.cart.getGrandTotal();
-            const freeLimit = CONFIG.FREE_DELIVERY_LIMIT || 500;
+            const freeLimit = window.CONFIG?.FREE_DELIVERY_LIMIT || 999;
             const percentage = Math.min(100, Math.round((subtotal / freeLimit) * 100));
 
             if (progressPercentEl) progressPercentEl.textContent = `${percentage}%`;
@@ -355,6 +372,7 @@
                 if (subtotalEl) subtotalEl.textContent = '₹0';
                 if (deliveryEl) deliveryEl.textContent = '₹0';
                 if (grandTotalEl) grandTotalEl.textContent = '₹0';
+                if (weightBoxEl) weightBoxEl.innerHTML = '';
                 if (checkoutBtn) {
                     checkoutBtn.classList.add('opacity-50', 'pointer-events-none');
                 }
@@ -370,8 +388,51 @@
                 return;
             }
 
+            // Weight Status Box (1.0 Kg Rule)
+            if (weightBoxEl) {
+                if (!isWeightMet) {
+                    const needed = (minWeight - totalWeight).toFixed(1);
+                    weightBoxEl.innerHTML = `
+                        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 mb-3 text-xs text-amber-900 flex items-start gap-2.5 shadow-sm">
+                            <span class="material-symbols-outlined text-amber-600 text-xl flex-shrink-0 mt-0.5">scale</span>
+                            <div>
+                                <div class="font-extrabold text-sm text-amber-900 mb-0.5">${isKn ? 'ಕನಿಷ್ಠ ಡೆಲಿವರಿ ತೂಕ: 1.0 ಕೆ.ಜಿ' : 'Minimum Delivery Order: 1.0 Kg'}</div>
+                                <p class="text-amber-800 leading-snug">
+                                    ${isKn ? `ಕಾರ್ಟ್‌ನಲ್ಲಿ ಈಗ <strong>${totalWeight} ಕೆ.ಜಿ</strong> ಇದೆ. ಡೆಲಿವರಿ ಮುಂದುವರಿಸಲು ಇನ್ನೂ ಕನಿಷ್ಠ <strong>${needed} ಕೆ.ಜಿ (500g)</strong> ಸೇರಿಸಿ.` : `Your cart currently has <strong>${totalWeight} Kg</strong>. Please add at least <strong>${needed} Kg (500g)</strong> more to proceed.`}
+                                </p>
+                                <a href="products.html" class="inline-block mt-2 font-bold text-emerald-800 hover:text-emerald-950 underline">+ ${isKn ? 'ಹೆಚ್ಚು ಐಟಂಗಳನ್ನು ಸೇರಿಸಿ' : 'Add more chicken cuts'}</a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    weightBoxEl.innerHTML = `
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 mb-3 text-xs text-emerald-900 flex items-center justify-between shadow-sm">
+                            <span class="flex items-center gap-1.5 font-bold">
+                                <span class="material-symbols-outlined text-emerald-600 text-lg">check_circle</span>
+                                <span>${isKn ? 'ಕನಿಷ್ಠ ಡೆಲಿವರಿ ತೂಕ ತೃಪ್ತಿಕರವಾಗಿದೆ' : 'Minimum Delivery Weight Met'}</span>
+                            </span>
+                            <span class="font-extrabold bg-white px-2.5 py-1 rounded-xl border border-emerald-200 text-[#133B2C] shadow-xs">${totalWeight} Kg</span>
+                        </div>
+                    `;
+                }
+            }
+
             if (checkoutBtn) {
-                checkoutBtn.classList.remove('opacity-50', 'pointer-events-none');
+                if (!isWeightMet) {
+                    checkoutBtn.classList.add('opacity-50', 'pointer-events-none');
+                    checkoutBtn.classList.remove('bg-[#E53935]', 'hover:bg-[#c62828]');
+                    checkoutBtn.classList.add('bg-gray-400');
+                    checkoutBtn.innerHTML = `
+                        <span>${isKn ? `ಕನಿಷ್ಠ 1 ಕೆ.ಜಿ ಅಗತ್ಯವಿದೆ (${totalWeight} ಕೆ.ಜಿ)` : `Min 1 Kg Required (${totalWeight} Kg in cart)`}</span>
+                    `;
+                } else {
+                    checkoutBtn.classList.remove('opacity-50', 'pointer-events-none', 'bg-gray-400');
+                    checkoutBtn.classList.add('bg-[#E53935]', 'hover:bg-[#c62828]');
+                    checkoutBtn.innerHTML = `
+                        <span>${isKn ? `ಆರ್ಡರ್ ಮುಂದುವರಿಸಿ (${totalWeight} ಕೆ.ಜಿ)` : `Proceed to Checkout (${totalWeight} Kg)`}</span>
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    `;
+                }
             }
 
             wrapper.innerHTML = items.map(item => {

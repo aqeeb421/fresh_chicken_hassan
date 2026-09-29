@@ -33,8 +33,8 @@ const server = http.createServer((req, res) => {
 
     let filePath = path.join(ROOT, decodeURIComponent(reqUrl));
 
-    // Security check: prevent directory traversal
-    if (!filePath.startsWith(ROOT)) {
+    // Security check: prevent directory traversal (case-insensitive for Windows)
+    if (!filePath.toLowerCase().startsWith(ROOT.toLowerCase())) {
         res.writeHead(403, { 'Content-Type': 'text/plain' });
         res.end('403 Forbidden');
         return;
@@ -79,6 +79,7 @@ const server = http.createServer((req, res) => {
 
         res.writeHead(200, {
             'Content-Type': contentType,
+            'Content-Length': data.length,
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Access-Control-Allow-Origin': '*'
         });

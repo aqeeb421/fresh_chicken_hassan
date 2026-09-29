@@ -22,7 +22,7 @@
         }
     </script>
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/images/logo.png?v=1.0.2">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -33,7 +33,7 @@
         <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-100 space-y-6">
             <div class="text-center">
                 <div class="w-24 h-24 mx-auto mb-3 flex items-center justify-center">
-                    <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="w-full h-full object-contain filter drop-shadow-md" />
+                    <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="w-full h-full object-contain filter drop-shadow-md" />
                 </div>
                 <h2 class="text-2xl font-black text-[#133B2C]">Store Admin Login</h2>
                 <p class="text-gray-500 text-xs mt-1">Authorized store manager access only</p>
@@ -67,41 +67,60 @@
 
     <!-- MAIN ADMIN DASHBOARD CONTENT -->
     <div id="admin-dashboard" class="hidden flex-grow flex flex-col">
-        <!-- Admin Header -->
-        <header class="bg-[#133B2C] text-white border-b border-white/10 sticky top-0 z-40 shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <img src="assets/images/logo.png?v=1.0.2" alt="Fresh Chicken Hassan Logo" class="h-12 w-auto object-contain bg-white rounded-xl p-1 shadow-sm" />
-                    <div>
-                        <h1 class="font-black text-xl text-white leading-none">Fresh Chicken Admin</h1>
-                        <span id="db-status-badge" class="text-xs text-emerald-300 font-medium">⚡ Cloud DB: Connected (my-work-c68d9.firebaseio.com)</span>
+        <!-- Admin Header (Responsive Glassmorphism App Bar) -->
+        <header class="bg-gradient-to-r from-[#092218]/95 via-[#133B2C]/95 to-[#0b241b]/95 backdrop-blur-md text-white border-b border-white/10 sticky top-0 z-40 shadow-xl">
+            <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-4">
+                <!-- Brand Info -->
+                <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                    <div class="relative flex-shrink-0">
+                        <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="h-10 w-10 sm:h-12 sm:w-12 object-contain bg-white rounded-2xl p-1 shadow-md border border-white/20" />
+                        <span id="header-pulse-indicator" class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-[#133B2C] rounded-full animate-pulse"></span>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-black text-base sm:text-xl text-white tracking-tight truncate leading-tight">Fresh Chicken <span class="text-emerald-400">Admin</span></h1>
+                        </div>
+                        <div class="flex items-center gap-1.5 sm:gap-2 mt-0.5 flex-wrap">
+                            <span id="network-status-badge" class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                <span id="network-pulse-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span id="network-status-text">Online</span>
+                            </span>
+                            <span id="db-status-badge" class="text-[10px] sm:text-xs text-emerald-300/80 font-medium hidden md:inline truncate max-w-[200px]">⚡ Cloud DB: Connected</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-                    <!-- Sound Toggle Button -->
-                    <button id="admin-audio-toggle" onclick="toggleAdminAudio()" class="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors" title="Toggle Sound Chime">
-                        <span class="material-symbols-outlined text-sm" id="audio-icon">volume_up</span>
-                        <span id="audio-status-text">Sound: ON</span>
+                <!-- App Bar Action Controls -->
+                <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+                    <!-- Audio Chime Toggle -->
+                    <button id="admin-audio-toggle" onclick="toggleAdminAudio()" class="h-9 sm:h-10 px-2.5 sm:px-3.5 bg-white/10 hover:bg-white/20 active:scale-95 text-white rounded-xl sm:rounded-2xl text-xs font-bold border border-white/15 flex items-center gap-1.5 transition-all shadow-sm" title="Toggle Order Sound Chime">
+                        <span class="material-symbols-outlined text-base sm:text-lg" id="audio-icon">volume_up</span>
+                        <span id="audio-status-text" class="hidden sm:inline">Sound: ON</span>
                     </button>
 
-                    <!-- Desktop Notification Permission Toggle -->
-                    <button id="admin-notif-toggle" onclick="requestNotificationPermission()" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 px-3 py-2 rounded-xl text-xs font-bold border border-amber-400/40 transition-colors flex items-center gap-1.5" title="Enable Desktop Push Notifications">
-                        <span class="material-symbols-outlined text-sm">notifications</span>
-                        <span id="notif-status-text">Enable Alerts</span>
+                    <!-- Notification Alerts Permission Toggle -->
+                    <button id="admin-notif-toggle" onclick="requestNotificationPermission()" class="h-9 sm:h-10 px-2.5 sm:px-3.5 bg-amber-500/20 hover:bg-amber-500/30 active:scale-95 text-amber-200 rounded-xl sm:rounded-2xl text-xs font-bold border border-amber-400/40 transition-all flex items-center gap-1.5 shadow-sm" title="Enable Push Notification Alerts">
+                        <span class="material-symbols-outlined text-base sm:text-lg">notifications</span>
+                        <span id="notif-status-text" class="hidden sm:inline">Enable Alerts</span>
                     </button>
 
-                    <a href="index.html" target="_blank" class="bg-white/10 hover:bg-white/20 text-white px-3.5 py-2 rounded-xl text-xs font-bold border border-white/20 flex items-center gap-1.5 transition-colors">
-                        <span class="material-symbols-outlined text-sm">store</span>
-                        <span class="hidden sm:inline">View Store</span>
+                    <!-- View Storefront -->
+                    <a href="index.html" target="_blank" class="h-9 sm:h-10 px-2.5 sm:px-3.5 bg-white/10 hover:bg-white/20 active:scale-95 text-white rounded-xl sm:rounded-2xl text-xs font-bold border border-white/15 flex items-center gap-1.5 transition-all shadow-sm" title="Open Customer Store">
+                        <span class="material-symbols-outlined text-base sm:text-lg">storefront</span>
+                        <span class="hidden md:inline">View Store</span>
                     </a>
-                    <button onclick="handleAdminLogout()" class="bg-red-500/20 hover:bg-red-500/30 text-white px-3.5 py-2 rounded-xl text-xs font-bold border border-red-400/30 transition-colors flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">logout</span>
-                        <span>Logout</span>
+
+                    <!-- Logout Button -->
+                    <button onclick="handleAdminLogout()" class="h-9 sm:h-10 px-2.5 sm:px-3.5 bg-red-500/20 hover:bg-red-500/30 active:scale-95 text-red-200 hover:text-white rounded-xl sm:rounded-2xl text-xs font-bold border border-red-400/30 transition-all flex items-center gap-1 shadow-sm" title="Logout from Admin">
+                        <span class="material-symbols-outlined text-base sm:text-lg">logout</span>
+                        <span class="hidden sm:inline">Logout</span>
                     </button>
                 </div>
             </div>
         </header>
+
+        <!-- REAL-TIME NETWORK & OFFLINE ALERT BANNER -->
+        <div id="admin-network-banner" class="hidden transition-all duration-300"></div>
 
         <!-- FLOATING NEW ORDER TOAST CONTAINER -->
         <div id="admin-order-alerts-container" class="fixed top-24 right-4 z-50 flex flex-col gap-3 max-w-sm pointer-events-none">
@@ -109,137 +128,196 @@
         </div>
 
         <!-- Main Admin Body -->
-        <main class="flex-grow py-8">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <main class="flex-grow py-5 sm:py-8">
+            <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
                 
-                <!-- Navigation Tabs -->
-                <div class="flex border-b border-gray-200 mb-8 bg-white p-2 rounded-2xl border shadow-sm gap-2">
-                    <button id="tab-prices-btn" onclick="switchTab('prices')" class="admin-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-[#133B2C] text-white shadow-sm">
-                        <span class="material-symbols-outlined">payments</span>
+                <!-- Secondary Section: Navigation Tabs Bar (Horizontal Smooth Pill Scroller) -->
+                <div class="bg-white/90 backdrop-blur-md p-1.5 sm:p-2 rounded-2xl border border-gray-200/80 shadow-md mb-6 sm:mb-8 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth">
+                    <button id="tab-prices-btn" onclick="switchTab('prices')" class="admin-tab-btn flex-shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-[#133B2C] to-[#1c5540] text-white shadow-md shadow-[#133B2C]/20 whitespace-nowrap">
+                        <span class="material-symbols-outlined text-base sm:text-lg">payments</span>
                         <span>Daily Price Manager</span>
                     </button>
 
-                    <button id="tab-revenue-btn" onclick="switchTab('revenue')" class="admin-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-gray-50 text-gray-600 hover:bg-gray-100">
-                        <span class="material-symbols-outlined">analytics</span>
+                    <button id="tab-revenue-btn" onclick="switchTab('revenue')" class="admin-tab-btn flex-shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-transparent text-gray-600 hover:bg-gray-100 whitespace-nowrap">
+                        <span class="material-symbols-outlined text-base sm:text-lg">analytics</span>
                         <span>Day-wise Revenue</span>
                     </button>
 
-                    <button id="tab-orders-btn" onclick="switchTab('orders')" class="admin-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-gray-50 text-gray-600 hover:bg-gray-100">
-                        <span class="material-symbols-outlined">receipt_long</span>
+                    <button id="tab-orders-btn" onclick="switchTab('orders')" class="admin-tab-btn flex-shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-transparent text-gray-600 hover:bg-gray-100 whitespace-nowrap">
+                        <span class="material-symbols-outlined text-base sm:text-lg">receipt_long</span>
                         <span>Order History</span>
                     </button>
 
-                    <button id="tab-banners-btn" onclick="switchTab('banners')" class="admin-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-gray-50 text-gray-600 hover:bg-gray-100">
-                        <span class="material-symbols-outlined">campaign</span>
+                    <button id="tab-banners-btn" onclick="switchTab('banners')" class="admin-tab-btn flex-shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-transparent text-gray-600 hover:bg-gray-100 whitespace-nowrap">
+                        <span class="material-symbols-outlined text-base sm:text-lg">campaign</span>
                         <span>Ads & Offers Banners</span>
                     </button>
                 </div>
 
                 <!-- TAB 1: DAILY PRICE MANAGER -->
-                <div id="tab-prices" class="admin-tab-content space-y-8">
+                <div id="tab-prices" class="admin-tab-content space-y-6 sm:space-y-8">
                     
-                    <!-- BASE RATE MASTER SECTION -->
-                    <div class="bg-gradient-to-br from-[#133B2C] to-[#0b251b] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-                        <div class="relative z-10 max-w-3xl space-y-4">
-                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-400/20 text-emerald-300 rounded-full text-xs font-bold border border-emerald-400/30">
-                                <span class="material-symbols-outlined text-sm">tune</span>
-                                <span>Poultry Rate Master</span>
+                    <!-- POULTRY RATE MASTER CONTROL CENTER -->
+                    <div class="bg-gradient-to-br from-[#0c271d] via-[#133B2C] to-[#071912] text-white rounded-3xl p-5 sm:p-8 shadow-2xl relative overflow-hidden border border-emerald-500/20">
+                        <div class="absolute -right-12 -top-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="relative z-10 space-y-4 sm:space-y-5">
+                            <div class="flex items-center justify-between flex-wrap gap-2">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-400/20 text-emerald-300 rounded-full text-xs font-bold border border-emerald-400/30">
+                                    <span class="material-symbols-outlined text-sm">tune</span>
+                                    <span>Poultry Rate Master</span>
+                                </div>
+                                <span class="text-xs text-emerald-200/80 font-medium">Hassan Daily Mandi Price Controller</span>
                             </div>
 
-                            <h2 class="text-2xl sm:text-3xl font-black text-white leading-tight">
-                                Base Rate Control: Whole Chicken (With Skin)
-                            </h2>
+                            <div class="max-w-3xl space-y-2">
+                                <h2 class="text-xl sm:text-3xl font-black text-white leading-tight">
+                                    Daily Base Rate: Whole Chicken (With Skin)
+                                </h2>
+                                <p class="text-emerald-100/90 text-xs sm:text-sm leading-relaxed">
+                                    Set today's base rate for Whole Chicken (With Skin). Clicking <strong class="text-white underline decoration-emerald-400">Apply Base Rate to All Cuts</strong> auto-calculates: Skinless (+₹20), Wings/Legs/Lollipop (+₹60), Boneless/Breast (+₹80), Keema (+₹100), Liver (Base ÷ 2), and City Market COT at +₹20 for all cuts.
+                                </p>
+                            </div>
 
-                            <p class="text-emerald-100 text-xs sm:text-sm leading-relaxed">
-                                Enter today's base price per Kg for **Whole Chicken (With Skin)**. Clicking <strong class="text-white">Apply Base Rate to All Cuts</strong> will automatically adjust the prices of all other cuts (Curry Cut, Skinless, Boneless, Drumsticks, Wings, Keema) based on standard category price offsets.
-                            </p>
+                            <!-- Base Rate Input & Quick Controls -->
+                            <div class="pt-2 space-y-3">
+                                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                    <!-- Stepper + Input -->
+                                    <div class="relative flex items-center bg-white rounded-2xl p-1 shadow-lg border-2 border-emerald-400/50 sm:w-72">
+                                        <button type="button" onclick="stepBaseRate(-5)" class="w-11 h-11 flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:scale-95 text-[#133B2C] font-black rounded-xl text-lg transition-all" title="Decrease by ₹5">-5</button>
+                                        <div class="flex-grow flex items-center justify-center px-2">
+                                            <span class="font-black text-xl text-[#133B2C] mr-1">₹</span>
+                                            <input type="number" id="base-rate-input" value="220" min="10" max="2000" step="5" class="w-24 text-center py-1 bg-transparent text-gray-900 font-black text-2xl focus:outline-none" />
+                                            <span class="text-xs font-bold text-gray-400 ml-1">/Kg</span>
+                                        </div>
+                                        <button type="button" onclick="stepBaseRate(5)" class="w-11 h-11 flex items-center justify-center bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-[#133B2C] font-black rounded-xl text-lg transition-all" title="Increase by ₹5">+5</button>
+                                    </div>
 
-                            <div class="flex flex-col sm:flex-row items-center gap-4 pt-2">
-                                <div class="relative w-full sm:w-64">
-                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-xl text-[#133B2C]">₹</span>
-                                    <input type="number" id="base-rate-input" value="220" min="10" max="2000" step="5" class="w-full pl-10 pr-4 py-3.5 bg-white text-gray-900 font-black text-xl rounded-2xl focus:outline-none focus:ring-4 focus:ring-emerald-400 shadow-md" />
+                                    <!-- Primary Action Button -->
+                                    <button onclick="applyBaseRateToAll()" class="bg-gradient-to-r from-[#E53935] to-[#c62828] hover:from-[#c62828] hover:to-[#b71c1c] active:scale-98 text-white px-6 py-3.5 sm:py-4 rounded-2xl font-black text-sm shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2 border border-red-400/30">
+                                        <span class="material-symbols-outlined text-xl">auto_fix_high</span>
+                                        <span>Apply Base Rate to All Cuts</span>
+                                    </button>
                                 </div>
 
-                                <button onclick="applyBaseRateToAll()" class="w-full sm:w-auto bg-[#E53935] hover:bg-[#c62828] text-white px-6 py-4 rounded-2xl font-black text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
-                                    <span class="material-symbols-outlined">auto_fix_high</span>
-                                    <span>Apply Base Rate to All Cuts</span>
-                                </button>
+                                <!-- Quick Preset Chips for mobile instant 1-tap setting -->
+                                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
+                                    <span class="text-[11px] font-bold text-emerald-300 uppercase tracking-wider flex-shrink-0">Quick Rates:</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <button type="button" onclick="setBaseRatePreset(200)" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 active:scale-95 text-white rounded-lg text-xs font-bold border border-white/15">₹200</button>
+                                        <button type="button" onclick="setBaseRatePreset(210)" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 active:scale-95 text-white rounded-lg text-xs font-bold border border-white/15">₹210</button>
+                                        <button type="button" onclick="setBaseRatePreset(220)" class="px-2.5 py-1 bg-emerald-400 text-[#0c271d] font-black rounded-lg text-xs shadow-sm">₹220</button>
+                                        <button type="button" onclick="setBaseRatePreset(230)" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 active:scale-95 text-white rounded-lg text-xs font-bold border border-white/15">₹230</button>
+                                        <button type="button" onclick="setBaseRatePreset(240)" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 active:scale-95 text-white rounded-lg text-xs font-bold border border-white/15">₹240</button>
+                                        <button type="button" onclick="setBaseRatePreset(250)" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 active:scale-95 text-white rounded-lg text-xs font-bold border border-white/15">₹250</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Individual Price Cards Header -->
-                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                         <div>
-                            <h3 class="text-xl font-bold text-[#133B2C]">Individual Cut Prices</h3>
-                            <p class="text-gray-500 text-xs mt-0.5">You can also manually fine-tune prices for individual cuts below if needed.</p>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg sm:text-xl font-bold text-[#133B2C]">Individual Cut Prices</h3>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">10 Cuts Active</span>
+                            </div>
+                            <p class="text-gray-500 text-xs mt-0.5">Use the +/- buttons or enter custom rates to fine-tune individual cuts.</p>
                         </div>
 
-                        <div class="flex items-center gap-3">
-                            <button onclick="saveTodayPrices()" class="bg-[#133B2C] hover:bg-[#0b251b] text-white px-5 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 shadow-md transition-all">
-                                <span class="material-symbols-outlined text-base">save</span>
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                            <button onclick="saveTodayPrices()" class="flex-1 sm:flex-none bg-[#133B2C] hover:bg-[#0b251b] active:scale-95 text-white px-5 py-3 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all">
+                                <span class="material-symbols-outlined text-base sm:text-lg">save</span>
                                 <span>Save All Prices</span>
                             </button>
-                            <button onclick="resetDefaultPrices()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-2xl font-semibold text-xs transition-colors">
+                            <button onclick="resetDefaultPrices()" class="bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-700 px-3.5 py-3 rounded-2xl font-semibold text-xs sm:text-sm transition-colors">
                                 Reset Defaults
                             </button>
                         </div>
                     </div>
 
                     <!-- Products Price Cards Grid -->
-                    <div id="price-manager-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Populated dynamically by JS -->
+                    <div id="price-manager-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                        <!-- Populated dynamically by renderPriceManager() -->
                     </div>
                 </div>
 
                 <!-- TAB 2: REVENUE & ANALYTICS -->
-                <div id="tab-revenue" class="admin-tab-content hidden space-y-8">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Today's Revenue</span>
-                            <div class="text-3xl font-black text-[#133B2C] mt-2" id="metric-today-rev">₹0</div>
-                            <p class="text-xs text-gray-500 mt-1" id="metric-today-count">0 orders today</p>
+                <div id="tab-revenue" class="admin-tab-content hidden space-y-6 sm:space-y-8">
+                    <!-- Modern KPI Stat Cards (2x2 on Mobile, 4-col on Desktop) -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                        <!-- Today's Revenue -->
+                        <div class="bg-gradient-to-br from-emerald-500/10 via-white to-white rounded-3xl p-4 sm:p-6 border border-emerald-200/80 shadow-sm relative overflow-hidden">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] sm:text-xs font-bold text-emerald-800 uppercase tracking-wider">Today's Revenue</span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Live Today"></span>
+                            </div>
+                            <div class="text-2xl sm:text-3xl font-black text-[#133B2C] mt-2 tracking-tight" id="metric-today-rev">₹0</div>
+                            <p class="text-[11px] sm:text-xs text-gray-500 mt-1 font-medium flex items-center gap-1" id="metric-today-count">
+                                <span class="material-symbols-outlined text-xs text-emerald-600">receipt</span> 0 orders today
+                            </p>
                         </div>
 
-                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Lifetime Revenue</span>
-                            <div class="text-3xl font-black text-emerald-600 mt-2" id="metric-total-rev">₹0</div>
-                            <p class="text-xs text-gray-500 mt-1" id="metric-total-count">0 total orders</p>
+                        <!-- Lifetime Revenue -->
+                        <div class="bg-gradient-to-br from-gray-50 via-white to-white rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm relative overflow-hidden">
+                            <span class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Lifetime Gross</span>
+                            <div class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2 tracking-tight" id="metric-total-rev">₹0</div>
+                            <p class="text-[11px] sm:text-xs text-gray-500 mt-1 font-medium flex items-center gap-1" id="metric-total-count">
+                                <span class="material-symbols-outlined text-xs text-gray-400">all_inclusive</span> 0 total orders
+                            </p>
                         </div>
 
-                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Avg. Order Value</span>
-                            <div class="text-3xl font-black text-gray-900 mt-2" id="metric-avg-order">₹0</div>
-                            <p class="text-xs text-gray-500 mt-1">Per transaction average</p>
+                        <!-- Avg Order Value -->
+                        <div class="bg-gradient-to-br from-amber-500/10 via-white to-white rounded-3xl p-4 sm:p-6 border border-amber-200/60 shadow-sm relative overflow-hidden">
+                            <span class="text-[10px] sm:text-xs font-bold text-amber-800 uppercase tracking-wider">Avg. Order Value</span>
+                            <div class="text-2xl sm:text-3xl font-black text-amber-700 mt-2 tracking-tight" id="metric-avg-order">₹0</div>
+                            <p class="text-[11px] sm:text-xs text-gray-500 mt-1 font-medium">Per checkout ticket</p>
                         </div>
 
-                        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Store Location</span>
-                            <div class="text-sm font-bold text-gray-900 mt-2 truncate" id="metric-store-loc">Hassan</div>
-                            <p class="text-xs text-gray-500 mt-1">Santepet Circle</p>
+                        <!-- Meat Sold Volume -->
+                        <div class="bg-gradient-to-br from-[#133B2C]/5 via-white to-white rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm relative overflow-hidden">
+                            <span class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Meat Sold (Kg)</span>
+                            <div class="text-2xl sm:text-3xl font-black text-gray-900 mt-2 tracking-tight" id="metric-total-weight">0 Kg</div>
+                            <p class="text-[11px] sm:text-xs text-gray-500 mt-1 truncate" id="metric-store-loc">Hassan Santepet</p>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-                        <h3 class="text-xl font-bold text-[#133B2C] mb-6 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[#E53935]">calendar_today</span>
-                            <span>Day-Wise Revenue Breakdown</span>
-                        </h3>
+                    <!-- Day-Wise Revenue Breakdown Table & Mobile Cards -->
+                    <div class="bg-white rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-lg sm:text-xl font-bold text-[#133B2C] flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[#E53935]">calendar_today</span>
+                                    <span>Day-Wise Revenue Breakdown</span>
+                                </h3>
+                                <p class="text-gray-400 text-xs mt-0.5">Historical daily summary of sales and chicken volume sold.</p>
+                            </div>
+                            <button onclick="window.print()" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-700 rounded-xl text-xs font-bold flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">print</span>
+                                <span>Print Report</span>
+                            </button>
+                        </div>
 
-                        <div class="overflow-x-auto">
+                        <!-- Responsive Table for Desktop & Tablet -->
+                        <div class="overflow-x-auto rounded-2xl border border-gray-100 hidden sm:block">
                             <table class="w-full text-left border-collapse">
                                 <thead>
-                                    <tr class="border-b border-gray-200 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                                        <th class="pb-3">Date</th>
-                                        <th class="pb-3">Orders Count</th>
-                                        <th class="pb-3">Chicken Sold (Kg)</th>
-                                        <th class="pb-3">Daily Revenue (₹)</th>
-                                        <th class="pb-3 text-right">Status</th>
+                                    <tr class="bg-gray-50/80 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                        <th class="py-3 px-4">Date</th>
+                                        <th class="py-3 px-4">Orders Count</th>
+                                        <th class="py-3 px-4">Chicken Sold (Kg)</th>
+                                        <th class="py-3 px-4">Daily Revenue (₹)</th>
+                                        <th class="py-3 px-4 text-right">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="day-revenue-table-body" class="divide-y divide-gray-100 text-sm">
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Mobile Cards View for Small Screens -->
+                        <div id="day-revenue-mobile-cards" class="sm:hidden space-y-2.5">
+                            <!-- Populated dynamically by JS for seamless mobile reading -->
                         </div>
                     </div>
                 </div>
@@ -302,7 +380,7 @@
                                 <div class="flex flex-wrap gap-2 pt-1">
                                     <span class="text-[11px] text-gray-400 font-bold self-center">Quick Presets:</span>
                                     <button type="button" onclick="setBannerPreset('assets/images/hero-banner.png')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-semibold">Hero Banner</button>
-                                    <button type="button" onclick="setBannerPreset('assets/images/chicken-curry-cut.png')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-semibold">Curry Cut</button>
+                                    <button type="button" onclick="setBannerPreset('assets/images/with-skin-chicken.png')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-semibold">Curry Cut</button>
                                     <button type="button" onclick="setBannerPreset('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-semibold">BBQ Dish</button>
                                 </div>
                             </div>
@@ -369,11 +447,11 @@
     <script src="js/orders.js?v=1.0.5"></script>
     <script src="js/main.js?v=1.0.5"></script>
     <script>
-        // ADMIN AUTHENTICATION
+        // ADMIN AUTHENTICATION (Persistent on Mobile PWA until explicit logout)
         const AUTH_KEY = 'fresh_chicken_admin_auth';
 
         function checkAuthStatus() {
-            const isAuth = sessionStorage.getItem(AUTH_KEY) === 'true';
+            const isAuth = localStorage.getItem(AUTH_KEY) === 'true' || sessionStorage.getItem(AUTH_KEY) === 'true';
             const modal = document.getElementById('admin-login-modal');
             const dashboard = document.getElementById('admin-dashboard');
 
@@ -395,8 +473,10 @@
 
             // Credentials check
             if (user === 'freshchikenadmin' && pass === 'adminfresh123') {
+                localStorage.setItem(AUTH_KEY, 'true');
                 sessionStorage.setItem(AUTH_KEY, 'true');
                 if (errorMsg) errorMsg.classList.add('hidden');
+                initAdminAudio();
                 checkAuthStatus();
             } else {
                 if (errorMsg) errorMsg.classList.remove('hidden');
@@ -404,22 +484,89 @@
         }
 
         function handleAdminLogout() {
-            sessionStorage.removeItem(AUTH_KEY);
-            checkAuthStatus();
+            if (confirm('Are you sure you want to log out of Admin Panel?')) {
+                localStorage.removeItem(AUTH_KEY);
+                sessionStorage.removeItem(AUTH_KEY);
+                checkAuthStatus();
+            }
         }
 
-        // CATEGORY OFFSETS FROM BASE RATE (Chicken With Skin)
+        // CATEGORY OFFSETS & FORMULAS FROM BASE RATE (Chicken With Skin)
+        // User Rules:
+        // • Base price + 20 for skinless
+        // • + 60 for wings and leg pieces, Chicken Lollipop
+        // • + 80 for boneless and chicken breast
+        // • + 100 for keema
+        // • Base price / 2 for Chicken Liver (Special)
+        // • Market price always +20 for all cuts
         const PRICE_OFFSETS = {
-            'prod-whole-chicken': 0,     // Base (Best: 220, COT: 240)
+            'prod-whole-chicken': 0,     // Base Rate (Chicken With Skin)
             'prod-skinless-chicken': 20, // Base + 20
             'prod-wings': 60,            // Base + 60
-            'prod-drumsticks': 90,       // Base + 90
-            'prod-lollipop': 100,        // Base + 100
-            'prod-boneless': 120,        // Base + 120
-            'prod-mince': 140,           // Base + 140
-            'prod-breast-fillet': 160,   // Base + 160
-            'prod-liver-special': -20    // Base - 20
+            'prod-drumsticks': 60,       // Base + 60 (Leg pieces)
+            'prod-lollipop': 60,         // Base + 60 (Chicken Lollipop)
+            'prod-boneless': 80,         // Base + 80 (Boneless Chicken)
+            'prod-breast-fillet': 80,    // Base + 80 (Chicken Breast)
+            'prod-mince': 100,           // Base + 100 (Keema)
+            'prod-liver-special': 'div2' // Base / 2 (Chicken Liver Special)
         };
+
+        function calculateCutPricesFromBase(productId, baseRate) {
+            let sellingPrice;
+            if (productId === 'prod-liver-special' || PRICE_OFFSETS[productId] === 'div2') {
+                sellingPrice = Math.round(baseRate / 2);
+            } else {
+                const offset = typeof PRICE_OFFSETS[productId] === 'number' ? PRICE_OFFSETS[productId] : 0;
+                sellingPrice = baseRate + offset;
+            }
+            const marketPrice = sellingPrice + 20; // Market price always +20 for all cuts
+            return { sellingPrice, marketPrice };
+        }
+
+        // Quick Steppers & Preset Handlers for Mobile & Desktop
+        function setBaseRatePreset(val) {
+            const baseInput = document.getElementById('base-rate-input');
+            if (baseInput) {
+                baseInput.value = val;
+                applyBaseRateToAll();
+            }
+        }
+
+        function stepBaseRate(delta) {
+            const baseInput = document.getElementById('base-rate-input');
+            if (!baseInput) return;
+            let val = parseFloat(baseInput.value) || 220;
+            val = Math.max(10, val + delta);
+            baseInput.value = val;
+        }
+
+        function stepPrice(inputId, delta) {
+            const el = document.getElementById(inputId);
+            if (!el) return;
+            let val = parseFloat(el.value) || 0;
+            val = Math.max(10, val + delta);
+            el.value = val;
+            el.classList.add('ring-2', 'ring-emerald-500');
+            setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 350);
+
+            // Automatically maintain Market Price as Best Price + 20
+            const productId = inputId.replace('price-input-', '');
+            const mktInput = document.getElementById(`mkt-price-input-${productId}`);
+            if (mktInput) {
+                mktInput.value = val + 20;
+            }
+        }
+
+        function onSellingPriceInput(productId) {
+            const priceInput = document.getElementById(`price-input-${productId}`);
+            const mktInput = document.getElementById(`mkt-price-input-${productId}`);
+            if (priceInput && mktInput) {
+                const val = parseFloat(priceInput.value);
+                if (!isNaN(val)) {
+                    mktInput.value = val + 20;
+                }
+            }
+        }
 
         // Apply Base Rate calculation to all cuts
         function applyBaseRateToAll() {
@@ -433,26 +580,24 @@
 
             const newPricesMap = {};
             PRODUCTS.forEach(product => {
-                const offset = PRICE_OFFSETS[product.id] !== undefined ? PRICE_OFFSETS[product.id] : 0;
-                const calculatedBest = baseRate + offset;
-                const calculatedMarket = calculatedBest + 20; // Standard COT market offset
+                const { sellingPrice, marketPrice } = calculateCutPricesFromBase(product.id, baseRate);
 
                 newPricesMap[product.id] = {
-                    pricePerKg: calculatedBest,
-                    marketPricePerKg: calculatedMarket
+                    pricePerKg: sellingPrice,
+                    marketPricePerKg: marketPrice
                 };
 
                 const inputBest = document.getElementById(`price-input-${product.id}`);
                 const inputMkt = document.getElementById(`mkt-price-input-${product.id}`);
-                if (inputBest) inputBest.value = calculatedBest;
-                if (inputMkt) inputMkt.value = calculatedMarket;
+                if (inputBest) inputBest.value = sellingPrice;
+                if (inputMkt) inputMkt.value = marketPrice;
             });
 
             if (window.priceManager.saveCustomPrices(newPricesMap)) {
                 if (window.cart && window.cart.showToast) {
-                    window.cart.showToast(`Applied Base Rate (₹${baseRate}/Kg) to all cuts!`, 'success');
+                    window.cart.showToast(`Applied Base Rate (₹${baseRate}/Kg) with standard formulas to all cuts!`, 'success');
                 } else {
-                    alert(`Applied Base Rate (₹${baseRate}/Kg) to all cuts!`);
+                    alert(`Applied Base Rate (₹${baseRate}/Kg) with standard formulas to all cuts!`);
                 }
                 renderPriceManager();
             }
@@ -465,9 +610,11 @@
                 const inputBest = document.getElementById(`price-input-${product.id}`);
                 const inputMkt = document.getElementById(`mkt-price-input-${product.id}`);
                 if (inputBest && inputBest.value) {
+                    const bestVal = parseFloat(inputBest.value);
+                    const mktVal = inputMkt && inputMkt.value ? parseFloat(inputMkt.value) : bestVal + 20;
                     newPricesMap[product.id] = {
-                        pricePerKg: parseFloat(inputBest.value),
-                        marketPricePerKg: inputMkt && inputMkt.value ? parseFloat(inputMkt.value) : parseFloat(inputBest.value) + 20
+                        pricePerKg: bestVal,
+                        marketPricePerKg: mktVal
                     };
                 }
             });
@@ -494,7 +641,7 @@
             }
         }
 
-        // Render Price Manager Cards
+        // Render Price Manager Cards with Instant Mobile Steppers
         function renderPriceManager() {
             const grid = document.getElementById('price-manager-grid');
             if (!grid) return;
@@ -514,43 +661,85 @@
                 const currentBest = (val && typeof val === 'object') ? val.pricePerKg : (val || product.pricePerKg);
                 const currentMkt = (val && typeof val === 'object' && val.marketPricePerKg) ? val.marketPricePerKg : (product.marketPricePerKg || currentBest + 20);
 
-                const offset = PRICE_OFFSETS[product.id] !== undefined ? PRICE_OFFSETS[product.id] : 0;
-                const formulaText = offset === 0 ? 'Base Price' : `Base ${offset >= 0 ? '+' : ''}₹${offset}`;
+                let formulaText;
+                if (product.id === 'prod-whole-chicken') {
+                    formulaText = 'Base Rate';
+                } else if (product.id === 'prod-liver-special' || PRICE_OFFSETS[product.id] === 'div2') {
+                    formulaText = 'Base ÷ 2';
+                } else {
+                    const offset = typeof PRICE_OFFSETS[product.id] === 'number' ? PRICE_OFFSETS[product.id] : 0;
+                    formulaText = `Base ${offset >= 0 ? '+' : ''}₹${offset}`;
+                }
+
+                const savings = currentMkt - currentBest;
+                const discountPct = currentMkt > 0 ? Math.round((savings / currentMkt) * 100) : 0;
 
                 return `
-                    <div class="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-emerald-200 transition-colors space-y-3">
+                    <div class="bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-sm hover:shadow-md flex flex-col justify-between hover:border-emerald-300 transition-all space-y-3 relative group">
+                        <!-- Product Header -->
                         <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <img src="${product.image}" alt="${product.name}" class="w-12 h-12 rounded-xl object-cover border border-gray-100" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&w=800&q=80';" />
-                                <div>
-                                    <h4 class="font-bold text-gray-900 text-sm leading-snug">${product.name}</h4>
-                                    <span class="text-[10px] text-gray-400 uppercase font-semibold">${product.category}</span>
+                            <div class="flex items-center gap-3 mb-2.5">
+                                <img src="${product.image}" alt="${product.name}" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-cover border border-gray-100 flex-shrink-0 shadow-sm" onerror="this.onerror=null;this.src='assets/images/hero-banner.png';" />
+                                <div class="min-w-0">
+                                    <h4 class="font-black text-gray-900 text-sm leading-snug truncate" title="${product.name}">${product.name}</h4>
+                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                        <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">${product.category}</span>
+                                        <span class="inline-block px-2 py-0.5 bg-emerald-50 text-[#133B2C] text-[10px] font-black rounded-md border border-emerald-200/60">
+                                            ${formulaText}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                            <span class="inline-block px-2.5 py-0.5 bg-emerald-50 text-[#133B2C] text-[11px] font-bold rounded-md">
-                                ${formulaText}
-                            </span>
                         </div>
 
-                        <div class="pt-3 border-t border-gray-100 space-y-3">
+                        <!-- Price Controls Body -->
+                        <div class="pt-2 border-t border-gray-100 space-y-3">
+                            <!-- Market Price / COT -->
                             <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                                    Market Price / COT (₹)
-                                </label>
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-sm font-bold text-gray-400">₹</span>
-                                    <input type="number" id="mkt-price-input-${product.id}" value="${currentMkt}" min="10" max="2000" step="5" class="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 focus:outline-none focus:border-[#133B2C]" />
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                                        Market Price / COT (₹)
+                                    </label>
+                                    <span class="text-[10px] text-gray-400">Best + ₹20</span>
+                                </div>
+                                <div class="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-2 py-1">
+                                    <span class="text-xs font-bold text-gray-400 mr-1">₹</span>
+                                    <input type="number" id="mkt-price-input-${product.id}" value="${currentMkt}" min="10" max="2000" step="5" class="w-full bg-transparent text-xs sm:text-sm font-bold text-gray-600 focus:outline-none" />
+                                    <span class="text-[10px] text-gray-400 font-medium">/Kg</span>
                                 </div>
                             </div>
 
+                            <!-- Our Selling Price (With +/- Steppers) -->
                             <div>
-                                <label class="block text-[10px] font-bold text-emerald-800 uppercase tracking-wider mb-1">
-                                    Our Best Price (₹)
-                                </label>
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-base font-black text-[#133B2C]">₹</span>
-                                    <input type="number" id="price-input-${product.id}" value="${currentBest}" min="10" max="2000" step="5" class="w-full px-2.5 py-1.5 bg-emerald-50 border border-emerald-300 rounded-xl text-base font-black text-gray-900 focus:outline-none focus:border-[#133B2C]" />
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="text-[10px] font-black text-emerald-800 uppercase tracking-wider">
+                                        Our Best Price (₹)
+                                    </label>
+                                    <span class="text-[10px] font-bold text-emerald-600">Customer Pays</span>
                                 </div>
+                                <div class="flex items-center bg-emerald-50/70 border border-emerald-300 rounded-2xl p-1 shadow-inner">
+                                    <button type="button" onclick="stepPrice('price-input-${product.id}', -5)" class="w-8 h-8 flex items-center justify-center bg-white hover:bg-emerald-100 active:scale-95 text-[#133B2C] font-black rounded-xl text-base shadow-sm transition-all" title="Decrease by ₹5">-5</button>
+                                    <div class="flex-grow flex items-center justify-center px-1">
+                                        <span class="font-black text-sm text-[#133B2C] mr-0.5">₹</span>
+                                        <input type="number" id="price-input-${product.id}" oninput="onSellingPriceInput('${product.id}')" value="${currentBest}" min="10" max="2000" step="5" class="w-16 text-center py-1 bg-transparent text-base sm:text-lg font-black text-gray-900 focus:outline-none" />
+                                        <span class="text-[10px] font-bold text-gray-500 ml-0.5">/Kg</span>
+                                    </div>
+                                    <button type="button" onclick="stepPrice('price-input-${product.id}', 5)" class="w-8 h-8 flex items-center justify-center bg-white hover:bg-emerald-100 active:scale-95 text-[#133B2C] font-black rounded-xl text-base shadow-sm transition-all" title="Increase by ₹5">+5</button>
+                                </div>
+                            </div>
+
+                            <!-- Savings / Margin Tag -->
+                            <div class="pt-0.5">
+                                ${savings > 0 ? `
+                                    <div class="text-[10px] font-bold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-xl flex items-center justify-between">
+                                        <span>Customer saves ₹${savings}/Kg</span>
+                                        <span class="font-black">${discountPct}% OFF</span>
+                                    </div>
+                                ` : `
+                                    <div class="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-xl text-center">
+                                        At market parity
+                                    </div>
+                                `}
                             </div>
                         </div>
                     </div>
@@ -558,12 +747,11 @@
             }).join('');
         }
 
-        // Tab Switcher
+        // Tab Switcher with Sleek Pill Animation
         function switchTab(tabName) {
             document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-                btn.classList.remove('bg-[#133B2C]', 'text-white', 'shadow-sm');
-                btn.classList.add('bg-gray-50', 'text-gray-600');
+                btn.className = 'admin-tab-btn flex-shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-transparent text-gray-600 hover:bg-gray-100 whitespace-nowrap';
             });
 
             const targetTab = document.getElementById(`tab-${tabName}`);
@@ -571,10 +759,10 @@
 
             if (targetTab) targetTab.classList.remove('hidden');
             if (targetBtn) {
-                targetBtn.classList.remove('bg-gray-50', 'text-gray-600');
-                targetBtn.classList.add('bg-[#133B2C]', 'text-white', 'shadow-sm');
+                targetBtn.className = 'admin-tab-btn flex-shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-[#133B2C] to-[#1c5540] text-white shadow-md shadow-[#133B2C]/20 whitespace-nowrap';
             }
 
+            if (tabName === 'prices') renderPriceManager();
             if (tabName === 'revenue') renderRevenueMetrics();
             if (tabName === 'orders') renderOrdersList();
             if (tabName === 'banners') renderBannersManager();
@@ -590,7 +778,7 @@
             }
         }
 
-        // Render Day-Wise Revenue & Metrics
+        // Render Day-Wise Revenue & Metrics (Desktop & Mobile Views)
         function renderRevenueMetrics() {
             if (!window.ordersEngine) return;
 
@@ -598,43 +786,89 @@
             const todayRev = engine.getTodayRevenue();
             const todayCount = engine.getTodayOrders().length;
             const lifetimeRev = engine.getLifetimeRevenue();
-            const totalCount = engine.getAllOrders().length;
+            const allOrders = engine.getAllOrders();
+            const totalCount = allOrders.length;
             const avgOrder = totalCount > 0 ? Math.round(lifetimeRev / totalCount) : 0;
 
+            // Compute total weight sold across all live orders
+            let totalWeightKg = 0;
+            allOrders.forEach(o => {
+                (o.items || []).forEach(it => {
+                    totalWeightKg += parseFloat(it.quantity) || 0;
+                });
+            });
+            totalWeightKg = Math.round(totalWeightKg * 10) / 10;
+
             document.getElementById('metric-today-rev').textContent = `₹${todayRev}`;
-            document.getElementById('metric-today-count').textContent = `${todayCount} orders today`;
+            document.getElementById('metric-today-count').innerHTML = `<span class="material-symbols-outlined text-xs text-emerald-600">receipt</span> ${todayCount} orders today`;
             document.getElementById('metric-total-rev').textContent = `₹${lifetimeRev}`;
-            document.getElementById('metric-total-count').textContent = `${totalCount} total orders`;
+            document.getElementById('metric-total-count').innerHTML = `<span class="material-symbols-outlined text-xs text-gray-400">all_inclusive</span> ${totalCount} total orders`;
             document.getElementById('metric-avg-order').textContent = `₹${avgOrder}`;
+            
+            const weightEl = document.getElementById('metric-total-weight');
+            if (weightEl) weightEl.textContent = `${totalWeightKg} Kg`;
+
             if (CONFIG && CONFIG.ADDRESS) {
                 document.getElementById('metric-store-loc').textContent = CONFIG.ADDRESS.split(',')[1] || CONFIG.ADDRESS;
             }
 
             const dayBreakdown = engine.getDayWiseRevenue();
             const tableBody = document.getElementById('day-revenue-table-body');
+            const mobileCards = document.getElementById('day-revenue-mobile-cards');
             
             if (dayBreakdown.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="py-8 text-center text-gray-400">No orders logged yet. Place a test order via checkout to view daily revenue.</td>
-                    </tr>
+                const emptyMsg = `
+                    <div class="py-8 text-center text-gray-400 text-xs sm:text-sm">
+                        No orders recorded yet. As orders are placed, daily sales & chicken volume will appear here.
+                    </div>
                 `;
+                if (tableBody) tableBody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-400">No orders logged yet.</td></tr>`;
+                if (mobileCards) mobileCards.innerHTML = emptyMsg;
                 return;
             }
 
-            tableBody.innerHTML = dayBreakdown.map(day => `
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="py-4 font-bold text-gray-900">${day.dateString}</td>
-                    <td class="py-4 font-semibold text-gray-700">${day.count} orders</td>
-                    <td class="py-4 text-gray-600">${day.itemsSoldKg} Kg</td>
-                    <td class="py-4 font-black text-[#133B2C]">₹${day.revenue}</td>
-                    <td class="py-4 text-right">
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
-                            Active
-                        </span>
-                    </td>
-                </tr>
-            `).join('');
+            // Populate Desktop / Tablet Table
+            if (tableBody) {
+                tableBody.innerHTML = dayBreakdown.map(day => `
+                    <tr class="hover:bg-gray-50/80 transition-colors">
+                        <td class="py-3.5 px-4 font-bold text-gray-900 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm text-emerald-600">event</span>
+                            <span>${day.dateString}</span>
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-gray-700">${day.count} orders</td>
+                        <td class="py-3.5 px-4 font-medium text-gray-600">${day.itemsSoldKg} Kg</td>
+                        <td class="py-3.5 px-4 font-black text-[#133B2C] text-base">₹${day.revenue}</td>
+                        <td class="py-3.5 px-4 text-right">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
+                                Completed
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Populate Mobile Cards View
+            if (mobileCards) {
+                mobileCards.innerHTML = dayBreakdown.map(day => `
+                    <div class="bg-gray-50/80 p-3.5 rounded-2xl border border-gray-100 flex items-center justify-between gap-3 shadow-sm">
+                        <div>
+                            <p class="font-black text-gray-900 text-xs sm:text-sm flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-xs text-emerald-700">event</span>
+                                <span>${day.dateString}</span>
+                            </p>
+                            <p class="text-[11px] text-gray-500 mt-1 font-medium">
+                                ${day.count} orders • <strong class="text-gray-700">${day.itemsSoldKg} Kg</strong> sold
+                            </p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="font-black text-[#133B2C] text-base tracking-tight">₹${day.revenue}</p>
+                            <span class="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-bold">
+                                Active
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            }
         }
 
         let activeOrderTab = 'live';
@@ -1063,6 +1297,13 @@
                     osc.start(now + note.start);
                     osc.stop(now + note.start + note.dur + 0.05);
                 });
+
+                // Distinctive mobile phone vibration alert pattern (buzz, pause, buzz, pause, long buzz)
+                if ('vibrate' in navigator) {
+                    try {
+                        navigator.vibrate([400, 150, 400, 150, 600]);
+                    } catch (ve) {}
+                }
             } catch (err) {
                 console.warn('Audio chime playback error:', err);
             }
@@ -1093,15 +1334,17 @@
         async function requestNotificationPermission() {
             initAdminAudio();
             if (!('Notification' in window)) {
-                alert('Desktop notifications are not supported by this browser.');
+                alert('Push notifications are not supported by this browser.');
                 return;
             }
 
             if (Notification.permission === 'granted') {
                 try {
-                    new Notification('🍗 Fresh Chicken Hassan - Alerts Active', {
-                        body: 'You will receive instant desktop notifications for every incoming order!',
-                        icon: 'assets/images/logo.png?v=1.0.2'
+                    await sendOrderDesktopNotification({
+                        id: 'DEMO-ALERT',
+                        grandTotal: '100',
+                        customer: { name: 'Store Admin', phone: 'Fresh Chicken' },
+                        items: [{ quantity: 1, name: 'Notification Test' }]
                     });
                 } catch (e) {}
                 playNewOrderChime();
@@ -1112,9 +1355,11 @@
                 const permission = await Notification.requestPermission();
                 updateNotificationButtonUI();
                 if (permission === 'granted') {
-                    new Notification('🍗 Fresh Chicken Hassan - Alerts Active', {
-                        body: 'You will receive instant desktop notifications for every incoming order!',
-                        icon: 'assets/images/logo.png?v=1.0.2'
+                    await sendOrderDesktopNotification({
+                        id: 'DEMO-ALERT',
+                        grandTotal: '100',
+                        customer: { name: 'Store Admin', phone: 'Fresh Chicken' },
+                        items: [{ quantity: 1, name: 'Notification Test' }]
                     });
                     playNewOrderChime();
                 }
@@ -1123,23 +1368,45 @@
             }
         }
 
-        function sendOrderDesktopNotification(order) {
-            if ('Notification' in window && Notification.permission === 'granted') {
+        async function sendOrderDesktopNotification(order) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+            const itemsSummary = (order.items || []).map(i => `${i.quantity}Kg ${i.name}`).join(', ');
+            const title = `🍗 NEW ORDER: ${order.id} (₹${order.grandTotal})`;
+            const bodyText = `Customer: ${order.customer?.name || 'Customer'} (${order.customer?.phone || ''})\nItems: ${itemsSummary}\nAddress: ${order.customer?.fullAddress || ''}`;
+            const options = {
+                body: bodyText,
+                icon: 'assets/images/logo.png',
+                badge: 'assets/images/logo.png',
+                tag: order.id,
+                renotify: true,
+                requireInteraction: true,
+                vibrate: [400, 150, 400, 150, 600],
+                data: { url: './admin.html' }
+            };
+
+            // Use Service Worker showNotification if available (essential for Android PWA background alerts)
+            if ('serviceWorker' in navigator) {
                 try {
-                    const itemsSummary = (order.items || []).map(i => `${i.quantity}Kg ${i.name}`).join(', ');
-                    const n = new Notification(`🍗 NEW ORDER: ${order.id} (₹${order.grandTotal})`, {
-                        body: `Customer: ${order.customer?.name || 'Customer'} (${order.customer?.phone || ''})\nItems: ${itemsSummary}\nAddress: ${order.customer?.fullAddress || ''}`,
-                        icon: 'assets/images/logo.png?v=1.0.2',
-                        tag: order.id,
-                        requireInteraction: true
-                    });
-                    n.onclick = function() {
-                        window.focus();
-                        switchTab('orders');
-                    };
+                    const reg = await navigator.serviceWorker.getRegistration();
+                    if (reg && reg.showNotification) {
+                        await reg.showNotification(title, options);
+                        return;
+                    }
                 } catch (e) {
-                    console.warn('Desktop notification error:', e);
+                    console.warn('SW notification fallback to window Notification:', e);
                 }
+            }
+
+            // Fallback to standard window Notification
+            try {
+                const n = new Notification(title, options);
+                n.onclick = function() {
+                    window.focus();
+                    switchTab('orders');
+                };
+            } catch (e) {
+                console.warn('Desktop notification error:', e);
             }
         }
 
@@ -1219,6 +1486,55 @@
             }
         }
 
+        let networkBannerTimer = null;
+        function updateNetworkStatus(isOnline) {
+            const banner = document.getElementById('admin-network-banner');
+            const badge = document.getElementById('network-status-badge');
+            const dot = document.getElementById('network-pulse-dot');
+            const statusText = document.getElementById('network-status-text');
+
+            if (isOnline) {
+                if (badge) {
+                    badge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30';
+                }
+                if (dot) {
+                    dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse';
+                }
+                if (statusText) {
+                    statusText.textContent = 'Online';
+                }
+
+                if (banner && !banner.classList.contains('hidden')) {
+                    banner.className = 'bg-emerald-600 text-white px-4 py-2.5 text-center text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-all duration-300';
+                    banner.innerHTML = '<span class="material-symbols-outlined text-base">cloud_done</span> <span>YOU ARE ONLINE: Realtime order alerts are live!</span>';
+                    clearTimeout(networkBannerTimer);
+                    networkBannerTimer = setTimeout(() => {
+                        banner.classList.add('hidden');
+                    }, 4000);
+                }
+            } else {
+                if (badge) {
+                    badge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-400/50 animate-pulse';
+                }
+                if (dot) {
+                    dot.className = 'w-1.5 h-1.5 rounded-full bg-red-400';
+                }
+                if (statusText) {
+                    statusText.textContent = 'Offline';
+                }
+
+                if (banner) {
+                    clearTimeout(networkBannerTimer);
+                    banner.classList.remove('hidden');
+                    banner.className = 'bg-red-600 text-white px-4 py-2.5 text-center text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg transition-all duration-300';
+                    banner.innerHTML = '<span class="material-symbols-outlined text-base animate-pulse">wifi_off</span> <span>ADMIN DEVICE IS OFFLINE: Internet disconnected. Live alerts are paused. Orders will still arrive on your WhatsApp and sync upon reconnection!</span>';
+                }
+            }
+        }
+
+        window.addEventListener('online', () => updateNetworkStatus(true));
+        window.addEventListener('offline', () => updateNetworkStatus(false));
+
         function updateDbStatus() {
             const badge = document.getElementById('db-status-badge');
             if (!badge) return;
@@ -1235,6 +1551,7 @@
         // Check authentication on load and connect Realtime Firebase Cloud Order Listener
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthStatus();
+            updateNetworkStatus(navigator.onLine);
             updateDbStatus();
             updateNotificationButtonUI();
 

@@ -49,6 +49,8 @@ const TRANSLATIONS = {
         'cut_biryani': '🍗 Biryani Cut',
         'cut_fry': '🍳 Fry Cut',
         'cut_standard': '🔪 Standard',
+        'quick_order_wa': '⚡ 1-Click WhatsApp Order',
+        'select_weight': 'Select Weight:',
 
         // Categories
         'cat_all': 'All Cuts',
@@ -105,6 +107,40 @@ const TRANSLATIONS = {
         'order_ready_title': 'Order Ready to Send!',
         'send_wa_btn': 'Send Order on WhatsApp',
 
+        // How to Order in 3 Steps
+        'quick_easy_ordering': '⚡ Quick &amp; Easy Ordering',
+        'how_to_order_title': 'How to Order Chicken in 3 Steps',
+        'how_to_order_subtitle': 'Hygienic, antibiotic-free fresh cuts delivered straight to your door in Hassan.',
+        'step_1_title': 'Pick Cut &amp; Weight',
+        'step_1_desc': 'Choose Whole, Curry Cut, Biryani Cut, or Boneless. Select 500g, 1 Kg, or your preferred quantity.',
+        'step_2_title': '1-Tap WhatsApp Order',
+        'step_2_desc': 'Tap the green "⚡ 1-Click WhatsApp Order" button or Add to Cart and enter your Hassan address.',
+        'step_3_title': 'Delivered in 30-45 Mins',
+        'step_3_desc': 'Dispatched from Santepet Circle. Inspect your fresh meat and pay cash or UPI upon delivery!',
+        'call_to_order_title': 'Prefer to call and speak with us?',
+        'call_to_order_subtitle': 'Call our Hassan Santepet shop directly for instant phone orders (9:00 AM - 9:00 PM)',
+        'call_btn_text': 'Call +91 91486 99386',
+
+        // Featured & Coming Soon
+        'top_recommended': 'Top Recommended',
+        'fresh_cuts_title': 'Our Fresh Chicken Cuts',
+        'view_full_catalog': 'View Full Catalog',
+        'exciting_arrivals': 'Exciting New Arrivals',
+        'coming_soon_title': 'Coming Soon...',
+        'coming_soon_desc': 'We are expanding our store catalog! Stay tuned for authentic free-range Nati Koli and specialty items.',
+
+        // Why Choose Us
+        'why_choose_title': 'Why Choose Fresh Chicken?',
+        'why_choose_subtitle': 'We prioritize unmatched hygiene, farm freshness, and rapid delivery for your healthy meals.',
+        'why_feature_1_title': 'Fresh Daily',
+        'why_feature_1_desc': 'Directly sourced every morning from certified local poultry farms.',
+        'why_feature_2_title': 'Hygienically Cut',
+        'why_feature_2_desc': 'Cleaned in temperature-controlled, sanitized facilities.',
+        'why_feature_3_title': 'Fast Delivery',
+        'why_feature_3_desc': 'Express doorstep delivery guaranteed in under 90 minutes.',
+        'why_feature_4_title': '100% Halal',
+        'why_feature_4_desc': 'Strictly certified 100% Halal cut following traditional ethical procedures.',
+
         // Footer & Contact
         'footer_desc': 'Farm fresh, hygienic poultry cuts delivered directly to your doorstep in Hassan. Simple, quick WhatsApp ordering.',
         'quick_links': 'Quick Links',
@@ -159,6 +195,8 @@ const TRANSLATIONS = {
         'cut_biryani': '🍗 ಬಿರಿಯಾನಿ ಕಟ್ (Biryani Cut)',
         'cut_fry': '🍳 ಫ್ರೈ ಕಟ್ (Fry Cut)',
         'cut_standard': '🔪 ಸಾಮಾನ್ಯ ಕಟ್ (Standard)',
+        'quick_order_wa': '⚡ ನೇರ WhatsApp ಆರ್ಡರ್ (1-ಕ್ಲಿಕ್)',
+        'select_weight': 'ತೂಕ ಆಯ್ಕೆ:',
 
         // Categories
         'cat_all': 'ಎಲ್ಲಾ ಮಾದರಿಗಳು',
@@ -214,6 +252,40 @@ const TRANSLATIONS = {
         'place_order_btn': 'ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಆರ್ಡರ್ ಖಚಿತಪಡಿಸಿ',
         'order_ready_title': 'ಆರ್ಡರ್ ಕಳುಹಿಸಲು ಸಿದ್ಧವಾಗಿದೆ!',
         'send_wa_btn': 'ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಆರ್ಡರ್ ಕಳುಹಿಸಿ',
+
+        // How to Order in 3 Steps
+        'quick_easy_ordering': '⚡ ತ್ವರಿತ ಮತ್ತು ಸುಲಭ ಆರ್ಡರ್',
+        'how_to_order_title': '3 ಸರಳ ಹಂತಗಳಲ್ಲಿ ಚಿಕನ್ ಆರ್ಡರ್ ಮಾಡಿ',
+        'how_to_order_subtitle': 'ಹಾಸನದಲ್ಲಿ ಶುದ್ಧ, ಆರೋಗ್ಯಕರ ಮತ್ತು ತಾಜಾ ಚಿಕನ್ ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲಿಗೆ.',
+        'step_1_title': 'ಕಟ್ ಮತ್ತು ತೂಕ ಆಯ್ಕೆಮಾಡಿ',
+        'step_1_desc': 'ಕರಿ ಕಟ್, ಬಿರಿಯಾನಿ ಕಟ್ ಅಥವಾ ಬೋನ್ಲೆಸ್ ಆಯ್ಕೆಮಾಡಿ. 500g, 1 Kg ಅಥವಾ ನಿಮ್ಮ ಅಗತ್ಯದಷ್ಟು ತೂಕವನ್ನು ಆರಿಸಿ.',
+        'step_2_title': '1-ಕ್ಲಿಕ್ WhatsApp ಆರ್ಡರ್',
+        'step_2_desc': 'ಹಸಿರು "⚡ 1-ಕ್ಲಿಕ್ WhatsApp ಆರ್ಡರ್" ಬಟನ್ ಒತ್ತಿ ಅಥವಾ ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ ನಿಮ್ಮ ಹಾಸನ ವಿಳಾಸ ನಮೂದಿಸಿ.',
+        'step_3_title': '30-45 ನಿಮಿಷಗಳಲ್ಲಿ ಡೆಲಿವರಿ',
+        'step_3_desc': 'ಸಂತೆಪೇಟೆ ಸರ್ಕಲ್‌ನಿಂದ ರವಾನೆ. ಪರಿಶೀಲಿಸಿ, ನಗದು ಅಥವಾ UPI ಮೂಲಕ ಪಾವತಿಸಿ!',
+        'call_to_order_title': 'ಫೋನ್ ಮೂಲಕ ಮಾತನಾಡಿ ಆರ್ಡರ್ ಮಾಡಲು ಬಯಸುವಿರಾ?',
+        'call_to_order_subtitle': 'ತ್ವರಿತ ಫೋನ್ ಆರ್ಡರ್‌ಗಳಿಗಾಗಿ ನೇರವಾಗಿ ನಮ್ಮ ಹಾಸನ ಸಂತೆಪೇಟೆ ಶಾಪ್‌ಗೆ ಕರೆ ಮಾಡಿ (9:00 AM - 9:00 PM)',
+        'call_btn_text': 'ಕರೆ ಮಾಡಿ: +91 91486 99386',
+
+        // Featured & Coming Soon
+        'top_recommended': 'ಜನಪ್ರಿಯ ಆಯ್ಕೆಗಳು',
+        'fresh_cuts_title': 'ನಮ್ಮ ತಾಜಾ ಚಿಕನ್ ತುಂಡುಗಳು',
+        'view_full_catalog': 'ಸಂಪೂರ್ಣ ಪಟ್ಟಿ ನೋಡಿ',
+        'exciting_arrivals': 'ಹೊಸ ಆಗಮನಗಳು',
+        'coming_soon_title': 'ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ...',
+        'coming_soon_desc': 'ನಾವು ಹೊಸ ಉತ್ಪನ್ನಗಳನ್ನು ತರುತ್ತಿದ್ದೇವೆ! ನಾಟಿ ಕೋಳಿ ಮತ್ತು ವಿಶೇಷ ಮಾಂಸದ ಕಟ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಲಭ್ಯ.',
+
+        // Why Choose Us
+        'why_choose_title': 'ಫ್ರೆಶ್ ಚಿಕನ್ ಏಕೆ ಆರಿಸಬೇಕು?',
+        'why_choose_subtitle': 'ನಿಮ್ಮ ಆರೋಗ್ಯಕರ ಊಟಕ್ಕಾಗಿ ನಾವು ಅಪ್ರತಿಮ ನೈರ್ಮಲ್ಯ, ಫಾರ್ಮ್ ತಾಜಾತನ ಮತ್ತು ವೇಗದ ಡೆಲಿವರಿಗೆ ಆದ್ಯತೆ ನೀಡುತ್ತೇವೆ.',
+        'why_feature_1_title': 'ದಿನವೂ ತಾಜಾ',
+        'why_feature_1_desc': 'ಪ್ರತಿದಿನ ಮುಂಜಾನೆ ಸ್ಥಳೀಯ ಕೋಳಿ ಫಾರ್ಮ್‌ಗಳಿಂದ ನೇರವಾಗಿ ತರಲಾಗುತ್ತದೆ.',
+        'why_feature_2_title': 'ಶುಚಿಯಾದ ಕಟಿಂಗ್',
+        'why_feature_2_desc': 'ಸಂಪೂರ್ಣ ಸ್ಯಾನಿಟೈಸ್ ಮಾಡಿದ ಜಾಗದಲ್ಲಿ ಅತ್ಯಂತ ನೈರ್ಮಲ್ಯದಿಂದ ಕಟ್ ಮಾಡಲಾಗುತ್ತದೆ.',
+        'why_feature_3_title': 'ವೇಗದ ಡೆಲಿವರಿ',
+        'why_feature_3_desc': 'ಆರ್ಡರ್ ಮಾಡಿದ 30-45 ನಿಮಿಷಗಳಲ್ಲಿ ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲಿಗೆ ಎಕ್ಸ್‌ಪ್ರೆಸ್ ಡೆಲಿವರಿ.',
+        'why_feature_4_title': '100% ಹಲಾಲ್',
+        'why_feature_4_desc': 'ಸಂಪೂರ್ಣ ನಿಯಮಬದ್ಧ ಹಾಗೂ ನೈತಿಕ 100% ಹಲಾಲ್ ಮಾಂಸ ಮಾತ್ರ.',
 
         // Footer & Contact
         'footer_desc': 'ಹಾಸನದಲ್ಲಿ ಫಾರ್ಮ್‌ನಿಂದ ನೇರವಾಗಿ ತಾಜಾ ಹಾಗೂ ಶುಚಿಯಾದ ಚಿಕನ್ ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲಿಗೆ ತಲುಪಿಸಲಾಗುತ್ತದೆ. ಸುಲಭ ಹಾಗೂ ವೇಗದ ವಾಟ್ಸಾಪ್ ಆರ್ಡರ್.',
@@ -285,6 +357,11 @@ function updateLanguageToggleUI() {
             btn.classList.remove('bg-[#133B2C]', 'text-white', 'shadow-sm');
             btn.classList.add('text-gray-700', 'hover:bg-gray-100');
         }
+    });
+
+    // Update compact mobile language toggle label
+    document.querySelectorAll('.lang-current-label').forEach(el => {
+        el.textContent = currentLanguage === 'en' ? 'ಕನ್ನಡ' : 'EN';
     });
 }
 

@@ -37,6 +37,8 @@ class CartEngine {
             detail: {
                 cart: this.items,
                 count: this.getTotalCount(),
+                totalWeight: this.getTotalWeight(),
+                isMinWeightSatisfied: this.isMinWeightSatisfied(),
                 subtotal: this.getSubtotal()
             }
         }));
@@ -98,12 +100,12 @@ class CartEngine {
         }
     }
 
-    // Decrease quantity by 0.5 Kg (min 1 Kg)
+    // Decrease quantity by 0.5 Kg (min 0.5 Kg)
     decrement(cartItemIdOrId) {
         const item = this.items.find(i => i.cartItemId === cartItemIdOrId || i.id === cartItemIdOrId);
         if (item) {
             const next = Math.round((item.quantity - 0.5) * 10) / 10;
-            this.updateQuantity(item.cartItemId || item.id, next < 1 ? 0 : next); // 0 triggers removeItem
+            this.updateQuantity(item.cartItemId || item.id, next < 0.5 ? 0 : next); // 0 triggers removeItem
         }
     }
 
@@ -131,6 +133,21 @@ class CartEngine {
     getSubtotal() {
         const raw = this.items.reduce((sum, item) => sum + (item.pricePerKg * item.quantity), 0);
         return Math.round(raw * 100) / 100;
+    }
+
+    // Total weight in Kg of all items currently in cart
+    getTotalWeight() {
+        const raw = this.items.reduce((sum, item) => sum + (parseFloat(item.quantity) || 0), 0);
+        return Math.round(raw * 100) / 100;
+    }
+
+    // Minimum order weight rule (1.0 Kg required for delivery)
+    get minOrderWeight() {
+        return window.CONFIG?.MIN_DELIVERY_WEIGHT_KG || 1.0;
+    }
+
+    isMinWeightSatisfied() {
+        return this.getTotalWeight() >= this.minOrderWeight;
     }
 
     // Calculate delivery charge

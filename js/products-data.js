@@ -12,7 +12,7 @@ const DEFAULT_PRODUCTS = [
         pricePerKg: 220,
         unit: '1 Kg',
         description: 'Fresh, farm-raised chicken with skin intact. Ideal for roasting, grilling, or traditional whole curry.',
-        image: 'assets/images/with-skin-chicken.png?v=1.0.5',
+        image: 'assets/images/with-skin-chicken.png',
         badge: 'Best Seller',
         stockStatus: 'In Stock (Fresh Cut Daily)',
         allowCutPreferences: true
@@ -25,22 +25,10 @@ const DEFAULT_PRODUCTS = [
         pricePerKg: 240,
         unit: '1 Kg',
         description: 'Cleaned, dressed, and skinless whole chicken. Low fat, tender, and ready for all home recipes.',
-        image: 'assets/images/skinless-chicken.png?v=1.0.5',
+        image: 'assets/images/skinless-chicken.png',
         badge: 'Popular',
         stockStatus: 'In Stock',
         allowCutPreferences: true
-    },
-    {
-        id: 'prod-boneless',
-        name: 'Boneless Chicken',
-        category: 'Boneless',
-        marketPricePerKg: 360,
-        pricePerKg: 340,
-        unit: '1 Kg',
-        description: '100% tender, lean boneless chicken breast and thigh meat. Perfect for tikka, stir-fries, and pasta.',
-        image: 'assets/images/boneless-chicken.png?v=1.0.5',
-        badge: 'High Protein',
-        stockStatus: 'In Stock'
     },
     {
         id: 'prod-wings',
@@ -50,7 +38,7 @@ const DEFAULT_PRODUCTS = [
         pricePerKg: 280,
         unit: '1 Kg',
         description: 'Juicy chicken wings cut into drums and flats. Perfect for hot wings, BBQ grills, and crunchy snacks.',
-        image: 'assets/images/chicken-wings.png?v=1.0.5',
+        image: 'assets/images/chicken-wings.png',
         badge: 'Snack Special',
         stockStatus: 'In Stock'
     },
@@ -58,23 +46,47 @@ const DEFAULT_PRODUCTS = [
         id: 'prod-drumsticks',
         name: 'Chicken Legs',
         category: 'Special Cuts',
-        marketPricePerKg: 330,
-        pricePerKg: 310,
+        marketPricePerKg: 300,
+        pricePerKg: 280,
         unit: '1 Kg',
         description: 'Fleshy, juicy leg drumsticks & leg cuts with bone-in richness. Great for tandoori, broasting, and thick curries.',
-        image: 'assets/images/chicken-legs.png?v=1.0.5',
+        image: 'assets/images/chicken-legs.png',
         badge: 'Kid Favorite',
+        stockStatus: 'In Stock'
+    },
+    {
+        id: 'prod-lollipop',
+        name: 'Chicken Lollipop',
+        category: 'Special Cuts',
+        marketPricePerKg: 300,
+        pricePerKg: 280,
+        unit: '1 Kg',
+        description: 'French-trimmed chicken wing drums shaped into juicy lollipops. Ready for appetizers & Indo-Chinese dishes.',
+        image: 'assets/images/chicken-lollipop.png',
+        badge: 'Party Favorite',
+        stockStatus: 'In Stock'
+    },
+    {
+        id: 'prod-boneless',
+        name: 'Boneless Chicken',
+        category: 'Boneless',
+        marketPricePerKg: 320,
+        pricePerKg: 300,
+        unit: '1 Kg',
+        description: '100% tender, lean boneless chicken breast and thigh meat. Perfect for tikka, stir-fries, and pasta.',
+        image: 'assets/images/boneless-chicken.png',
+        badge: 'High Protein',
         stockStatus: 'In Stock'
     },
     {
         id: 'prod-breast-fillet',
         name: 'Chicken Breast',
         category: 'Boneless',
-        marketPricePerKg: 400,
-        pricePerKg: 380,
+        marketPricePerKg: 320,
+        pricePerKg: 300,
         unit: '1 Kg',
         description: 'Ultra-lean boneless chicken breast fillets. High protein, zero skin, trimmed cleanly for fitness diets.',
-        image: 'assets/images/chicken-breast.png?v=1.0.5',
+        image: 'assets/images/chicken-breast.png',
         badge: 'Fitness Pick',
         stockStatus: 'In Stock'
     },
@@ -82,35 +94,23 @@ const DEFAULT_PRODUCTS = [
         id: 'prod-mince',
         name: 'Chicken Keema (Mince)',
         category: 'Boneless',
-        marketPricePerKg: 380,
-        pricePerKg: 360,
-        unit: '1 Kg',
-        description: 'Finely minced fresh chicken breast meat. Excellent for kebabs, keema curry, and burgers.',
-        image: 'assets/images/chicken-keema.png?v=1.0.5',
-        badge: 'Premium Cut',
-        stockStatus: 'In Stock'
-    },
-    {
-        id: 'prod-lollipop',
-        name: 'Chicken Lollipop',
-        category: 'Special Cuts',
-        marketPricePerKg: 350,
+        marketPricePerKg: 340,
         pricePerKg: 320,
         unit: '1 Kg',
-        description: 'French-trimmed chicken wing drums shaped into juicy lollipops. Ready for appetizers & Indo-Chinese dishes.',
-        image: 'assets/images/chicken-lollipop.png?v=1.0.5',
-        badge: 'Party Favorite',
+        description: 'Finely minced fresh chicken breast meat. Excellent for kebabs, keema curry, and burgers.',
+        image: 'assets/images/chicken-keema.png',
+        badge: 'Premium Cut',
         stockStatus: 'In Stock'
     },
     {
         id: 'prod-liver-special',
         name: 'Chicken Liver (Special)',
         category: 'Special Cuts',
-        marketPricePerKg: 220,
-        pricePerKg: 200,
+        marketPricePerKg: 130,
+        pricePerKg: 110,
         unit: '1 Kg',
         description: 'Fresh, cleaned special chicken liver & gizzard. High iron & nutrition for traditional fry recipes.',
-        image: 'assets/images/chicken-liver.png?v=1.0.5',
+        image: 'assets/images/chicken-liver.png',
         badge: 'Nutrient Rich',
         stockStatus: 'In Stock'
     }
@@ -122,7 +122,7 @@ const COMING_SOON_PRODUCTS = [
         name: 'Nati Koli (Country Chicken)',
         category: 'Coming Soon',
         description: 'Authentic free-range country chicken. Rich flavor, lean meat, and traditional Karnataka taste.',
-        image: 'assets/images/nati-koli.png?v=1.0.3',
+        image: 'assets/images/nati-koli.png',
         badge: 'Coming Soon'
     },
     {
@@ -130,15 +130,15 @@ const COMING_SOON_PRODUCTS = [
         name: 'Nati Koli Eggs',
         category: 'Coming Soon',
         description: '100% natural, farm-reared country chicken eggs packed with protein and vitamins.',
-        image: 'assets/images/nati-koli-eggs.png?v=1.0.3',
+        image: 'assets/images/nati-koli-eggs.png',
         badge: 'Coming Soon'
     },
     {
-        id: 'cs-barbeque-chicken',
-        name: 'Barbeque Chicken',
+        id: 'cs-fresh-fish',
+        name: 'Fresh River & Sea Fish',
         category: 'Coming Soon',
-        description: 'Chef marinated juicy chicken cuts with exotic spices, ready for BBQ grill & tandoor.',
-        image: 'assets/images/barbeque-chicken.png?v=1.0.3',
+        description: 'Cleaned, descaled, and freshly cut premium fish varieties delivered straight to your kitchen.',
+        image: 'assets/images/fresh-fish.png',
         badge: 'Coming Soon'
     }
 ];

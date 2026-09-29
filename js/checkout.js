@@ -324,12 +324,36 @@ function clearGpsLocation() {
 // Toggle display between UPI QR Scanner and Cash on Delivery
 function togglePaymentMethodDisplay(type) {
     const scannerContainer = document.getElementById('upi-scanner-container');
-    if (!scannerContainer) return;
-    if (type === 'upi') {
-        scannerContainer.classList.remove('hidden');
-    } else {
-        scannerContainer.classList.add('hidden');
+    if (scannerContainer) {
+        if (type === 'upi') {
+            scannerContainer.classList.remove('hidden');
+        } else {
+            scannerContainer.classList.add('hidden');
+        }
     }
+
+    const payOptions = document.querySelectorAll('.pay-option');
+    payOptions.forEach(opt => {
+        const radio = opt.querySelector('input[type="radio"]');
+        if (radio) {
+            const heading = opt.querySelector('span:first-child');
+            if (radio.checked) {
+                opt.classList.remove('border-gray-200', 'bg-gray-50');
+                opt.classList.add('border-2', 'border-[#133B2C]', 'bg-emerald-50/50');
+                if (heading) {
+                    heading.classList.add('text-[#133B2C]');
+                    heading.classList.remove('text-gray-900');
+                }
+            } else {
+                opt.classList.remove('border-2', 'border-[#133B2C]', 'bg-emerald-50/50');
+                opt.classList.add('border', 'border-gray-200', 'bg-gray-50');
+                if (heading) {
+                    heading.classList.remove('text-[#133B2C]');
+                    heading.classList.add('text-gray-900');
+                }
+            }
+        }
+    });
 }
 
 // Copy UPI ID helper function
@@ -398,6 +422,37 @@ function renderOrderSummary() {
     if (deliveryEl) deliveryEl.textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
     if (grandTotalEl) grandTotalEl.textContent = `₹${grandTotal}`;
 
+    const totalWeight = window.cart.getTotalWeight();
+    const minWeight = window.cart.minOrderWeight || 1.0;
+    const isWeightMet = totalWeight >= minWeight;
+    const submitBtn = document.getElementById('place-order-btn');
+
+    if (!isWeightMet) {
+        const needed = (minWeight - totalWeight).toFixed(1);
+        const weightWarn = `
+            <div class="p-3.5 mb-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-amber-600 text-lg flex-shrink-0">scale</span>
+                <div>
+                    <strong class="block font-bold">Minimum Delivery Order: 1.0 Kg</strong>
+                    <span>Your cart has only <strong>${totalWeight} Kg</strong>. Please add at least <strong>${needed} Kg (500g)</strong> more to place order.</span>
+                    <div class="mt-1"><a href="products.html" class="font-bold text-emerald-800 underline">+ Add More Chicken Cuts</a></div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('afterbegin', weightWarn);
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitBtn.title = `Minimum 1.0 Kg required for delivery (Current: ${totalWeight} Kg)`;
+        }
+    } else {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitBtn.title = '';
+        }
+    }
+
     // Dynamic QR code with total amount
     const qrImg = document.getElementById('upi-qr-img');
     if (qrImg) {
@@ -407,7 +462,7 @@ function renderOrderSummary() {
     }
 }
 
-// Handle Form Submission & WhatsApp Link Generation
+// Handle Form Submission & Direct WhatsApp Order
 function handleCheckoutSubmit(e) {
     e.preventDefault();
 
@@ -415,14 +470,17 @@ function handleCheckoutSubmit(e) {
         return; // Prevent duplicate rapid submission
     }
 
-    // 1. Store Hours Gate (9:00 AM - 9:00 PM only)
-    if (window.CONFIG && !window.CONFIG.isStoreOpen()) {
-        showStoreClosedModal();
+    if (!window.cart || window.cart.items.length === 0) {
+        alert('Your cart is empty! Please add products before checking out.');
         return;
     }
 
-    if (!window.cart || window.cart.items.length === 0) {
-        alert('Your cart is empty!');
+    const totalWeight = window.cart.getTotalWeight();
+    const minWeight = window.cart.minOrderWeight || 1.0;
+    if (totalWeight < minWeight) {
+        const needed = (minWeight - totalWeight).toFixed(1);
+        alert(`Minimum order weight for delivery is 1.0 Kg. Your cart currently has ${totalWeight} Kg. Please add at least ${needed} Kg more before checking out.`);
+        window.location.href = 'products.html';
         return;
     }
 
@@ -431,28 +489,35 @@ function handleCheckoutSubmit(e) {
     const street = document.getElementById('cust-street')?.value.trim();
     const landmark = document.getElementById('cust-landmark')?.value.trim() || '';
     const area = document.getElementById('cust-area')?.value.trim();
-    const city = document.getElementById('cust-city')?.value.trim();
-    const pincode = document.getElementById('cust-pincode')?.value.trim();
+    let city = document.getElementById('cust-city')?.value.trim() || 'Hassan';
+    const pincode = document.getElementById('cust-pincode')?.value.trim() || '573201';
     const notes = document.getElementById('cust-notes')?.value.trim();
     
     // Get selected payment method
     const paymentRadio = document.querySelector('input[name="payment-method"]:checked');
-    const paymentMethod = paymentRadio ? paymentRadio.value : 'Google Pay / UPI Scanner';
+    const paymentMethod = paymentRadio ? paymentRadio.value : 'Cash / UPI on Delivery';
 
     // Get selected delivery slot
     const slotRadio = document.querySelector('input[name="delivery-slot"]:checked');
-    const deliverySlot = slotRadio ? slotRadio.value : 'Express Delivery (Within 30-45 Mins)';
+    let deliverySlot = slotRadio ? slotRadio.value : 'Express Delivery (Within 30-45 Mins)';
 
-    if (!name || !phone || !street || !area || !city || !pincode) {
-        alert('Please fill out all required fields.');
+    // Check store hours: if closed, seamlessly accept as morning pre-order without blocking
+    const isStoreOpen = window.CONFIG && window.CONFIG.isStoreOpen ? window.CONFIG.isStoreOpen() : true;
+    if (!isStoreOpen) {
+        deliverySlot = '🌅 Morning Fresh Pre-Order (9:00 AM Dispatch)';
+    }
+
+    if (!name || !phone || !street || !area) {
+        alert('Please fill out your Name, Phone Number, and Delivery Address.');
         return;
     }
 
-    // 2. Hassan City Restriction
-    const cityClean = city.trim().toLowerCase();
-    const hassanKeywords = ['hassan', 'ಹಾಸನ'];
-    const isHassanCity = hassanKeywords.some(kw => cityClean.includes(kw));
-    if (!isHassanCity) {
+    // Hassan City Validation (Friendly & Non-blocking)
+    const cityClean = city.toLowerCase();
+    const areaClean = area.toLowerCase();
+    const hassanKeywords = ['hassan', 'ಹಾಸನ', 'santepet', 'vidyanagar', 'kr puram', 'bm road', 'salagame', 'channapatna', 'pension mohalla', 'kattaya', 'gorur', 'kandali', 'alewadi', 'shankarmutt', 'kikkeri', 'ring road'];
+    const isHassan = hassanKeywords.some(kw => cityClean.includes(kw) || areaClean.includes(kw)) || cityClean === '' || pincode === '573201';
+    if (!isHassan) {
         showOutsideHassanModal(city);
         return;
     }
@@ -474,7 +539,7 @@ function handleCheckoutSubmit(e) {
     } catch (err) {}
 
     // Construct formatted WhatsApp message
-    let message = `Hello ${CONFIG.BUSINESS_NAME},\n\n`;
+    let message = `Hello ${CONFIG.BUSINESS_NAME || 'Fresh Chicken Hassan'},\n\n`;
     message += `I would like to place an order.\n\n`;
     message += `📋 *CUSTOMER DETAILS*\n`;
     message += `👤 Name: ${name}\n`;
@@ -483,7 +548,7 @@ function handleCheckoutSubmit(e) {
     
     if (userGpsCoords) {
         message += `🗺️ *GPS Pin:* https://maps.google.com/?q=${userGpsCoords.lat},${userGpsCoords.lng}\n`;
-        message += `🚗 *Get Directions (GPS Navigation):* https://www.google.com/maps/dir/?api=1&destination=${userGpsCoords.lat},${userGpsCoords.lng}\n`;
+        message += `🚗 *Directions:* https://www.google.com/maps/dir/?api=1&destination=${userGpsCoords.lat},${userGpsCoords.lng}\n`;
     }
     
     message += `⏰ *Delivery Slot:* ${deliverySlot}\n`;
@@ -493,7 +558,6 @@ function handleCheckoutSubmit(e) {
     }
 
     message += `\n🛒 *ORDERED ITEMS*\n`;
-
     items.forEach(item => {
         const cutInfo = item.cutType ? ` [${item.cutType}]` : '';
         const itemTotal = Math.round(item.pricePerKg * item.quantity * 100) / 100;
@@ -506,9 +570,8 @@ function handleCheckoutSubmit(e) {
     message += `*Total Amount: ₹${grandTotal}*\n`;
     message += `💳 *Payment Method: ${paymentMethod}*\n`;
 
-    if (paymentMethod.includes('UPI')) {
-        message += `📲 Store UPI ID: ${CONFIG.UPI_ID || '9148699386@ybl'}\n\n`;
-        message += `⚠️ *IMPORTANT: PLEASE SHARE PAYMENT SCREENSHOT (SS) IN THIS CHAT TO CONFIRM YOUR ONLINE PAYMENT ORDER!*\n`;
+    if (paymentMethod.includes('UPI') || paymentMethod.includes('Google Pay')) {
+        message += `📲 Store UPI ID: ${CONFIG.UPI_ID || '9148699386-2@ybl'}\n`;
     }
 
     message += `\nPlease confirm my order and share delivery details!`;
@@ -517,12 +580,6 @@ function handleCheckoutSubmit(e) {
     const encodedMessage = encodeURIComponent(message);
     const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
 
-    // Disable place order button temporarily to prevent multi-clicking
-    const placeOrderBtn = document.getElementById('place-order-btn');
-    if (placeOrderBtn) {
-        placeOrderBtn.disabled = true;
-        placeOrderBtn.classList.add('opacity-50', 'pointer-events-none');
-    }
     isSubmittingOrder = true;
 
     // Save order into order history & revenue tracker
@@ -539,11 +596,23 @@ function handleCheckoutSubmit(e) {
         });
     }
 
-    // Show Success Modal
+    // Clear cart immediately so items don't linger
+    if (window.cart) {
+        window.cart.clearCart();
+    }
+
+    // Immediately launch WhatsApp!
+    try {
+        window.location.href = waUrl;
+    } catch(err) {
+        console.warn('Direct redirect to WhatsApp failed:', err);
+    }
+
+    // Show Confirmation Modal with option to reopen WhatsApp or track orders
     showOrderSuccessModal(waUrl, name, grandTotal, paymentMethod, deliverySlot);
 }
 
-// Order Success Overlay Modal before redirecting to WhatsApp
+// Order Success Overlay Modal
 function showOrderSuccessModal(waUrl, name, totalAmount, paymentMethod, deliverySlot) {
     let modal = document.getElementById('order-success-modal');
     if (!modal) {
@@ -553,61 +622,44 @@ function showOrderSuccessModal(waUrl, name, totalAmount, paymentMethod, delivery
         document.body.appendChild(modal);
     }
 
-    const upiId = CONFIG.UPI_ID || '9148699386@ybl';
-    const isUpi = paymentMethod && paymentMethod.includes('UPI');
-
     modal.innerHTML = `
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl transform scale-90 transition-transform duration-300">
             <div class="w-16 h-16 bg-green-100 text-[#133B2C] rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
                 <span class="material-symbols-outlined text-4xl">check_circle</span>
             </div>
             
-            <h3 class="text-2xl font-black text-gray-900 mb-1">Order Ready to Send!</h3>
+            <h3 class="text-2xl font-black text-gray-900 mb-1">🎉 Order Placed!</h3>
             <p class="text-gray-600 text-xs mb-3">
-                Thank you <strong class="text-gray-900">${name}</strong>! Total Amount: <strong class="text-[#133B2C] text-sm">₹${totalAmount}</strong>
+                Thank you <strong class="text-gray-900">${name}</strong>! Your order of <strong class="text-[#133B2C] text-sm">₹${totalAmount}</strong> is sent to WhatsApp.
             </p>
 
-            <div class="bg-gray-50 border border-gray-100 rounded-xl p-2.5 mb-4 text-xs text-gray-700 font-semibold flex items-center justify-center gap-1.5">
+            <div class="bg-emerald-50 border border-emerald-200/80 rounded-xl p-2.5 mb-4 text-xs text-emerald-950 font-semibold flex items-center justify-center gap-1.5">
                 <span class="material-symbols-outlined text-sm text-emerald-600">schedule</span>
-                <span>${deliverySlot || 'Express Delivery (30-45 mins)'}</span>
+                <span>${deliverySlot}</span>
             </div>
 
-            ${isUpi ? `
-                <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl mb-4 space-y-2 text-left">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-[#133B2C] flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm text-emerald-600">qr_code_scanner</span>
-                            Google Pay / UPI Details
-                        </span>
-                        <span class="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-full">Store UPI</span>
-                    </div>
-                    <p class="text-[11px] text-gray-600">Pay <strong>₹${totalAmount}</strong> to UPI ID below or scan QR at checkout.</p>
-                    <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-emerald-200">
-                        <span class="font-bold text-xs text-[#133B2C] select-all">${upiId}</span>
-                        <button onclick="copyUpiId()" class="text-[11px] bg-[#133B2C] text-white px-3 py-1 rounded-lg font-bold">Copy</button>
-                    </div>
+            <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 mb-4 text-left space-y-2 text-xs text-gray-600">
+                <div class="flex items-center justify-between font-bold text-gray-800">
+                    <span>Payment:</span>
+                    <span class="text-[#133B2C]">${paymentMethod}</span>
                 </div>
+                <p class="text-[11px] text-gray-500">WhatsApp has been opened with your order text. Just tap <strong>Send</strong> in WhatsApp to chat with our Hassan store!</p>
+            </div>
 
-                <div class="p-3 bg-amber-50 border-2 border-amber-400 text-amber-950 rounded-2xl mb-4 text-xs font-black text-center shadow-sm space-y-1">
-                    <div class="flex items-center justify-center gap-1 text-amber-700">
-                        <span class="material-symbols-outlined text-base">warning</span>
-                        <span>IMPORTANT FOR ONLINE PAYMENT</span>
-                    </div>
-                    <p class="text-[11px] leading-tight">PLEASE ATTACH & SHARE PAYMENT SCREENSHOT (SS) IN THE WHATSAPP CHAT TO CONFIRM YOUR ORDER!</p>
-                </div>
-            ` : ''}
-
-            <a href="${waUrl}" target="_blank" id="confirm-wa-btn" class="w-full bg-[#25D366] hover:bg-[#1ebd59] text-white py-4 px-6 rounded-2xl font-bold text-base flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 mb-3">
+            <a href="${waUrl}" target="_blank" id="confirm-wa-btn" class="w-full bg-[#25D366] hover:bg-[#1ebd59] text-white py-3.5 px-6 rounded-2xl font-black text-base flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 mb-3 cursor-pointer">
                 <span class="material-symbols-outlined text-2xl">chat</span>
-                <span>Send Order on WhatsApp</span>
+                <span>Open WhatsApp Chat Again</span>
             </a>
 
-            <div class="flex items-center justify-center gap-4 text-xs font-semibold">
-                <a href="orders.html" class="text-[#133B2C] hover:underline">Track My Orders</a>
+            <div class="flex items-center justify-center gap-4 text-xs font-bold pt-2">
+                <a href="orders.html" class="text-[#133B2C] hover:underline flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">receipt_long</span>
+                    <span>Track My Orders</span>
+                </a>
                 <span class="text-gray-300">•</span>
-                <button onclick="closeModalAndClear()" class="text-gray-400 hover:text-gray-600 underline">
+                <a href="index.html" class="text-gray-500 hover:text-gray-800 underline">
                     Return to Store
-                </button>
+                </a>
             </div>
         </div>
     `;
@@ -617,17 +669,6 @@ function showOrderSuccessModal(waUrl, name, totalAmount, paymentMethod, delivery
         modal.classList.remove('opacity-0');
         modal.querySelector('div').classList.remove('scale-90');
     });
-
-    // Clear cart when user clicks the WhatsApp confirm button
-    const confirmBtn = modal.querySelector('#confirm-wa-btn');
-    if (confirmBtn) {
-        confirmBtn.addEventListener('click', () => {
-            setTimeout(() => {
-                if (window.cart) window.cart.clearCart();
-                window.location.href = 'orders.html';
-            }, 1000);
-        });
-    }
 }
 
 function closeModalAndClear() {

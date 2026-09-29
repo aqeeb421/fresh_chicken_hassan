@@ -36,7 +36,8 @@ global.CustomEvent = class {};
 global.CONFIG = {
     BUSINESS_NAME: 'Fresh Chicken',
     DELIVERY_CHARGE: 40,
-    FREE_DELIVERY_LIMIT: 500
+    FREE_DELIVERY_LIMIT: 999,
+    MIN_DELIVERY_WEIGHT_KG: 1.0
 };
 
 // Mock PRODUCTS
@@ -203,10 +204,17 @@ class CartEngine {
         const raw = this.items.reduce((sum, item) => sum + (item.pricePerKg * item.quantity), 0);
         return Math.round(raw * 100) / 100;
     }
+    getTotalWeight() {
+        const raw = this.items.reduce((sum, item) => sum + (parseFloat(item.quantity) || 0), 0);
+        return Math.round(raw * 100) / 100;
+    }
+    isMinWeightSatisfied() {
+        return this.getTotalWeight() >= (CONFIG.MIN_DELIVERY_WEIGHT_KG || 1.0);
+    }
     getDeliveryCharge() {
         const subtotal = this.getSubtotal();
         if (subtotal === 0) return 0;
-        return subtotal >= (CONFIG.FREE_DELIVERY_LIMIT || 500) ? 0 : (CONFIG.DELIVERY_CHARGE || 40);
+        return subtotal >= (CONFIG.FREE_DELIVERY_LIMIT || 999) ? 0 : (CONFIG.DELIVERY_CHARGE || 40);
     }
     getGrandTotal() {
         return this.getSubtotal() + this.getDeliveryCharge();
@@ -259,15 +267,34 @@ test('Cart: Decrementing below 1 Kg removes item from cart', () => {
     assert.strictEqual(cart.getSubtotal(), 0);
 });
 
-test('Delivery Charge: Subtotal < 500 applies ₹40 delivery, subtotal >= 500 gives FREE delivery', () => {
+test('Delivery Charge: Subtotal < 999 applies ₹40 delivery, subtotal >= 999 gives FREE delivery', () => {
     cart.clearCart();
-    cart.addItem('prod-whole-chicken', 1.0); // 220 -> < 500
+    cart.addItem('prod-whole-chicken', 1.0); // 220 -> < 999
     assert.strictEqual(cart.getDeliveryCharge(), 40);
     assert.strictEqual(cart.getGrandTotal(), 260);
 
-    cart.addItem('prod-boneless', 1.0); // 220 + 340 = 560 -> >= 500
+    cart.addItem('prod-boneless', 2.0); // 220 + (2 * 340) = 900 -> < 999
+    assert.strictEqual(cart.getDeliveryCharge(), 40);
+    assert.strictEqual(cart.getGrandTotal(), 940);
+
+    cart.addItem('prod-whole-chicken', 1.0); // 900 + 220 = 1120 -> >= 999
     assert.strictEqual(cart.getDeliveryCharge(), 0);
-    assert.strictEqual(cart.getGrandTotal(), 560);
+    assert.strictEqual(cart.getGrandTotal(), 1120);
+});
+
+test('Minimum Weight Gate: Total cart weight must be at least 1.0 Kg for delivery checkout', () => {
+    cart.clearCart();
+    cart.addItem('prod-whole-chicken', 0.5); // 0.5 Kg
+    assert.strictEqual(cart.getTotalWeight(), 0.5);
+    assert.strictEqual(cart.isMinWeightSatisfied(), false);
+
+    cart.addItem('prod-boneless', 0.5); // + 0.5 Kg = 1.0 Kg
+    assert.strictEqual(cart.getTotalWeight(), 1.0);
+    assert.strictEqual(cart.isMinWeightSatisfied(), true);
+
+    cart.addItem('prod-boneless', 0.5); // + 0.5 Kg = 1.5 Kg
+    assert.strictEqual(cart.getTotalWeight(), 1.5);
+    assert.strictEqual(cart.isMinWeightSatisfied(), true);
 });
 
 // ----------------------------------------------------

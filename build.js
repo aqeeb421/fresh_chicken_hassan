@@ -13,6 +13,7 @@ const jsFiles = [
     'js/config.js',
     'js/translations.js',
     'js/products-data.js',
+    'js/products.js',
     'js/cart.js',
     'js/orders.js',
     'js/profile.js',
@@ -61,6 +62,34 @@ htmlFiles.forEach(file => {
         console.log(`  ✓ ${file}`);
     } else {
         console.error(`  ✗ Missing HTML file: ${file}`);
+    }
+});
+
+// 3. Validate Critical Images on Disk
+const criticalImages = [
+    'assets/images/logo.png',
+    'assets/images/hero-banner.png',
+    'assets/images/with-skin-chicken.png',
+    'assets/images/skinless-chicken.png',
+    'assets/images/boneless-chicken.png',
+    'assets/images/chicken-wings.png',
+    'assets/images/chicken-legs.png',
+    'assets/images/chicken-breast.png',
+    'assets/images/chicken-keema.png',
+    'assets/images/chicken-lollipop.png',
+    'assets/images/chicken-liver.png',
+    'assets/images/nati-koli.png',
+    'assets/images/nati-koli-eggs.png',
+    'assets/images/fresh-fish.png'
+];
+
+console.log('\n🖼️ Checking Asset Images...');
+criticalImages.forEach(img => {
+    if (fs.existsSync(img)) {
+        const stats = fs.statSync(img);
+        console.log(`  ✓ ${img} (${(stats.size / 1024).toFixed(1)} KB)`);
+    } else {
+        console.error(`  ✗ Missing image asset: ${img}`);
     }
 });
 

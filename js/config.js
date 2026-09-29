@@ -16,9 +16,11 @@ const CONFIG = {
     CURRENCY_SYMBOL: '₹',
     DELIVERY_CHARGE: 40,
     FREE_DELIVERY_LIMIT: 999,
+    MIN_DELIVERY_WEIGHT_KG: 1.0,
     UPI_ID: '9148699386-2@ybl',
     UPI_NAME: 'Fresh Chicken Hassan',
-    INSTAGRAM_URL: 'https://instagram.com',
+    INSTAGRAM_URL: 'https://www.instagram.com/fresh_chicken_hassan/',
+    INSTAGRAM_HANDLE: '@fresh_chicken_hassan',
     FACEBOOK_URL: 'https://facebook.com',
 
     // Helper: Check if store is currently open (9:00 AM - 9:00 PM)
