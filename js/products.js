@@ -558,13 +558,22 @@ document.addEventListener('DOMContentLoaded', () => {
             qty = 1.0;
             quantityMap[id] = 1.0;
             updateQtyDisplay(id);
+            if (window.cart && window.cart.showToast) {
+                window.cart.showToast('Minimum delivery weight is 1.0 Kg (set to 1.0 Kg)', 'info');
+            }
         }
         const prod = PRODUCTS.find(p => p.id === id);
         if (!prod) return;
 
         const allowsCut = prod && (prod.allowCutPreferences || prod.id === 'prod-whole-chicken' || prod.id === 'prod-skinless-chicken');
         const cutType = allowsCut ? (cutMap[id] || 'Curry Cut') : null;
-        const totalAmount = Math.round(prod.pricePerKg * qty * 100) / 100;
+        
+        // Exact pricing breakdown
+        const subtotal = Math.round(prod.pricePerKg * qty * 100) / 100;
+        const freeLimit = window.CONFIG?.FREE_DELIVERY_LIMIT || 999;
+        const deliveryRate = window.CONFIG?.DELIVERY_CHARGE !== undefined ? window.CONFIG.DELIVERY_CHARGE : 40;
+        const deliveryCharge = subtotal >= freeLimit ? 0 : deliveryRate;
+        const grandTotal = Math.round((subtotal + deliveryCharge) * 100) / 100;
 
         let savedProfile = null;
         try {
@@ -578,19 +587,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 prodName: prod.name,
                 qty: qty,
                 cutType: cutType,
-                total: totalAmount,
+                subtotal: subtotal,
+                deliveryCharge: deliveryCharge,
+                grandTotal: grandTotal,
                 name: savedProfile.name,
                 phone: savedProfile.phone || '',
                 address: [savedProfile.street, savedProfile.area, 'Hassan'].filter(Boolean).join(', ')
             });
         } else {
             // Show clean 2-field modal
-            showQuickOrderModal(prod, qty, cutType, totalAmount);
+            showQuickOrderModal(prod, qty, cutType, subtotal, deliveryCharge, grandTotal);
         }
     }
 
     // Modal for 1-Click Quick Order
-    function showQuickOrderModal(prod, qty, cutType, totalAmount) {
+    function showQuickOrderModal(prod, qty, cutType, subtotal, deliveryCharge, grandTotal) {
+        // Fallback calculations for safety
+        const sTotal = typeof subtotal === 'number' ? subtotal : Math.round(prod.pricePerKg * qty * 100) / 100;
+        const freeLimit = window.CONFIG?.FREE_DELIVERY_LIMIT || 999;
+        const deliveryRate = window.CONFIG?.DELIVERY_CHARGE !== undefined ? window.CONFIG.DELIVERY_CHARGE : 40;
+        const dCharge = typeof deliveryCharge === 'number' ? deliveryCharge : (sTotal >= freeLimit ? 0 : deliveryRate);
+        const gTotal = typeof grandTotal === 'number' ? grandTotal : Math.round((sTotal + dCharge) * 100) / 100;
+
         let modal = document.getElementById('quick-order-modal');
         if (!modal) {
             modal = document.createElement('div');
@@ -617,16 +635,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
-                <!-- Item preview pill -->
-                <div class="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3 mb-4 flex items-center justify-between">
-                    <div class="flex items-center gap-2.5">
-                        <img src="${prod.image}" alt="${prod.name}" class="w-10 h-10 rounded-xl object-cover border border-emerald-200" onerror="if(this.src&&this.src.indexOf('?')!==-1){this.src=this.src.split('?')[0];}else{this.onerror=null;this.src='assets/images/with-skin-chicken.png';}" />
-                        <div>
-                            <div class="font-extrabold text-xs text-[#133B2C]">${prod.name}</div>
-                            <div class="text-[11px] text-emerald-800 font-bold">${qty} Kg${cutText}</div>
+                <!-- Item preview & pricing pill with full delivery breakdown -->
+                <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-3.5 mb-4">
+                    <div class="flex items-center justify-between pb-2.5 border-b border-emerald-100">
+                        <div class="flex items-center gap-2.5">
+                            <img src="${prod.image}" alt="${prod.name}" class="w-10 h-10 rounded-xl object-cover border border-emerald-200" onerror="if(this.src&&this.src.indexOf('?')!==-1){this.src=this.src.split('?')[0];}else{this.onerror=null;this.src='assets/images/with-skin-chicken.png';}" />
+                            <div>
+                                <div class="font-extrabold text-xs text-[#133B2C]">${prod.name}</div>
+                                <div class="text-[11px] text-emerald-800 font-bold">${qty} Kg${cutText}</div>
+                            </div>
+                        </div>
+                        <div class="font-bold text-xs text-gray-700">₹${sTotal}</div>
+                    </div>
+                    <div class="pt-2 text-[11px] space-y-1">
+                        <div class="flex items-center justify-between text-gray-600">
+                            <span>${isKn ? 'ಉತ್ಪನ್ನ ಬೆಲೆ' : 'Item Subtotal'}:</span>
+                            <span class="font-semibold text-gray-800">₹${sTotal}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-gray-600">
+                            <span>${isKn ? 'ಮನೆ ಬಾಗಿಲಿಗೆ ಡೆಲಿವರಿ ಶುಲ್ಕ' : 'Delivery Charge'}:</span>
+                            <span class="font-bold ${dCharge === 0 ? 'text-emerald-700' : 'text-gray-800'}">${dCharge === 0 ? (isKn ? 'ಉಚಿತ (FREE)' : 'FREE') : '₹' + dCharge}</span>
+                        </div>
+                        <div class="flex items-center justify-between font-black text-xs text-[#133B2C] pt-1.5 border-t border-emerald-200/60">
+                            <span>${isKn ? 'ಒಟ್ಟು ಮೊತ್ತ (Grand Total)' : 'Grand Total'}:</span>
+                            <span class="text-sm font-black text-[#133B2C]">₹${gTotal}</span>
                         </div>
                     </div>
-                    <div class="font-black text-sm text-[#133B2C]">₹${totalAmount}</div>
                 </div>
 
                 <form id="quick-order-form" class="space-y-3">
@@ -679,7 +713,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 prodName: prod.name,
                 qty: qty,
                 cutType: cutType,
-                total: totalAmount,
+                subtotal: sTotal,
+                deliveryCharge: dCharge,
+                grandTotal: gTotal,
                 name: name,
                 phone: phone,
                 address: `${area}, Hassan`
@@ -688,13 +724,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Direct WhatsApp Message Formatter & Sender
-    function sendDirectWhatsAppOrder({ prodName, qty, cutType, total, name, phone, address }) {
+    function sendDirectWhatsAppOrder({ prodName, qty, cutType, subtotal, deliveryCharge, grandTotal, total, name, phone, address }) {
+        // Fallback calculations for safety
+        const sTotal = typeof subtotal === 'number' ? subtotal : (typeof total === 'number' ? total : 0);
+        const freeLimit = window.CONFIG?.FREE_DELIVERY_LIMIT || 999;
+        const deliveryRate = window.CONFIG?.DELIVERY_CHARGE !== undefined ? window.CONFIG.DELIVERY_CHARGE : 40;
+        const dCharge = typeof deliveryCharge === 'number' ? deliveryCharge : (sTotal >= freeLimit ? 0 : deliveryRate);
+        const gTotal = typeof grandTotal === 'number' ? grandTotal : Math.round((sTotal + dCharge) * 100) / 100;
+
         let msg = `Hello ${CONFIG.BUSINESS_NAME || 'Fresh Chicken Hassan'},\n\n`;
-        msg += `I would like to place an order:\n`;
-        msg += `🍗 *${prodName}* - ${qty} Kg${cutType ? ' [' + cutType + ']' : ''}\n`;
-        msg += `💰 *Total Amount: ₹${total}*\n`;
+        msg += `I would like to place an order:\n\n`;
+        msg += `🍗 *ORDERED ITEM*\n`;
+        msg += `• ${prodName} - ${qty} Kg${cutType ? ' [' + cutType + ']' : ''} (₹${sTotal})\n\n`;
+        msg += `💰 *PAYMENT SUMMARY*\n`;
+        msg += `Subtotal: ₹${sTotal}\n`;
+        msg += `Delivery Fee: ${dCharge === 0 ? 'FREE (Order >= ₹' + freeLimit + ')' : '₹' + dCharge}\n`;
+        msg += `*Total Amount: ₹${gTotal}*\n`;
         msg += `💵 *Payment: Cash / UPI on Delivery*\n\n`;
-        msg += `📋 *CUSTOMER DETAILS:*\n`;
+        msg += `📋 *CUSTOMER DETAILS*\n`;
         msg += `👤 Name: ${name}\n`;
         if (phone) msg += `📞 Phone: ${phone}\n`;
         msg += `📍 Delivery Address: ${address}\n\n`;
@@ -707,10 +754,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.ordersEngine) {
             window.ordersEngine.saveOrder({
                 customer: { name, phone, fullAddress: address, area: address, city: 'Hassan' },
-                items: [{ name: prodName, quantity: qty, cutType, pricePerKg: total / qty }],
-                subtotal: total,
-                deliveryCharge: total >= (CONFIG.FREE_DELIVERY_LIMIT || 999) ? 0 : 40,
-                grandTotal: total + (total >= (CONFIG.FREE_DELIVERY_LIMIT || 999) ? 0 : 40),
+                items: [{ name: prodName, quantity: qty, cutType, pricePerKg: Math.round((sTotal / qty) * 100) / 100 }],
+                subtotal: sTotal,
+                deliveryCharge: dCharge,
+                grandTotal: gTotal,
                 paymentMethod: 'Cash / UPI on Delivery',
                 deliverySlot: 'Express Delivery (30-45 mins)',
                 status: 'Order Placed'
@@ -743,7 +790,7 @@ function renderDynamicHomeBanners() {
 
     // Render static carousel shell with sliding track (rendered ONCE, no jumpy re-renders)
     container.innerHTML = `
-        <div id="banner-carousel-shell" class="banner-carousel-shell group min-h-[250px] sm:min-h-[220px] md:h-[220px] relative w-full flex items-center">
+        <div id="banner-carousel-shell" class="banner-carousel-shell group min-h-[140px] sm:min-h-[130px] relative w-full flex items-center">
             
             <!-- Ambient Modern Lighting Glows -->
             <div class="absolute -right-16 -top-16 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -752,43 +799,37 @@ function renderDynamicHomeBanners() {
             <!-- Sliding Track containing all slides side-by-side -->
             <div id="banner-carousel-track" class="banner-track h-full items-center">
                 ${banners.map(b => `
-                    <div class="banner-slide flex flex-col md:flex-row items-center justify-between p-5 sm:p-7 md:px-10 lg:px-12 gap-4 sm:gap-6 relative z-10 h-full box-border">
+                    <div class="banner-slide flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 md:px-8 lg:px-10 gap-3 sm:gap-4 relative z-10 h-full box-border">
                         
                         <!-- Left: Info & Badges with strict line clamps to prevent vertical jumping -->
-                        <div class="w-full md:max-w-xl lg:max-w-2xl text-left flex flex-col justify-center space-y-2 sm:space-y-2.5">
+                        <div class="w-full sm:max-w-xl md:max-w-2xl text-left flex flex-col justify-center space-y-1.5 sm:space-y-2">
                             <div class="flex items-center gap-2">
                                 ${b.badge ? `
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400 text-amber-950 font-black rounded-full text-[11px] uppercase tracking-wider shadow-sm flex-shrink-0">
-                                        <span class="material-symbols-outlined text-xs">campaign</span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-amber-400 text-amber-950 font-black rounded-full text-[10px] uppercase tracking-wider shadow-sm flex-shrink-0">
+                                        <span class="material-symbols-outlined text-[13px]">campaign</span>
                                         ${b.badge}
                                     </span>
                                 ` : ''}
-                                <span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300/80 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                <span class="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-300/80 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/20">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                                     Hassan Special
                                 </span>
                             </div>
 
-                            <h3 class="text-xl sm:text-2xl md:text-3xl font-black text-white leading-snug tracking-tight line-clamp-1 sm:line-clamp-2">
+                            <h3 class="text-base sm:text-lg md:text-xl font-black text-white leading-snug tracking-tight line-clamp-1 sm:line-clamp-2">
                                 ${b.title || 'Fresh Chicken Hassan'}
                             </h3>
 
-                            <p class="text-emerald-100/85 text-xs sm:text-sm leading-relaxed line-clamp-2">
+                            <p class="text-emerald-100/85 text-xs leading-relaxed line-clamp-2 sm:line-clamp-1">
                                 ${b.description || 'Farm-fresh cuts delivered right to your home.'}
                             </p>
                         </div>
 
-                        <!-- Right: Standardized Media and CTA button -->
-                        <div class="w-full md:w-auto flex items-center justify-between md:justify-end gap-3 sm:gap-5 flex-shrink-0 pt-2 md:pt-0 border-t border-white/10 md:border-none">
-                            ${b.image ? `
-                                <div class="w-24 h-16 sm:w-32 sm:h-20 md:w-40 md:h-24 rounded-2xl overflow-hidden shadow-xl border border-white/15 bg-black/30 flex-shrink-0">
-                                    <img src="${b.image}" alt="${b.title || 'Offer'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.parentElement.style.display='none'" />
-                                </div>
-                            ` : ''}
-
-                            <a href="${b.linkUrl || 'products.html'}" class="inline-flex items-center justify-center gap-2 bg-[#E53935] hover:bg-[#c62828] active:scale-95 text-white px-5 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl font-black text-xs sm:text-sm shadow-xl shadow-red-950/40 hover:shadow-red-600/30 transition-all whitespace-nowrap">
+                        <!-- Right: Clean, Compact CTA button (No image showcase) -->
+                        <div class="w-auto flex items-center justify-start sm:justify-end flex-shrink-0 pt-1 sm:pt-0">
+                            <a href="${b.linkUrl || 'products.html'}" class="inline-flex items-center justify-center gap-1.5 bg-[#E53935] hover:bg-[#c62828] active:scale-95 text-white px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl font-bold text-xs shadow-md shadow-red-950/30 hover:shadow-red-600/30 transition-all whitespace-nowrap">
                                 <span>${b.linkText || 'Order Now'}</span>
-                                <span class="material-symbols-outlined text-base">arrow_forward</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
                             </a>
                         </div>
                     </div>

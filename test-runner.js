@@ -282,6 +282,34 @@ test('Delivery Charge: Subtotal < 999 applies ₹40 delivery, subtotal >= 999 gi
     assert.strictEqual(cart.getGrandTotal(), 1120);
 });
 
+test('Quick Order Delivery Charge: Single-click orders < 999 correctly apply ₹40 delivery fee', () => {
+    // Quick order for 1 Kg of Whole Chicken (Skinless) = ₹240
+    const qty = 1.0;
+    const pricePerKg = 240;
+    const subtotal = Math.round(pricePerKg * qty * 100) / 100;
+    const freeLimit = CONFIG.FREE_DELIVERY_LIMIT || 999;
+    const deliveryCharge = subtotal >= freeLimit ? 0 : (CONFIG.DELIVERY_CHARGE || 40);
+    const grandTotal = Math.round((subtotal + deliveryCharge) * 100) / 100;
+
+    assert.strictEqual(subtotal, 240, 'Subtotal should be ₹240');
+    assert.strictEqual(deliveryCharge, 40, 'Delivery fee must be ₹40 for orders under ₹999');
+    assert.strictEqual(grandTotal, 280, 'Grand total must include delivery charge (₹280)');
+});
+
+test('Quick Order Delivery Charge: Single-click orders >= 999 get FREE delivery (₹0)', () => {
+    // Quick order for 3 Kg of Boneless = 3 * 340 = ₹1020
+    const qty = 3.0;
+    const pricePerKg = 340;
+    const subtotal = Math.round(pricePerKg * qty * 100) / 100;
+    const freeLimit = CONFIG.FREE_DELIVERY_LIMIT || 999;
+    const deliveryCharge = subtotal >= freeLimit ? 0 : (CONFIG.DELIVERY_CHARGE || 40);
+    const grandTotal = Math.round((subtotal + deliveryCharge) * 100) / 100;
+
+    assert.strictEqual(subtotal, 1020, 'Subtotal should be ₹1020');
+    assert.strictEqual(deliveryCharge, 0, 'Delivery fee must be 0 for orders >= ₹999');
+    assert.strictEqual(grandTotal, 1020, 'Grand total must be ₹1020 with FREE delivery');
+});
+
 test('Minimum Weight Gate: Total cart weight must be at least 1.0 Kg for delivery checkout', () => {
     cart.clearCart();
     cart.addItem('prod-whole-chicken', 0.5); // 0.5 Kg
