@@ -13,11 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initPWA();
 });
 
-// Register PWA Service Worker (only in normal browser sessions, not in automated headless tests)
+// Register PWA Service Worker
 function initPWA() {
-    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && !navigator.webdriver) {
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
+            navigator.serviceWorker.register('/sw.js')
                 .then(reg => console.log('⚡ PWA Service Worker Registered! Scope:', reg.scope))
                 .catch(err => console.warn('PWA registration skipped or failed:', err));
         });

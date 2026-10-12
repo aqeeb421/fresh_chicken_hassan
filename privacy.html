@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Fresh Chicken Hassan</title>
+    <meta name="description" content="Privacy Policy for Fresh Chicken Hassan poultry delivery mobile app and web service.">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#133B2C',
+                        'primary-dark': '#0b251b',
+                        accent: '#E53935',
+                        'accent-hover': '#c62828',
+                        'bg-light': '#F9FBF9'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Favicon & PWA Manifest -->
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
+    <link rel="apple-touch-icon" href="assets/images/logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#133B2C">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-[#F9FBF9] text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <!-- Header Navbar -->
+    <header class="fixed top-0 w-full z-40 bg-white/95 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2.5">
+                <img src="assets/images/logo.png" alt="Fresh Chicken Hassan Logo" class="h-10 w-10 object-contain" />
+                <div>
+                    <span class="font-black text-lg sm:text-xl text-[#133B2C] block leading-tight">Fresh Chicken</span>
+                    <span class="text-[10px] text-gray-500 font-semibold tracking-wider uppercase">Hassan Delivery</span>
+                </div>
+            </a>
+            <a href="index.html" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#133B2C] hover:text-[#E53935] transition-colors">
+                <span class="material-symbols-outlined text-base">arrow_back</span>
+                <span>Back to Store</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+        <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100 space-y-8">
+            <div>
+                <span class="inline-block bg-emerald-50 text-[#133B2C] text-xs font-black uppercase px-3 py-1 rounded-full border border-emerald-200 mb-3">Legal & Compliance</span>
+                <h1 class="text-2xl sm:text-4xl font-black text-gray-900 tracking-tight">Privacy Policy</h1>
+                <p class="text-xs sm:text-sm text-gray-500 mt-2">Last Updated: October 2026 | Effective Date: October 2026</p>
+            </div>
+
+            <section class="space-y-3">
+                <h2 class="text-lg sm:text-xl font-black text-[#133B2C]">1. Introduction</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Welcome to <strong>Fresh Chicken Hassan</strong> ("we", "our", or "us"). We are committed to protecting your privacy while providing hygienic, same-day poultry cuts delivery across Hassan city. This Privacy Policy outlines what information we collect, how it is used, and how your privacy is safeguarded when you access our website or Android mobile application.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-lg sm:text-xl font-black text-[#133B2C]">2. Information We Collect</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">To successfully fulfill and deliver your poultry orders, we collect the following limited customer information:</p>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                    <li><strong>Contact Details:</strong> Your full name and phone number (to coordinate order confirmation and delivery calls).</li>
+                    <li><strong>Delivery Address:</strong> Street name, landmark, area, city (Hassan), and postal code (573201) so our delivery staff can reach your doorstep.</li>
+                    <li><strong>Location Data (Optional):</strong> If you tap "Use My GPS Location" at checkout, your device provides latitude and longitude coordinates to pinpoint your address and generate navigation directions for the delivery driver. GPS data is only accessed when you explicitly tap the button.</li>
+                    <li><strong>Order Details:</strong> Products selected, weights (Kg), cut preferences, delivery time slot, and chosen payment mode.</li>
+                </ul>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-lg sm:text-xl font-black text-[#133B2C]">3. How We Use Your Information</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">We use your data solely for order fulfillment and customer service:</p>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                    <li>To prepare your specific chicken cuts and deliver them to your address in Hassan.</li>
+                    <li>To communicate order status, dispatch updates, and receipts via WhatsApp or direct phone calls.</li>
+                    <li>To save your address locally on your device for fast 1-tap checkout on future orders.</li>
+                    <li>To provide customer support if you have inquiries regarding an order.</li>
+                </ul>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-lg sm:text-xl font-black text-[#133B2C]">4. Data Sharing & Third Parties</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    <strong>We do not sell, rent, or trade your personal information to third parties, marketers, or data brokers.</strong> Information is only processed through essential delivery infrastructure:
+                </p>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                    <li><strong>WhatsApp / Meta:</strong> When you place an order, your order summary is sent to our store WhatsApp number for direct shop communication.</li>
+                    <li><strong>Firebase Realtime Database:</strong> Cloud database infrastructure operated by Google Cloud used securely to store order logs and sync live catalog prices.</li>
+                    <li><strong>OpenStreetMap:</strong> Reverse geocoding tool used solely to convert GPS coordinates into a street name when you use location auto-fill.</li>
+                </ul>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-lg sm:text-xl font-black text-[#133B2C]">5. Payment Processing & Security</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    We accept payments via <strong>Cash on Delivery (COD)</strong> and direct <strong>Unified Payments Interface (UPI)</strong>. We do <strong>NOT</strong> collect, process, or store credit card numbers, debit card details, or net banking passwords on our servers. UPI payments are executed directly via your installed UPI app (Google Pay, PhonePe, Paytm, BHIM) on your secure banking network.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-lg sm:text-xl font-black text-[#133B2C]">6. Data Retention & Deletion</h2>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    You can clear your locally saved profile at any time by clearing your browser cache/storage or tapping "Logout / Clear Profile" in the My Orders page. If you wish to have your past orders or phone number removed from our cloud records, contact us directly at <a href="mailto:freshchicken@gmail.com" class="text-[#E53935] font-bold underline">freshchicken@gmail.com</a> or phone <a href="tel:+919148699386" class="text-[#133B2C] font-bold">+91 91486 99386</a>, and we will delete your record within 48 hours.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-lg sm:text-xl font-black text-[#133B2C]">7. Contact Store Administration</h2>
+                <div class="bg-gray-50 border border-gray-100 rounded-2xl p-5 text-sm text-gray-700 space-y-1.5">
+                    <p class="font-black text-gray-900 text-base">Fresh Chicken Hassan</p>
+                    <p>📍 Fresh Poultry Market, Santepet Circle, Hassan, Karnataka - 573201</p>
+                    <p>📞 Phone: +91 91486 99386</p>
+                    <p>📧 Email: freshchicken@gmail.com</p>
+                    <p>🕒 Hours: Monday – Sunday, 9:00 AM – 9:00 PM</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-500">
+            <p>&copy; 2026 Fresh Chicken Hassan. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

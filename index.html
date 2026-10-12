@@ -24,8 +24,23 @@
     </script>
     <!-- Favicon & PWA Manifest -->
     <link rel="icon" type="image/png" href="assets/images/logo.png">
+    <link rel="apple-touch-icon" href="assets/images/logo.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#133B2C">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fresh Chicken">
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('⚡ PWA Service Worker Active:', reg.scope))
+                    .catch(err => console.warn('PWA Service Worker registration failed:', err));
+            });
+        }
+    </script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -381,7 +396,7 @@
             </div>
 
             <div class="pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-                <p>&copy; 2026 Fresh Chicken. All rights reserved. <a href="admin.html" class="text-gray-600 hover:text-gray-400 ml-2 text-[10px]">🔒 Manager</a></p>
+                <p>&copy; 2026 Fresh Chicken. All rights reserved. <a href="privacy.html" class="hover:text-gray-300 underline ml-2">Privacy Policy</a> <a href="admin.html" class="text-gray-600 hover:text-gray-400 ml-2 text-[10px]">🔒 Manager</a></p>
                 <p>Designed for fast & hygienic food delivery.</p>
             </div>
         </div>

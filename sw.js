@@ -1,20 +1,21 @@
-const CACHE_NAME = 'fresh-chicken-v1.0.7';
+const CACHE_NAME = 'fresh-chicken-v1.0.8';
 const ASSETS_TO_CACHE = [
-    './index.html',
-    './products.html',
-    './cart.html',
-    './checkout.html',
-    './orders.html',
-    './contact.html',
-    './css/styles.css',
-    './js/config.js',
-    './js/translations.js',
-    './js/firebase-db.js',
-    './js/products-data.js',
-    './js/cart.js',
-    './js/orders.js',
-    './js/main.js',
-    './manifest.json'
+    '/',
+    '/index.html',
+    '/products.html',
+    '/cart.html',
+    '/checkout.html',
+    '/orders.html',
+    '/contact.html',
+    '/css/styles.css',
+    '/js/config.js',
+    '/js/translations.js',
+    '/js/firebase-db.js',
+    '/js/products-data.js',
+    '/js/cart.js',
+    '/js/orders.js',
+    '/js/main.js',
+    '/manifest.json'
 ];
 
 // Install Event - Pre-cache core assets safely
@@ -59,7 +60,7 @@ self.addEventListener('fetch', (e) => {
                 }
                 return res;
             })
-            .catch(() => caches.match(e.request).then(cached => cached || caches.match('./index.html')))
+            .catch(() => caches.match(e.request).then(cached => cached || caches.match('/index.html') || caches.match('/')))
     );
 });
 

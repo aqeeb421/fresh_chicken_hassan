@@ -53,6 +53,7 @@ const htmlFiles = [
     'checkout.html',
     'orders.html',
     'contact.html',
+    'privacy.html',
     'admin.html'
 ];
 
@@ -114,6 +115,7 @@ try {
         'checkout.html',
         'orders.html',
         'contact.html',
+        'privacy.html',
         'admin.html',
         'manifest.json',
         'sw.js',
